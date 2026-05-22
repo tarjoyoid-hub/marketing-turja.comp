@@ -41,6 +41,7 @@
         let generatedVoucher = null;
         let searchResult = null;
         let loginError = '';
+        let editingUserId = null; // Menyimpan ID user yang sedang diedit
 
         function saveData() {
             localStorage.setItem('tc_users', JSON.stringify(users));
@@ -193,6 +194,41 @@
             users.push(newUser);
             saveData();
             alert(`Akun marketing "${newName}" berhasil dibuat!`);
+            reRender();
+        }
+
+        function handleEditUserSubmit(e) {
+            e.preventDefault();
+            const updatedName = document.getElementById('new-name').value;
+            const updatedUsername = document.getElementById('new-username').value;
+            const updatedPassword = document.getElementById('new-password').value;
+
+            // Pastikan username tidak bentrok dengan user lain
+            if (users.find(u => u.username === updatedUsername && u.id !== editingUserId)) {
+                alert("Username sudah digunakan oleh akun lain. Pilih username lain.");
+                return;
+            }
+
+            const userIndex = users.findIndex(u => u.id === editingUserId);
+            if (userIndex > -1) {
+                users[userIndex].name = updatedName;
+                users[userIndex].username = updatedUsername;
+                users[userIndex].password = updatedPassword;
+                saveData();
+                alert(`Akun marketing "${updatedName}" berhasil diperbarui!`);
+            }
+
+            editingUserId = null;
+            reRender();
+        }
+
+        window.startEditUser = function(id) {
+            editingUserId = id;
+            reRender();
+        }
+
+        window.cancelEditUser = function() {
+            editingUserId = null;
             reRender();
         }
 
@@ -697,43 +733,59 @@
             let usersRows = '';
             
             if (marketingUsers.length === 0) {
-                usersRows = `<tr><td colspan="3" class="p-6 text-center text-slate-500">Belum ada akun tim marketing. Buat di sebelah kiri.</td></tr>`;
+                usersRows = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Belum ada akun tim marketing. Buat di sebelah kiri.</td></tr>`;
             } else {
                 usersRows = marketingUsers.map(u => `
                     <tr>
                         <td class="p-4 font-bold text-slate-800">${u.name}</td>
                         <td class="p-4 font-mono text-slate-600">${u.username}</td>
+                        <td class="p-4 font-mono text-slate-600">${u.password}</td>
                         <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Marketing</span></td>
+                        <td class="p-4">
+                            <button onclick="startEditUser('${u.id}')" class="px-3 py-1 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
+                                <i data-lucide="edit" class="w-3 h-3"></i> Edit
+                            </button>
+                        </td>
                     </tr>
                 `).join('');
             }
+
+            // Variabel untuk mode Edit / Buat Baru
+            const editUser = editingUserId ? users.find(u => u.id === editingUserId) : null;
+            const formId = editingUserId ? 'edit-user-form' : 'create-user-form';
+            const formTitle = editingUserId ? 'Edit Akun Marketing' : 'Buat Akun Marketing';
+            const btnText = editingUserId ? 'Simpan Perubahan' : 'Buat Akun';
+            const btnClass = editingUserId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700';
 
             return `
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Form -->
                 <div class="lg:col-span-1">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
-                                <i data-lucide="user-plus" class="w-6 h-6"></i>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="${editingUserId ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'} p-2 rounded-lg">
+                                    <i data-lucide="${editingUserId ? 'edit' : 'user-plus'}" class="w-6 h-6"></i>
+                                </div>
+                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
                             </div>
-                            <h2 class="text-lg font-bold text-slate-800">Buat Akun Marketing</h2>
+                            ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="text-slate-400 hover:text-slate-600" title="Batal Edit"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
                         </div>
                         
-                        <form id="create-user-form" class="space-y-4">
+                        <form id="${formId}" class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
-                                <input type="text" id="new-name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                                <input type="text" id="new-name" value="${editUser ? editUser.name : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Username Login</label>
-                                <input type="text" id="new-username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                                <input type="text" id="new-username" value="${editUser ? editUser.username : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                                <input type="text" id="new-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                                <input type="text" id="new-password" value="${editUser ? editUser.password : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
                             </div>
-                            <button type="submit" class="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold">Buat Akun</button>
+                            <button type="submit" class="w-full py-3 mt-2 ${btnClass} text-white rounded-xl font-semibold">${btnText}</button>
                         </form>
                     </div>
                 </div>
@@ -750,7 +802,9 @@
                                     <tr class="bg-slate-50 text-slate-500 text-sm">
                                         <th class="p-4 font-medium">Nama</th>
                                         <th class="p-4 font-medium">Username</th>
+                                        <th class="p-4 font-medium">Password</th>
                                         <th class="p-4 font-medium">Role</th>
+                                        <th class="p-4 font-medium">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-sm">${usersRows}</tbody>
@@ -780,6 +834,10 @@
             // Form Pembuatan Akun
             const createUserForm = document.getElementById('create-user-form');
             if (createUserForm) createUserForm.addEventListener('submit', handleCreateUser);
+
+            // Form Edit Akun
+            const editUserForm = document.getElementById('edit-user-form');
+            if (editUserForm) editUserForm.addEventListener('submit', handleEditUserSubmit);
         }
 
         // Jalankan saat halaman pertama kali dimuat
