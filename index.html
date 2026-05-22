@@ -39,7 +39,7 @@
         
         // State UI
         let activeAdminTab = 'verify';
-        let activeMarketingTab = 'vouchers';
+        let activeMarketingTab = 'create_voucher';
         let generatedVoucher = null;
         let searchResult = null;
         let loginError = '';
@@ -87,6 +87,7 @@
             }
         }
 
+        // Logout
         function handleLogout() {
             currentUser = null;
             generatedVoucher = null;
@@ -95,6 +96,7 @@
             reRender();
         }
 
+        // Mengacak Kode Voucer
         function generateRandomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = 'VCH-';
@@ -104,6 +106,7 @@
             return result;
         }
 
+        // Pembuatan Voucher Baru
         function handleCreateVoucher(e) {
             e.preventDefault();
             const name = document.getElementById('cust-name').value;
@@ -134,6 +137,7 @@
             reRender();
         }
 
+        // Cek Keberadaan & Status Voucher
         function handleSearchVoucher(e) {
             e.preventDefault();
             const code = document.getElementById('search-code').value.toUpperCase().trim();
@@ -156,6 +160,7 @@
             reRender();
         }
 
+        // Menggunakan Voucher (Redeem)
         function handleRedeemVoucher() {
             if (searchResult?.status !== 'found') return;
 
@@ -176,6 +181,7 @@
             }
         }
 
+        // Registrasi Akun Marketing Baru oleh Admin
         function handleCreateUser(e) {
             e.preventDefault();
             const newName = document.getElementById('new-name').value;
@@ -198,9 +204,11 @@
             users.push(newUser);
             saveData();
             alert(`Akun marketing "${newName}" berhasil dibuat!`);
+            activeAdminTab = 'users'; // Ganti ke tab daftar akun setelah sukses membuat
             reRender();
         }
 
+        // Edit Akun Marketing oleh Admin
         function handleEditUserSubmit(e) {
             e.preventDefault();
             const updatedName = document.getElementById('new-name').value;
@@ -223,16 +231,19 @@
             }
 
             editingUserId = null;
+            activeAdminTab = 'users'; // Kembalikan ke tab daftar setelah sukses edit
             reRender();
         }
 
         window.startEditUser = function(id) {
             editingUserId = id;
+            activeAdminTab = 'create_user'; // Pindah ke tab form edit
             reRender();
         }
 
         window.cancelEditUser = function() {
             editingUserId = null;
+            activeAdminTab = 'users'; // Kembalikan ke tab daftar jika batal
             reRender();
         }
 
@@ -462,7 +473,7 @@
         function renderLogin() {
             return `
             <div class="min-h-screen flex flex-col items-center justify-center p-4">
-                <div class="mb-8 text-center">
+                <div class="mb-8 text-center animate-fade-in">
                     <div class="bg-indigo-600 inline-block p-4 rounded-2xl text-white shadow-lg mb-4">
                         <i data-lucide="ticket" class="w-12 h-12"></i>
                     </div>
@@ -470,7 +481,7 @@
                     <p class="text-slate-500 mt-2">Login untuk mengelola promosi Turja Computer</p>
                 </div>
 
-                <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+                <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 animate-fade-in">
                     <form id="login-form" class="space-y-5">
                         ${loginError ? `
                         <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center gap-2">
@@ -515,7 +526,7 @@
                         </div>
                         <div>
                             <h1 class="font-bold text-slate-800 leading-tight">PromoVoucer</h1>
-                            <span class="text-xs font-medium text-slate-500 capitalize">${currentUser.role} Area</span>
+                            <span class="text-xs font-medium text-slate-400 capitalize">${currentUser.role} Area</span>
                         </div>
                     </div>
                     
@@ -541,7 +552,9 @@
         function renderMarketingDashboard() {
             let contentHTML = '';
             
-            if (activeMarketingTab === 'vouchers') {
+            if (activeMarketingTab === 'create_voucher') {
+                contentHTML = renderMarketingCreateVoucher();
+            } else if (activeMarketingTab === 'vouchers') {
                 contentHTML = renderMarketingVouchers();
             } else if (activeMarketingTab === 'create_sale') {
                 contentHTML = renderMarketingCreateSale();
@@ -552,21 +565,101 @@
             return `
             <div class="space-y-6">
                 <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 w-fit mx-auto flex-wrap justify-center">
-                    <button onclick="switchMarketingTab('vouchers')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeMarketingTab === 'vouchers' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="ticket" class="w-5 h-5"></i> Kelola Voucer
+                    <button onclick="switchMarketingTab('create_voucher')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeMarketingTab === 'create_voucher' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Buat Voucer Baru
                     </button>
-                    <button onclick="switchMarketingTab('create_sale')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeMarketingTab === 'create_sale' ? 'bg-fuchsia-100 text-fuchsia-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="shopping-bag" class="w-5 h-5"></i> Catat Penjualan
+                    <button onclick="switchMarketingTab('vouchers')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeMarketingTab === 'vouchers' ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="ticket" class="w-4 h-4"></i> Daftar Voucer
                     </button>
-                    <button onclick="switchMarketingTab('sales_history')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeMarketingTab === 'sales_history' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="database" class="w-5 h-5"></i> Data Penjualan
+                    <button onclick="switchMarketingTab('create_sale')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeMarketingTab === 'create_sale' ? 'bg-fuchsia-100 text-fuchsia-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Catat Penjualan
+                    </button>
+                    <button onclick="switchMarketingTab('sales_history')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeMarketingTab === 'sales_history' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="database" class="w-4 h-4"></i> Data Penjualan
                     </button>
                 </div>
                 ${contentHTML}
             </div>`;
         }
 
-        // --- SUB-VIEW: MARKETING VOUCHERS ---
+        // --- SUB-VIEW: TIM MARKETING - CREATE VOUCHER (FORM & PREVIEW ONLY) ---
+        function renderMarketingCreateVoucher() {
+            let generatedHTML = '';
+            if (generatedVoucher) {
+                generatedHTML = `
+                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-2xl shadow-lg text-white animate-fade-in border border-indigo-500">
+                    <h3 class="font-semibold text-indigo-100 mb-4 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i> Voucer Berhasil Dibuat!
+                    </h3>
+                    <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20 text-center mb-4">
+                        <p class="text-3xl font-mono font-bold tracking-widest">${generatedVoucher.code}</p>
+                    </div>
+                    <div class="text-sm text-indigo-100 space-y-2 mb-6">
+                        <p>Nilai Voucer: <span class="font-bold text-yellow-300">100 Rb</span></p>
+                        <p>Pelanggan: <span class="font-semibold text-white">${generatedVoucher.customerName}</span></p>
+                        <p>WA: <span class="font-semibold text-white">${generatedVoucher.customerPhone}</span></p>
+                        <p>Berlaku s/d: <span class="font-semibold text-yellow-300">
+                            ${new Date(generatedVoucher.expiresAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
+                        </span></p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-emerald-500 hover:bg-emerald-600 text-white font-bold">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim WA
+                        </button>
+                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-white hover:bg-slate-100 text-indigo-600 font-bold">
+                            <i data-lucide="download" class="w-4 h-4"></i> Download
+                        </button>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                <!-- Form Buat Voucher -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                            <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Buat Voucer Baru</h2>
+                            <p class="text-xs text-slate-500">Masa berlaku otomatis 1 minggu</p>
+                        </div>
+                    </div>
+                    
+                    <form id="create-voucher-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pelanggan *</label>
+                            <input type="text" id="cust-name" placeholder="Cth: Budi Santoso" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">No. WhatsApp *</label>
+                            <input type="tel" id="cust-phone" placeholder="Cth: 08123456789" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Alamat (Desa & Kec) *</label>
+                            <input type="text" id="cust-address" placeholder="Cth: Desa Sukamaju, Kec. Jati" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                        </div>
+                        <button type="submit" class="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="ticket" class="w-4 h-4"></i> Generate Voucer
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Bagian Kanan: Preview Hasil Pembuatan -->
+                <div class="flex flex-col justify-center">
+                    ${generatedHTML || `
+                    <div class="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-slate-400 flex flex-col items-center justify-center h-full min-h-[250px] bg-slate-50">
+                        <i data-lucide="ticket" class="w-12 h-12 text-slate-300 mb-2"></i>
+                        <h4 class="font-semibold text-slate-500">Tiket Belum Dibuat</h4>
+                        <p class="text-xs text-slate-400 max-w-xs mt-1">Silakan isi formulir di sebelah kiri untuk menghasilkan kode voucer dan gambar tiket diskon.</p>
+                    </div>
+                    `}
+                </div>
+            </div>`;
+        }
+
+        // --- SUB-VIEW: TIM MARKETING - LIST VOUCHERS (TABLE ONLY) ---
         function renderMarketingVouchers() {
             const myVouchers = vouchers.filter(v => v.createdBy === currentUser.name);
             
@@ -575,7 +668,7 @@
                 myVouchersHTML = `
                 <div class="p-10 text-center text-slate-500 flex flex-col items-center">
                     <i data-lucide="ticket" class="w-12 h-12 text-slate-200 mb-3"></i>
-                    <p>Belum ada voucer yang dibuat hari ini.</p>
+                    <p>Belum ada voucer yang pernah dibuat oleh Anda.</p>
                 </div>`;
             } else {
                 const rows = myVouchers.map(v => {
@@ -593,8 +686,12 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="p-4">
                             <p class="font-mono font-bold text-indigo-600">${v.code}</p>
-                            <p class="font-medium text-slate-800 mt-0.5">${v.customerName}</p>
                         </td>
+                        <td class="p-4">
+                            <p class="font-bold text-slate-800">${v.customerName}</p>
+                            <p class="text-xs text-slate-500">${v.customerPhone || '-'}</p>
+                        </td>
+                        <td class="p-4 text-xs text-slate-500 max-w-[150px] truncate">${v.customerAddress || '-'}</td>
                         <td class="p-4 text-slate-600">${new Date(v.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td class="p-4">${statusBadge}</td>
                         <td class="p-4 text-right">
@@ -611,10 +708,12 @@
                 }).join('');
 
                 myVouchersHTML = `
-                <table class="w-full text-left border-collapse min-w-[600px]">
+                <table class="w-full text-left border-collapse min-w-[700px]">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-sm">
-                            <th class="p-4 font-medium">Info Voucer</th>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                            <th class="p-4 font-medium">Kode</th>
+                            <th class="p-4 font-medium">Pelanggan</th>
+                            <th class="p-4 font-medium">Alamat</th>
                             <th class="p-4 font-medium">Berlaku Sampai</th>
                             <th class="p-4 font-medium">Status</th>
                             <th class="p-4 font-medium text-right">Aksi</th>
@@ -624,81 +723,21 @@
                 </table>`;
             }
 
-            let generatedHTML = '';
-            if (generatedVoucher) {
-                generatedHTML = `
-                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-2xl shadow-lg text-white animate-fade-in border border-indigo-500 mt-6">
-                    <h3 class="font-semibold text-indigo-100 mb-4 flex items-center gap-2">
-                        <i data-lucide="check-circle" class="w-5 h-5"></i> Voucer Berhasil Dibuat!
-                    </h3>
-                    <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20 text-center mb-4">
-                        <p class="text-3xl font-mono font-bold tracking-widest">${generatedVoucher.code}</p>
-                    </div>
-                    <div class="text-sm text-indigo-100 space-y-2 mb-6">
-                        <p>Nilai Voucer: <span class="font-bold text-yellow-300">100 Rb</span></p>
-                        <p>Pelanggan: <span class="font-semibold text-white">${generatedVoucher.customerName}</span></p>
-                        <p>WA: <span class="font-semibold text-white">${generatedVoucher.customerPhone}</span></p>
-                        <p>Berlaku s/d: <span class="font-semibold text-yellow-300">
-                            ${new Date(generatedVoucher.expiresAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
-                        </span></p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-emerald-500 hover:bg-emerald-600 text-white">
-                            <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim WA
-                        </button>
-                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-white hover:bg-slate-100 text-indigo-600">
-                            <i data-lucide="download" class="w-4 h-4"></i> Download
-                        </button>
-                    </div>
-                </div>`;
-            }
-
             return `
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-                <!-- Kiri: Form -->
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
-                                <i data-lucide="plus-circle" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-lg font-bold text-slate-800">Buat Voucer Baru</h2>
-                                <p class="text-xs text-slate-500">Masa berlaku otomatis 1 minggu</p>
-                            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in max-w-5xl mx-auto">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                            <i data-lucide="ticket" class="w-5 h-5"></i>
                         </div>
-                        
-                        <form id="create-voucher-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pelanggan *</label>
-                                <input type="text" id="cust-name" placeholder="Cth: Budi Santoso" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">No. WhatsApp *</label>
-                                <input type="tel" id="cust-phone" placeholder="Cth: 08123456789" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat (Desa & Kec) *</label>
-                                <input type="text" id="cust-address" placeholder="Cth: Desa Sukamaju, Kec. Jati" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-                            </div>
-                            <button type="submit" class="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2">
-                                <i data-lucide="ticket" class="w-4 h-4"></i> Generate Voucer
-                            </button>
-                        </form>
-                    </div>
-                    ${generatedHTML}
-                </div>
-
-                <!-- Kanan: Riwayat -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-slate-800">Riwayat Voucer yang Anda Buat</h2>
-                            <div class="text-sm text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-medium">Total: ${myVouchers.length}</div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Daftar Voucer Anda</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Daftar seluruh tiket diskon yang telah Anda terbitkan</p>
                         </div>
-                        <div class="overflow-x-auto">${myVouchersHTML}</div>
                     </div>
+                    <div class="text-sm text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-semibold">Total: ${myVouchers.length} Voucer</div>
                 </div>
+                <div class="overflow-x-auto">${myVouchersHTML}</div>
             </div>`;
         }
 
@@ -800,7 +839,7 @@
             }
 
             return `
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in max-w-5xl mx-auto">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                     <div class="flex items-center gap-3">
                         <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
@@ -839,6 +878,8 @@
             
             if (activeAdminTab === 'verify') {
                 contentHTML = renderAdminVerify();
+            } else if (activeAdminTab === 'create_user') {
+                contentHTML = renderAdminCreateUser();
             } else if (activeAdminTab === 'users') {
                 contentHTML = renderAdminUsers();
             } else if (activeAdminTab === 'create_sale') {
@@ -850,20 +891,125 @@
             return `
             <div class="space-y-6">
                 <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 w-fit mx-auto flex-wrap justify-center">
-                    <button onclick="switchAdminTab('verify')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i> Verifikasi Voucer
+                    <button onclick="switchAdminTab('verify')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Verifikasi Voucer
                     </button>
-                    <button onclick="switchAdminTab('users')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'users' ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="users" class="w-5 h-5"></i> Kelola Tim Marketing
+                    <button onclick="switchAdminTab('create_user')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeAdminTab === 'create_user' ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Buat Akun Marketing
                     </button>
-                    <button onclick="switchAdminTab('create_sale')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'create_sale' ? 'bg-fuchsia-100 text-fuchsia-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="shopping-bag" class="w-5 h-5"></i> Input Penjualan
+                    <button onclick="switchAdminTab('users')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeAdminTab === 'users' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="users" class="w-4 h-4"></i> Daftar Tim Marketing
                     </button>
-                    <button onclick="switchAdminTab('sales_history')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'sales_history' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}">
-                        <i data-lucide="database" class="w-5 h-5"></i> Data Penjualan
+                    <button onclick="switchAdminTab('create_sale')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeAdminTab === 'create_sale' ? 'bg-fuchsia-100 text-fuchsia-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Input Penjualan
+                    </button>
+                    <button onclick="switchAdminTab('sales_history')" class="flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all ${activeAdminTab === 'sales_history' ? 'bg-slate-200 text-slate-800' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="database" class="w-4 h-4"></i> Data Penjualan
                     </button>
                 </div>
                 ${contentHTML}
+            </div>`;
+        }
+
+        // --- SUB-VIEW: ADMIN - CREATE USER (FORM ONLY) ---
+        function renderAdminCreateUser() {
+            const editUser = editingUserId ? users.find(u => u.id === editingUserId) : null;
+            const formId = editingUserId ? 'edit-user-form' : 'create-user-form';
+            const formTitle = editingUserId ? 'Edit Akun Marketing' : 'Buat Akun Marketing Baru';
+            const btnText = editingUserId ? 'Simpan Perubahan' : 'Daftarkan Akun';
+            const btnClass = editingUserId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700';
+
+            return `
+            <div class="max-w-md mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="${editingUserId ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'} p-2 rounded-lg">
+                                <i data-lucide="${editingUserId ? 'edit' : 'user-plus'}" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
+                                <p class="text-xs text-slate-400 mt-0.5">${editingUserId ? 'Ubah informasi hak akses login marketing' : 'Berikan hak akses login sistem untuk tim marketing baru'}</p>
+                            </div>
+                        </div>
+                        ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg" title="Batal"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                    </div>
+                    
+                    <form id="${formId}" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" id="new-name" value="${editUser ? editUser.name : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Username Login</label>
+                            <input type="text" id="new-username" value="${editUser ? editUser.username : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                            <input type="text" id="new-password" value="${editUser ? editUser.password : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-semibold transition-colors">Batal</button>` : ''}
+                            <button type="submit" class="${editingUserId ? 'w-1/2' : 'w-full'} py-3 ${btnClass} text-white rounded-xl font-bold transition-all shadow-md">${btnText}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+        }
+
+        // --- SUB-VIEW: ADMIN - DAFTAR TIM MARKETING (TABLE ONLY) ---
+        function renderAdminUsers() {
+            const marketingUsers = users.filter(u => u.role === 'marketing');
+            let usersRows = '';
+            
+            if (marketingUsers.length === 0) {
+                usersRows = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Belum ada akun tim marketing terdaftar. Silakan buat di menu "Buat Akun Marketing".</td></tr>`;
+            } else {
+                usersRows = marketingUsers.map(u => `
+                    <tr>
+                        <td class="p-4 font-bold text-slate-800">${u.name}</td>
+                        <td class="p-4 font-mono text-slate-600">${u.username}</td>
+                        <td class="p-4 font-mono text-slate-600">${u.password}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Marketing</span></td>
+                        <td class="p-4">
+                            <button onclick="startEditUser('${u.id}')" class="px-3 py-1.5 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
+                                <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit Akun
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            return `
+            <div class="max-w-4xl mx-auto animate-fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">Daftar Akun Tim Marketing</h2>
+                                <p class="text-xs text-slate-400 mt-0.5">Daftar seluruh marketing yang memiliki hak akses sistem</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-semibold">Total: ${marketingUsers.length} Akun</div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                    <th class="p-4 font-medium">Nama</th>
+                                    <th class="p-4 font-medium">Username</th>
+                                    <th class="p-4 font-medium">Password</th>
+                                    <th class="p-4 font-medium">Role</th>
+                                    <th class="p-4 font-medium">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">${usersRows}</tbody>
+                        </table>
+                    </div>
+                </div>
             </div>`;
         }
 
@@ -966,7 +1112,7 @@
             }
 
             return `
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6 animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6 animate-fade-in max-w-6xl mx-auto">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                     <div class="flex items-center gap-3">
                         <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
@@ -1117,94 +1263,6 @@
                         <h3 class="font-bold text-slate-800">Voucer yang Telah Digunakan</h3>
                     </div>
                     <div class="overflow-x-auto">${historyHTML}</div>
-                </div>
-            </div>`;
-        }
-
-        // --- SUB-VIEW: ADMIN USERS ---
-        function renderAdminUsers() {
-            const marketingUsers = users.filter(u => u.role === 'marketing');
-            let usersRows = '';
-            
-            if (marketingUsers.length === 0) {
-                usersRows = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Belum ada akun tim marketing. Buat di sebelah kiri.</td></tr>`;
-            } else {
-                usersRows = marketingUsers.map(u => `
-                    <tr>
-                        <td class="p-4 font-bold text-slate-800">${u.name}</td>
-                        <td class="p-4 font-mono text-slate-600">${u.username}</td>
-                        <td class="p-4 font-mono text-slate-600">${u.password}</td>
-                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Marketing</span></td>
-                        <td class="p-4">
-                            <button onclick="startEditUser('${u.id}')" class="px-3 py-1 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
-                                <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Variabel untuk mode Edit / Buat Baru
-            const editUser = editingUserId ? users.find(u => u.id === editingUserId) : null;
-            const formId = editingUserId ? 'edit-user-form' : 'create-user-form';
-            const formTitle = editingUserId ? 'Edit Akun Marketing' : 'Buat Akun Marketing';
-            const btnText = editingUserId ? 'Simpan Perubahan' : 'Buat Akun';
-            const btnClass = editingUserId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700';
-
-            return `
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-                <!-- Form -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="${editingUserId ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'} p-2 rounded-lg">
-                                    <i data-lucide="${editingUserId ? 'edit' : 'user-plus'}" class="w-6 h-6"></i>
-                                </div>
-                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
-                            </div>
-                            ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="text-slate-400 hover:text-slate-600" title="Batal Edit"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
-                        </div>
-                        
-                        <form id="${formId}" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
-                                <input type="text" id="new-name" value="${editUser ? editUser.name : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Username Login</label>
-                                <input type="text" id="new-username" value="${editUser ? editUser.username : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                                <input type="text" id="new-password" value="${editUser ? editUser.password : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none" />
-                            </div>
-                            <button type="submit" class="w-full py-3 mt-2 ${btnClass} text-white rounded-xl font-semibold">${btnText}</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b border-slate-100">
-                            <h2 class="text-lg font-bold text-slate-800">Daftar Akun Tim Marketing</h2>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 text-sm">
-                                        <th class="p-4 font-medium">Nama</th>
-                                        <th class="p-4 font-medium">Username</th>
-                                        <th class="p-4 font-medium">Password</th>
-                                        <th class="p-4 font-medium">Role</th>
-                                        <th class="p-4 font-medium">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-sm">${usersRows}</tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>`;
         }
