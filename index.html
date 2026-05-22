@@ -89,6 +89,7 @@
         let loginError = '';
         let editingUserId = null; 
         let editingSaleId = null; 
+        let isDrawerOpen = false; // State untuk mendeteksi apakah menu laci samping kanan terbuka
 
         function saveData() {
             localStorage.setItem('tc_users', JSON.stringify(users));
@@ -195,6 +196,7 @@
             if (user) {
                 currentUser = user;
                 loginError = '';
+                isDrawerOpen = false; // Pastikan laci tertutup saat login baru
                 saveData();
                 reRender();
                 showToast(`Selamat datang kembali, ${user.name}!`);
@@ -208,6 +210,7 @@
             currentUser = null;
             generatedVoucher = null;
             searchResult = null;
+            isDrawerOpen = false;
             saveData();
             reRender();
             showToast('Anda telah keluar dari sistem.');
@@ -372,7 +375,32 @@
         window.switchMarketingTab = function(tab) {
             activeMarketingTab = tab;
             editingSaleId = null; 
+            toggleDrawer(false); // Otomatis tutup laci drawer saat tab dipilih
             reRender();
+        }
+
+        window.switchAdminTab = function(tab) {
+            activeAdminTab = tab;
+            editingSaleId = null; 
+            toggleDrawer(false); // Otomatis tutup laci drawer saat tab dipilih
+            reRender();
+        }
+
+        // Fungsi mengendalikan visibilitas drawer menu garis 3
+        window.toggleDrawer = function(open) {
+            isDrawerOpen = open;
+            const drawer = document.getElementById('nav-drawer');
+            const backdrop = document.getElementById('drawer-backdrop');
+            
+            if (drawer && backdrop) {
+                if (open) {
+                    drawer.classList.remove('translate-x-full');
+                    backdrop.classList.remove('hidden');
+                } else {
+                    drawer.classList.add('translate-x-full');
+                    backdrop.classList.add('hidden');
+                }
+            }
         }
 
         function handleCreateSale(e) {
@@ -590,12 +618,6 @@
             window.open(waUrl, '_blank');
         }
 
-        window.switchAdminTab = function(tab) {
-            activeAdminTab = tab;
-            editingSaleId = null; 
-            reRender();
-        }
-
         // ==========================================
         // FUNGSI RENDER HTML
         // ==========================================
@@ -653,7 +675,7 @@
             </div>`;
         }
 
-        // --- VIEW: NAVBAR & DASHBOARD WRAPPER ---
+        // --- VIEW: NAVBAR & DASHBOARD WRAPPER (Dengan Tombol Garis 3) ---
         function renderDashboard() {
             const isMarketing = currentUser.role === 'marketing';
             return `
@@ -675,57 +697,111 @@
                             <span class="text-sm font-extrabold text-slate-900">${currentUser.name}</span>
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID: 0${currentUser.id || '9'}</span>
                         </div>
-                        <button onclick="handleLogout()" class="p-2.5 bg-slate-50 border border-slate-200 hover:bg-red-50 hover:text-red-500 rounded-xl transition-all text-slate-500" title="Keluar">
-                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        <!-- Tombol Garis Tiga (Hamburger Menu) -->
+                        <button onclick="toggleDrawer(true)" class="p-2.5 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl transition-all" title="Buka Menu">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
                         </button>
                     </div>
                 </div>
             </nav>
 
-            <!-- Main Content -->
+            <!-- Backdrop Laci -->
+            <div id="drawer-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-all duration-300" onclick="toggleDrawer(false)"></div>
+
+            <!-- Laci Navigasi Samping Kanan (Drawer Sidebar) -->
+            <div id="nav-drawer" class="fixed top-0 right-0 h-full w-80 bg-white border-l border-slate-200 shadow-2xl z-50 transform translate-x-full transition-transform duration-350 ease-out p-6 flex flex-col justify-between">
+                <div class="space-y-6">
+                    <!-- Drawer Header -->
+                    <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-5 h-5 text-indigo-600"></i>
+                            <span class="font-bold text-slate-900">Turja Hub Menu</span>
+                        </div>
+                        <button onclick="toggleDrawer(false)" class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- List Menu Tabs -->
+                    <div class="space-y-1.5">
+                        ${isMarketing ? renderMarketingNavButtons() : renderAdminNavButtons()}
+                    </div>
+                </div>
+
+                <!-- Drawer Footer (Logout & User Profile Info) -->
+                <div class="pt-4 border-t border-slate-100 space-y-4">
+                    <div class="flex items-center gap-3 px-2">
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold">
+                            ${currentUser.name.charAt(0)}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-sm font-bold text-slate-900 truncate">${currentUser.name}</p>
+                            <p class="text-xs text-slate-400 capitalize">${currentUser.role}</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Keluar Akun
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
             <main class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
                 ${isMarketing ? renderMarketingDashboard() : renderAdminDashboard()}
             </main>`;
         }
 
-        // --- VIEW: MARKETING DASHBOARD (Sidenav layout on desktop) ---
-        function renderMarketingDashboard() {
-            let contentHTML = '';
-            
-            if (activeMarketingTab === 'create_voucher') {
-                contentHTML = renderMarketingCreateVoucher();
-            } else if (activeMarketingTab === 'vouchers') {
-                contentHTML = renderMarketingVouchers();
-            } else if (activeMarketingTab === 'create_sale') {
-                contentHTML = renderMarketingCreateSale();
-            } else if (activeMarketingTab === 'sales_history') {
-                contentHTML = renderMarketingSalesHistory();
-            }
-            
+        // Fungsi pembantu me-render tombol navigasi untuk Marketing
+        function renderMarketingNavButtons() {
             return `
-            <div class="flex flex-col lg:flex-row-reverse gap-8 items-start">
-                <!-- Navigation Tab Samping Kanan (Desktop) / Atas (Mobile) -->
-                <div class="w-full lg:w-64 shrink-0 bg-white p-4 border border-slate-200 rounded-3xl shadow-sm space-y-1.5 sticky top-24 z-10">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2 hidden lg:block">Menu Navigasi</div>
-                    <button onclick="switchMarketingTab('create_voucher')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_voucher' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> Buat Voucer
-                    </button>
-                    <button onclick="switchMarketingTab('vouchers')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'vouchers' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="ticket" class="w-4.5 h-4.5"></i> Daftar Voucer
-                    </button>
-                    <button onclick="switchMarketingTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_sale' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Catat Penjualan
-                    </button>
-                    <button onclick="switchMarketingTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'sales_history' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="database" class="w-4.5 h-4.5"></i> Data Penjualan
-                    </button>
-                </div>
-                
-                <!-- Main Area Content -->
-                <div class="flex-grow w-full">
-                    ${contentHTML}
-                </div>
-            </div>`;
+            <button onclick="switchMarketingTab('create_voucher')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_voucher' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> Buat Voucer Baru
+            </button>
+            <button onclick="switchMarketingTab('vouchers')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'vouchers' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="ticket" class="w-4.5 h-4.5"></i> Daftar Voucer Aktif
+            </button>
+            <button onclick="switchMarketingTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_sale' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Catat Penjualan
+            </button>
+            <button onclick="switchMarketingTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'sales_history' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="database" class="w-4.5 h-4.5"></i> Data Penjualan Anda
+            </button>
+            `;
+        }
+
+        // Fungsi pembantu me-render tombol navigasi untuk Admin
+        function renderAdminNavButtons() {
+            return `
+            <button onclick="switchAdminTab('verify')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="shield-check" class="w-4.5 h-4.5"></i> Verifikasi Voucer
+            </button>
+            <button onclick="switchAdminTab('create_user')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_user' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="user-plus" class="w-4.5 h-4.5"></i> Buat Akun Marketing
+            </button>
+            <button onclick="switchAdminTab('users')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="users" class="w-4.5 h-4.5"></i> Daftar Tim Marketing
+            </button>
+            <button onclick="switchAdminTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_sale' ? 'bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Input Penjualan Pusat
+            </button>
+            <button onclick="switchAdminTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'sales_history' ? 'bg-slate-700 text-white shadow-lg shadow-slate-700/25' : 'text-slate-600 hover:bg-slate-50'}">
+                <i data-lucide="database" class="w-4.5 h-4.5"></i> Semua Data Penjualan
+            </button>
+            `;
+        }
+
+        // --- VIEW: MARKETING DASHBOARD CORE ---
+        function renderMarketingDashboard() {
+            if (activeMarketingTab === 'create_voucher') {
+                return renderMarketingCreateVoucher();
+            } else if (activeMarketingTab === 'vouchers') {
+                return renderMarketingVouchers();
+            } else if (activeMarketingTab === 'create_sale') {
+                return renderMarketingCreateSale();
+            } else if (activeMarketingTab === 'sales_history') {
+                return renderMarketingSalesHistory();
+            }
+            return '';
         }
 
         // --- SUB-VIEW: TIM MARKETING - CREATE VOUCHER (FORM & LIVE CARD PREVIEW) ---
@@ -773,10 +849,10 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 text-white transition-all transform active:scale-95 shadow-lg shadow-emerald-600/20">
+                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-550 text-white transition-all transform active:scale-95 shadow-lg shadow-emerald-600/20">
                             <i data-lucide="message-circle" class="w-4 h-4"></i> Bagikan WA
                         </button>
-                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform active:scale-95 shadow-lg">
+                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-indigo-650 hover:bg-indigo-700 text-white transition-all transform active:scale-95 shadow-lg">
                             <i data-lucide="download" class="w-4 h-4"></i> Unduh Tiket
                         </button>
                     </div>
@@ -784,7 +860,7 @@
             } else {
                 // Ilustrasi kartu placeholder modern
                 previewHTML = `
-                <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center text-slate-400 flex flex-col items-center justify-center min-h-[350px] bg-white">
+                <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center text-slate-400 flex flex-col items-center justify-center min-h-[350px] bg-white shadow-inner">
                     <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
                         <i data-lucide="ticket" class="w-8 h-8 text-slate-400"></i>
                     </div>
@@ -794,7 +870,7 @@
             }
 
             return `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start animate-fade-in max-w-5xl mx-auto">
                 <!-- Form Buat Voucher -->
                 <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-xl">
                     <div class="flex items-center gap-3 mb-6">
@@ -900,7 +976,7 @@
             }
 
             return `
-            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden animate-fade-in shadow-xl">
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden animate-fade-in max-w-5xl mx-auto shadow-xl">
                 <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                     <div class="flex items-center gap-3">
                         <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
@@ -1001,7 +1077,7 @@
                 salesRows = mySales.map((s, index) => `
                     <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
                         <td class="p-4 text-slate-500 font-mono text-xs">${index + 1}</td>
-                        <td class="p-4 font-bold text-slate-950 text-sm">${s.pembeli}</td>
+                        <td class="p-4 font-bold text-slate-955 text-sm">${s.pembeli}</td>
                         <td class="p-4 text-slate-500 text-xs">${s.hp || '-'}</td>
                         <td class="p-4 text-slate-500 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
                         <td class="p-4">
@@ -1048,55 +1124,26 @@
                                 <th class="p-4 font-bold">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">${rows}</tbody>
+                        <tbody class="divide-y divide-slate-100 text-sm">${salesRows}</tbody>
                     </table>
                 </div>
             </div>`;
         }
 
-        // --- VIEW: ADMIN DASHBOARD (Sidenav layout on desktop) ---
+        // --- VIEW: ADMIN DASHBOARD CORE ---
         function renderAdminDashboard() {
-            let contentHTML = '';
-            
             if (activeAdminTab === 'verify') {
-                contentHTML = renderAdminVerify();
+                return renderAdminVerify();
             } else if (activeAdminTab === 'create_user') {
-                contentHTML = renderAdminCreateUser();
+                return renderAdminCreateUser();
             } else if (activeAdminTab === 'users') {
-                contentHTML = renderAdminUsers();
+                return renderAdminUsers();
             } else if (activeAdminTab === 'create_sale') {
-                contentHTML = renderAdminCreateSale();
+                return renderAdminCreateSale();
             } else if (activeAdminTab === 'sales_history') {
-                contentHTML = renderAdminSalesHistory();
+                return renderAdminSalesHistory();
             }
-
-            return `
-            <div class="flex flex-col lg:flex-row-reverse gap-8 items-start">
-                <!-- Navigation Tab Samping Kanan (Desktop) / Atas (Mobile) -->
-                <div class="w-full lg:w-64 shrink-0 bg-white p-4 border border-slate-200 rounded-3xl shadow-sm space-y-1.5 sticky top-24 z-10">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2 hidden lg:block">Panel Kontrol Admin</div>
-                    <button onclick="switchAdminTab('verify')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="shield-check" class="w-4.5 h-4.5"></i> Verifikasi Voucer
-                    </button>
-                    <button onclick="switchAdminTab('create_user')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_user' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="user-plus" class="w-4.5 h-4.5"></i> Buat Akun Marketing
-                    </button>
-                    <button onclick="switchAdminTab('users')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="users" class="w-4.5 h-4.5"></i> Daftar Tim Marketing
-                    </button>
-                    <button onclick="switchAdminTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_sale' ? 'bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-600/25' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Input Penjualan
-                    </button>
-                    <button onclick="switchAdminTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'sales_history' ? 'bg-slate-700 text-white shadow-lg shadow-slate-700/25' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-                        <i data-lucide="database" class="w-4.5 h-4.5"></i> Data Penjualan
-                    </button>
-                </div>
-                
-                <!-- Main Area Content -->
-                <div class="flex-grow w-full">
-                    ${contentHTML}
-                </div>
-            </div>`;
+            return '';
         }
 
         // --- SUB-VIEW: ADMIN - CREATE USER (FORM ONLY) ---
@@ -1105,7 +1152,7 @@
             const formId = editingUserId ? 'edit-user-form' : 'create-user-form';
             const formTitle = editingUserId ? 'Edit Akun Marketing' : 'Mendaftarkan Akun Marketing';
             const btnText = editingUserId ? 'Simpan Perubahan' : 'Daftarkan Akun';
-            const btnClass = editingUserId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-blue-600 hover:bg-blue-550 shadow-lg shadow-blue-600/10';
+            const btnClass = editingUserId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-blue-600 hover:bg-blue-555 shadow-lg shadow-blue-600/10';
 
             return `
             <div class="max-w-md mx-auto animate-fade-in">
@@ -1435,7 +1482,7 @@
             }
 
             return `
-            <div class="space-y-8 animate-fade-in">
+            <div class="space-y-8 animate-fade-in text-slate-800">
                 <!-- Scanner -->
                 <div class="bg-white border border-slate-200 p-8 rounded-3xl shadow-xl max-w-2xl mx-auto relative overflow-hidden">
                     <div class="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl"></div>
