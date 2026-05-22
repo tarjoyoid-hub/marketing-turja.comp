@@ -25,45 +25,84 @@
     <div id="app"></div>
 
     <script>
-        // URL Web Apps Google Apps Script (ganti dengan URL Web App milikmu)
-        const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwxoRhzvCUuFMXpO-wh3v-rCc-wpcgXplpJ7WHapJ04JWHq31vTJpMpuHEVXESk1Og2/exec';
+// Ganti URL ini dengan URL Web App Google Apps Script milikmu
+const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwxoRhzvCUuFMXpO-wh3v-rCc-wpcgXplpJ7WHapJ04JWHq31vTJpMpuHEVXESk1Og2/exec';
 
-        // ==========================================
-        // MANAJEMEN STATE & DATA (Menggunakan LocalStorage)
-        // ==========================================
-        const defaultUsers = [
-            { id: '1', username: 'admin', password: 'password123', role: 'admin', name: 'Administrator Utama' }
-        ];
+function handleCreateVoucher(e) {
+    e.preventDefault();
+    const name = document.getElementById('cust-name').value;
+    const phone = document.getElementById('cust-phone').value;
+    const address = document.getElementById('cust-address').value;
 
-        let users = JSON.parse(localStorage.getItem('tc_users')) || defaultUsers;
-        let vouchers = JSON.parse(localStorage.getItem('tc_vouchers')) || [];
-        let currentUser = JSON.parse(localStorage.getItem('tc_currentUser')) || null;
-        
-        // State UI
-        let activeAdminTab = 'verify';
-        let generatedVoucher = null;
-        let searchResult = null;
-        let loginError = '';
+    if (!name.trim()) return;
 
-        function saveData() {
-            localStorage.setItem('tc_users', JSON.stringify(users));
-            localStorage.setItem('tc_vouchers', JSON.stringify(vouchers));
-            localStorage.setItem('tc_currentUser', JSON.stringify(currentUser));
-        }
+    const now = new Date();
+    const expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 hari
 
-        function reRender() {
-            const app = document.getElementById('app');
-            if (!currentUser) {
-                app.innerHTML = renderLogin();
-            } else {
-                app.innerHTML = renderDashboard();
-            }
-            // Render ulang icon Lucide setelah DOM berubah
-            lucide.createIcons();
-            
-            // Pasang Event Listeners setelah HTML dirender
-            attachEventListeners();
-        }
+    const newVoucher = {
+        type: 'voucher', // tanda untuk Google Apps Script
+        id: Date.now().toString(),
+        code: generateRandomCode(),
+        customerName: name,
+        customerPhone: phone,
+        customerAddress: address,
+        status: 'active',
+        createdBy: currentUser.name,
+        createdAt: now.toISOString(),
+        expiresAt: expiryDate.toISOString(),
+        usedAt: null
+    };
+
+    vouchers.unshift(newVoucher);
+    generatedVoucher = newVoucher;
+    saveData();
+    reRender();
+
+    // Kirim data ke Google Sheets
+    fetch(GOOGLE_SHEETS_WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify(newVoucher),
+        headers: {'Content-Type': 'application/json'}
+    }).then(res => res.json())
+      .then(data => console.log('Voucher berhasil dikirim:', data))
+      .catch(err => console.error('Gagal kirim voucer:', err));
+}
+
+
+function handleCreateUser(e) {
+    e.preventDefault();
+    const newName = document.getElementById('new-name').value;
+    const newUsername = document.getElementById('new-username').value;
+    const newPassword = document.getElementById('new-password').value;
+
+    if (users.find(u => u.username === newUsername)) {
+        alert("Username sudah digunakan. Pilih username lain.");
+        return;
+    }
+
+    const newUser = {
+        type: 'user', // tanda untuk Google Apps Script
+        id: Date.now().toString(),
+        username: newUsername,
+        password: newPassword,
+        role: 'marketing',
+        name: newName
+    };
+
+    users.push(newUser);
+    saveData();
+    alert(`Akun marketing "${newName}" berhasil dibuat!`);
+    reRender();
+
+    // Kirim data user ke Google Sheets
+    fetch(GOOGLE_SHEETS_WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify(newUser),
+        headers: {'Content-Type': 'application/json'}
+    }).then(res => res.json())
+      .then(data => console.log('User berhasil dikirim:', data))
+      .catch(err => console.error('Gagal kirim user:', err));
+}
 
         // ==========================================
         // FUNGSI AKSI (LOGIC)
