@@ -237,7 +237,7 @@
         }
 
         // ==========================================
-        // FUNGSI PENJUALAN (MARKETING)
+        // FUNGSI PENJUALAN (MARKETING & ADMIN)
         // ==========================================
         window.switchMarketingTab = function(tab) {
             activeMarketingTab = tab;
@@ -802,12 +802,12 @@
             </div>`;
         }
 
-        // --- SUB-VIEW: ADMIN SALES ---
+        // --- SUB-VIEW: ADMIN SALES (SAMA SEPERTI MARKETING, BISA INPUT DAN EDIT SEMUA PENJUALAN) ---
         function renderAdminSales() {
             let salesRows = '';
             
             if (sales.length === 0) {
-                salesRows = `<tr><td colspan="9" class="p-6 text-center text-slate-500">Belum ada catatan penjualan dari tim marketing.</td></tr>`;
+                salesRows = `<tr><td colspan="10" class="p-6 text-center text-slate-500">Belum ada catatan penjualan dari tim marketing.</td></tr>`;
             } else {
                 salesRows = sales.map((s, index) => `
                     <tr class="hover:bg-slate-50">
@@ -820,35 +820,101 @@
                         <td class="p-4 font-semibold text-fuchsia-600">${s.produk || '-'}</td>
                         <td class="p-4 font-mono text-slate-600">${s.kodeVoucher || '-'}</td>
                         <td class="p-4 font-semibold text-emerald-600">Rp ${Number(s.harga).toLocaleString('id-ID')}</td>
+                        <td class="p-4">
+                            <button onclick="startEditSale('${s.id}')" class="px-3 py-1 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
+                                <i data-lucide="edit" class="w-3 h-3"></i> Edit
+                            </button>
+                        </td>
                     </tr>
                 `).join('');
             }
 
+            const editSale = editingSaleId ? sales.find(s => s.id === editingSaleId) : null;
+            const formId = editingSaleId ? 'edit-sale-form' : 'create-sale-form';
+            const formTitle = editingSaleId ? 'Edit Data Penjualan' : 'Catat Penjualan Baru';
+            const btnText = editingSaleId ? 'Simpan Perubahan' : 'Catat Penjualan';
+            const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700';
+
             return `
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                    <h2 class="text-lg font-bold text-slate-800">Semua Data Penjualan</h2>
-                    <div class="text-sm text-fuchsia-600 bg-fuchsia-100 px-3 py-1 rounded-full font-medium">Total: ${sales.length} Transaksi</div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-6">
+                <!-- Form Penjualan Admin -->
+                <div class="xl:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="${editingSaleId ? 'bg-amber-100 text-amber-600' : 'bg-fuchsia-100 text-fuchsia-600'} p-2 rounded-lg">
+                                    <i data-lucide="${editingSaleId ? 'edit' : 'shopping-bag'}" class="w-6 h-6"></i>
+                                </div>
+                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
+                            </div>
+                            ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                        </div>
+                        
+                        <form id="${formId}" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pembeli *</label>
+                                <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
+                                <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
+                                <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Produk yang Dijual *</label>
+                                <select id="sale-produk" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 bg-white">
+                                    <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Produk...</option>
+                                    <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
+                                    <option value="Laptop" ${editSale && editSale.produk === 'Laptop' ? 'selected' : ''}>Laptop</option>
+                                    <option value="PC" ${editSale && editSale.produk === 'PC' ? 'selected' : ''}>PC</option>
+                                    <option value="PC dan Printer" ${editSale && editSale.produk === 'PC dan Printer' ? 'selected' : ''}>PC dan Printer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Kode Voucer (Jika Ada)</label>
+                                <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 uppercase" placeholder="Cth: VCH-12345" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp) *</label>
+                                <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" placeholder="Cth: 150000" />
+                            </div>
+                            <button type="submit" class="w-full py-3 mt-2 ${btnClass} text-white rounded-xl font-semibold transition-colors">${btnText}</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead>
-                            <tr class="bg-white text-slate-500 text-sm border-b border-slate-100">
-                                <th class="p-4 font-medium">No</th>
-                                <th class="p-4 font-medium">Waktu Input</th>
-                                <th class="p-4 font-medium">Tim Marketing</th>
-                                <th class="p-4 font-medium">Pembeli</th>
-                                <th class="p-4 font-medium">No. HP</th>
-                                <th class="p-4 font-medium">Alamat</th>
-                                <th class="p-4 font-medium">Produk</th>
-                                <th class="p-4 font-medium">Kode Voucer</th>
-                                <th class="p-4 font-medium">Harga</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
-                            ${salesRows}
-                        </tbody>
-                    </table>
+
+                <!-- Tabel Riwayat Penjualan Admin -->
+                <div class="xl:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                            <h2 class="text-lg font-bold text-slate-800">Semua Data Penjualan</h2>
+                            <div class="text-sm text-fuchsia-600 bg-fuchsia-100 px-3 py-1 rounded-full font-medium">Total: ${sales.length} Transaksi</div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-500 text-sm border-b border-slate-100">
+                                        <th class="p-4 font-medium">No</th>
+                                        <th class="p-4 font-medium">Waktu Input</th>
+                                        <th class="p-4 font-medium">Tim Marketing</th>
+                                        <th class="p-4 font-medium">Pembeli</th>
+                                        <th class="p-4 font-medium">No. HP</th>
+                                        <th class="p-4 font-medium">Alamat</th>
+                                        <th class="p-4 font-medium">Produk</th>
+                                        <th class="p-4 font-medium">Kode Voucer</th>
+                                        <th class="p-4 font-medium">Harga</th>
+                                        <th class="p-4 font-medium">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-sm">
+                                    ${salesRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>`;
         }
