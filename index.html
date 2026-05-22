@@ -45,6 +45,7 @@
         let loginError = '';
         let editingUserId = null; // Menyimpan ID user yang sedang diedit
         let editingSaleId = null; // Menyimpan ID penjualan yang sedang diedit
+        let showSaleForm = false; // Menyimpan state apakah form penjualan ditampilkan atau disembunyikan
 
         function saveData() {
             localStorage.setItem('tc_users', JSON.stringify(users));
@@ -241,6 +242,16 @@
         // ==========================================
         window.switchMarketingTab = function(tab) {
             activeMarketingTab = tab;
+            showSaleForm = false; // Reset form pencatatan saat pindah tab
+            editingSaleId = null;
+            reRender();
+        }
+
+        window.toggleSaleForm = function(show) {
+            showSaleForm = show;
+            if (!show) {
+                editingSaleId = null;
+            }
             reRender();
         }
 
@@ -259,6 +270,7 @@
             };
             sales.unshift(newSale); // Tambah di atas
             saveData();
+            showSaleForm = false; // Sembunyikan form kembali setelah sukses
             alert('Data penjualan berhasil dicatat!');
             reRender();
         }
@@ -277,16 +289,19 @@
                 alert('Data penjualan berhasil diperbarui!');
             }
             editingSaleId = null;
+            showSaleForm = false; // Sembunyikan form kembali
             reRender();
         }
 
         window.startEditSale = function(id) {
             editingSaleId = id;
+            showSaleForm = true; // Paksa munculkan form saat proses edit dimulai
             reRender();
         }
 
         window.cancelEditSale = function() {
             editingSaleId = null;
+            showSaleForm = false; // Tutup form
             reRender();
         }
 
@@ -421,6 +436,8 @@
 
         window.switchAdminTab = function(tab) {
             activeAdminTab = tab;
+            showSaleForm = false; // Reset form saat ganti tab admin
+            editingSaleId = null;
             reRender();
         }
 
@@ -693,80 +710,97 @@
             const btnText = editingSaleId ? 'Simpan Perubahan' : 'Catat Penjualan';
             const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700';
 
-            return `
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <!-- Form Penjualan -->
-                <div class="xl:col-span-1">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="${editingSaleId ? 'bg-amber-100 text-amber-600' : 'bg-fuchsia-100 text-fuchsia-600'} p-2 rounded-lg">
-                                    <i data-lucide="${editingSaleId ? 'edit' : 'shopping-bag'}" class="w-6 h-6"></i>
-                                </div>
-                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
+            // HTML Form Penjualan (Hanya dirender jika showSaleForm === true)
+            const formHTML = `
+            <div class="xl:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="${editingSaleId ? 'bg-amber-100 text-amber-600' : 'bg-fuchsia-100 text-fuchsia-600'} p-2 rounded-lg">
+                                <i data-lucide="${editingSaleId ? 'edit' : 'shopping-bag'}" class="w-6 h-6"></i>
                             </div>
-                            ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                            <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
                         </div>
-                        
-                        <form id="${formId}" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pembeli *</label>
-                                <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
-                                <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
-                                <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Produk yang Dijual *</label>
-                                <select id="sale-produk" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 bg-white">
-                                    <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Produk...</option>
-                                    <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
-                                    <option value="Laptop" ${editSale && editSale.produk === 'Laptop' ? 'selected' : ''}>Laptop</option>
-                                    <option value="PC" ${editSale && editSale.produk === 'PC' ? 'selected' : ''}>PC</option>
-                                    <option value="PC dan Printer" ${editSale && editSale.produk === 'PC dan Printer' ? 'selected' : ''}>PC dan Printer</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Kode Voucer (Jika Ada)</label>
-                                <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 uppercase" placeholder="Cth: VCH-12345" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp) *</label>
-                                <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" placeholder="Cth: 150000" />
-                            </div>
-                            <button type="submit" class="w-full py-3 mt-2 ${btnClass} text-white rounded-xl font-semibold transition-colors">${btnText}</button>
-                        </form>
+                        <button type="button" onclick="toggleSaleForm(false)" class="text-slate-400 hover:text-slate-600" title="Tutup"><i data-lucide="x" class="w-5 h-5"></i></button>
                     </div>
-                </div>
-
-                <!-- Tabel Riwayat Penjualan -->
-                <div class="xl:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-slate-800">Riwayat Penjualan Anda</h2>
-                            <div class="text-sm text-fuchsia-600 bg-fuchsia-50 px-3 py-1 rounded-full font-medium">Total: ${mySales.length} Transaksi</div>
+                    
+                    <form id="${formId}" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pembeli *</label>
+                            <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-[700px]">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 text-sm">
-                                        <th class="p-4 font-medium">No</th>
-                                        <th class="p-4 font-medium">Pembeli</th>
-                                        <th class="p-4 font-medium">No. HP</th>
-                                        <th class="p-4 font-medium">Alamat</th>
-                                        <th class="p-4 font-medium">Produk</th>
-                                        <th class="p-4 font-medium">Kode Voucer</th>
-                                        <th class="p-4 font-medium">Harga</th>
-                                        <th class="p-4 font-medium">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-sm">${salesRows}</tbody>
-                            </table>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
+                            <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
+                            <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Produk yang Dijual *</label>
+                            <select id="sale-produk" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 bg-white">
+                                <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Produk...</option>
+                                <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
+                                <option value="Laptop" ${editSale && editSale.produk === 'Laptop' ? 'selected' : ''}>Laptop</option>
+                                <option value="PC" ${editSale && editSale.produk === 'PC' ? 'selected' : ''}>PC</option>
+                                <option value="PC dan Printer" ${editSale && editSale.produk === 'PC dan Printer' ? 'selected' : ''}>PC dan Printer</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Kode Voucer (Jika Ada)</label>
+                            <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 uppercase" placeholder="Cth: VCH-12345" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp) *</label>
+                            <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" placeholder="Cth: 150000" />
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="toggleSaleForm(false)" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-semibold transition-colors">Batal</button>
+                            <button type="submit" class="w-1/2 py-3 ${btnClass} text-white rounded-xl font-semibold transition-colors">${btnText}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+
+            return `
+            <div class="space-y-4">
+                <!-- Tombol untuk Memunculkan Form hanya saat disembunyikan dan tidak sedang mengedit -->
+                ${!showSaleForm ? `
+                <div class="flex justify-end">
+                    <button onclick="toggleSaleForm(true)" class="flex items-center gap-2 px-5 py-3 bg-fuchsia-600 hover:bg-fuchsia-700 text-white rounded-xl font-bold shadow-md active:scale-95 transition-all">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Catat Penjualan Baru
+                    </button>
+                </div>` : ''}
+
+                <div class="grid grid-cols-1 ${showSaleForm ? 'xl:grid-cols-3' : 'grid-cols-1'} gap-8">
+                    <!-- Form Penjualan -->
+                    ${showSaleForm ? formHTML : ''}
+
+                    <!-- Tabel Riwayat Penjualan -->
+                    <div class="${showSaleForm ? 'xl:col-span-2' : 'col-span-1'}">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                                <h2 class="text-lg font-bold text-slate-800">Riwayat Penjualan Anda</h2>
+                                <div class="text-sm text-fuchsia-600 bg-fuchsia-50 px-3 py-1 rounded-full font-medium">Total: ${mySales.length} Transaksi</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[700px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 text-slate-500 text-sm">
+                                            <th class="p-4 font-medium">No</th>
+                                            <th class="p-4 font-medium">Pembeli</th>
+                                            <th class="p-4 font-medium">No. HP</th>
+                                            <th class="p-4 font-medium">Alamat</th>
+                                            <th class="p-4 font-medium">Produk</th>
+                                            <th class="p-4 font-medium">Kode Voucer</th>
+                                            <th class="p-4 font-medium">Harga</th>
+                                            <th class="p-4 font-medium">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-sm">${salesRows}</tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -835,84 +869,100 @@
             const btnText = editingSaleId ? 'Simpan Perubahan' : 'Catat Penjualan';
             const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-fuchsia-600 hover:bg-fuchsia-700';
 
-            return `
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-6">
-                <!-- Form Penjualan Admin -->
-                <div class="xl:col-span-1">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="${editingSaleId ? 'bg-amber-100 text-amber-600' : 'bg-fuchsia-100 text-fuchsia-600'} p-2 rounded-lg">
-                                    <i data-lucide="${editingSaleId ? 'edit' : 'shopping-bag'}" class="w-6 h-6"></i>
-                                </div>
-                                <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
+            const formHTML = `
+            <div class="xl:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="${editingSaleId ? 'bg-amber-100 text-amber-600' : 'bg-fuchsia-100 text-fuchsia-600'} p-2 rounded-lg">
+                                <i data-lucide="${editingSaleId ? 'edit' : 'shopping-bag'}" class="w-6 h-6"></i>
                             </div>
-                            ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                            <h2 class="text-lg font-bold text-slate-800">${formTitle}</h2>
                         </div>
-                        
-                        <form id="${formId}" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pembeli *</label>
-                                <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
-                                <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
-                                <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Produk yang Dijual *</label>
-                                <select id="sale-produk" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 bg-white">
-                                    <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Produk...</option>
-                                    <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
-                                    <option value="Laptop" ${editSale && editSale.produk === 'Laptop' ? 'selected' : ''}>Laptop</option>
-                                    <option value="PC" ${editSale && editSale.produk === 'PC' ? 'selected' : ''}>PC</option>
-                                    <option value="PC dan Printer" ${editSale && editSale.produk === 'PC dan Printer' ? 'selected' : ''}>PC dan Printer</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Kode Voucer (Jika Ada)</label>
-                                <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 uppercase" placeholder="Cth: VCH-12345" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp) *</label>
-                                <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" placeholder="Cth: 150000" />
-                            </div>
-                            <button type="submit" class="w-full py-3 mt-2 ${btnClass} text-white rounded-xl font-semibold transition-colors">${btnText}</button>
-                        </form>
+                        <button type="button" onclick="toggleSaleForm(false)" class="text-slate-400 hover:text-slate-600" title="Tutup"><i data-lucide="x" class="w-5 h-5"></i></button>
                     </div>
-                </div>
-
-                <!-- Tabel Riwayat Penjualan Admin -->
-                <div class="xl:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h2 class="text-lg font-bold text-slate-800">Semua Data Penjualan</h2>
-                            <div class="text-sm text-fuchsia-600 bg-fuchsia-100 px-3 py-1 rounded-full font-medium">Total: ${sales.length} Transaksi</div>
+                    
+                    <form id="${formId}" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pembeli *</label>
+                            <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-[900px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-500 text-sm border-b border-slate-100">
-                                        <th class="p-4 font-medium">No</th>
-                                        <th class="p-4 font-medium">Waktu Input</th>
-                                        <th class="p-4 font-medium">Tim Marketing</th>
-                                        <th class="p-4 font-medium">Pembeli</th>
-                                        <th class="p-4 font-medium">No. HP</th>
-                                        <th class="p-4 font-medium">Alamat</th>
-                                        <th class="p-4 font-medium">Produk</th>
-                                        <th class="p-4 font-medium">Kode Voucer</th>
-                                        <th class="p-4 font-medium">Harga</th>
-                                        <th class="p-4 font-medium">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-sm">
-                                    ${salesRows}
-                                </tbody>
-                            </table>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
+                            <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
+                            <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Produk yang Dijual *</label>
+                            <select id="sale-produk" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 bg-white">
+                                <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Produk...</option>
+                                <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
+                                <option value="Laptop" ${editSale && editSale.produk === 'Laptop' ? 'selected' : ''}>Laptop</option>
+                                <option value="PC" ${editSale && editSale.produk === 'PC' ? 'selected' : ''}>PC</option>
+                                <option value="PC dan Printer" ${editSale && editSale.produk === 'PC dan Printer' ? 'selected' : ''}>PC dan Printer</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Kode Voucer (Jika Ada)</label>
+                            <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500 uppercase" placeholder="Cth: VCH-12345" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Harga (Rp) *</label>
+                            <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-fuchsia-500" placeholder="Cth: 150000" />
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="toggleSaleForm(false)" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-semibold transition-colors">Batal</button>
+                            <button type="submit" class="w-1/2 py-3 ${btnClass} text-white rounded-xl font-semibold transition-colors">${btnText}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+
+            return `
+            <div class="space-y-4 mt-6">
+                <!-- Tombol untuk Memunculkan Form hanya saat disembunyikan dan tidak sedang mengedit -->
+                ${!showSaleForm ? `
+                <div class="flex justify-end">
+                    <button onclick="toggleSaleForm(true)" class="flex items-center gap-2 px-5 py-3 bg-fuchsia-600 hover:bg-fuchsia-700 text-white rounded-xl font-bold shadow-md active:scale-95 transition-all">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Catat Penjualan Baru
+                    </button>
+                </div>` : ''}
+
+                <div class="grid grid-cols-1 ${showSaleForm ? 'xl:grid-cols-3' : 'grid-cols-1'} gap-8">
+                    <!-- Form Penjualan Admin -->
+                    ${showSaleForm ? formHTML : ''}
+
+                    <!-- Tabel Riwayat Penjualan Admin -->
+                    <div class="${showSaleForm ? 'xl:col-span-2' : 'col-span-1'}">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h2 class="text-lg font-bold text-slate-800">Semua Data Penjualan</h2>
+                                <div class="text-sm text-fuchsia-600 bg-fuchsia-100 px-3 py-1 rounded-full font-medium">Total: ${sales.length} Transaksi</div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[900px]">
+                                    <thead>
+                                        <tr class="bg-white text-slate-500 text-sm border-b border-slate-100">
+                                            <th class="p-4 font-medium">No</th>
+                                            <th class="p-4 font-medium">Waktu Input</th>
+                                            <th class="p-4 font-medium">Tim Marketing</th>
+                                            <th class="p-4 font-medium">Pembeli</th>
+                                            <th class="p-4 font-medium">No. HP</th>
+                                            <th class="p-4 font-medium">Alamat</th>
+                                            <th class="p-4 font-medium">Produk</th>
+                                            <th class="p-4 font-medium">Kode Voucer</th>
+                                            <th class="p-4 font-medium">Harga</th>
+                                            <th class="p-4 font-medium">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-sm">
+                                        ${salesRows}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
