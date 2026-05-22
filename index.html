@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Manajemen Voucer - Turja Computer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,84 +25,42 @@
     <div id="app"></div>
 
     <script>
-// Ganti URL ini dengan URL Web App Google Apps Script milikmu
-const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwr4mW9_R5j7MTVEVCT0wEma6uppHLpTxk7Gz9iFmn9WHiBDWqnVn3FKPO1oDDNm_Hi/exec';
+        // ==========================================
+        // MANAJEMEN STATE & DATA (Menggunakan LocalStorage)
+        // ==========================================
+        const defaultUsers = [
+            { id: '1', username: 'admin', password: 'password123', role: 'admin', name: 'Administrator Utama' }
+        ];
 
-function handleCreateVoucher(e) {
-    e.preventDefault();
-    const name = document.getElementById('cust-name').value;
-    const phone = document.getElementById('cust-phone').value;
-    const address = document.getElementById('cust-address').value;
+        let users = JSON.parse(localStorage.getItem('tc_users')) || defaultUsers;
+        let vouchers = JSON.parse(localStorage.getItem('tc_vouchers')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('tc_currentUser')) || null;
+        
+        // State UI
+        let activeAdminTab = 'verify';
+        let generatedVoucher = null;
+        let searchResult = null;
+        let loginError = '';
 
-    if (!name.trim()) return;
+        function saveData() {
+            localStorage.setItem('tc_users', JSON.stringify(users));
+            localStorage.setItem('tc_vouchers', JSON.stringify(vouchers));
+            localStorage.setItem('tc_currentUser', JSON.stringify(currentUser));
+        }
 
-    const now = new Date();
-    const expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 hari
-
-    const newVoucher = {
-        type: 'voucher', // tanda untuk Google Apps Script
-        id: Date.now().toString(),
-        code: generateRandomCode(),
-        customerName: name,
-        customerPhone: phone,
-        customerAddress: address,
-        status: 'active',
-        createdBy: currentUser.name,
-        createdAt: now.toISOString(),
-        expiresAt: expiryDate.toISOString(),
-        usedAt: null
-    };
-
-    vouchers.unshift(newVoucher);
-    generatedVoucher = newVoucher;
-    saveData();
-    reRender();
-
-    // Kirim data ke Google Sheets
-    fetch(GOOGLE_SHEETS_WEBAPP_URL, {
-        method: 'POST',
-        body: JSON.stringify(newVoucher),
-        headers: {'Content-Type': 'application/json'}
-    }).then(res => res.json())
-      .then(data => console.log('Voucher berhasil dikirim:', data))
-      .catch(err => console.error('Gagal kirim voucer:', err));
-}
-
-
-function handleCreateUser(e) {
-    e.preventDefault();
-    const newName = document.getElementById('new-name').value;
-    const newUsername = document.getElementById('new-username').value;
-    const newPassword = document.getElementById('new-password').value;
-
-    if (users.find(u => u.username === newUsername)) {
-        alert("Username sudah digunakan. Pilih username lain.");
-        return;
-    }
-
-    const newUser = {
-        type: 'user', // tanda untuk Google Apps Script
-        id: Date.now().toString(),
-        username: newUsername,
-        password: newPassword,
-        role: 'marketing',
-        name: newName
-    };
-
-    users.push(newUser);
-    saveData();
-    alert(`Akun marketing "${newName}" berhasil dibuat!`);
-    reRender();
-
-    // Kirim data user ke Google Sheets
-    fetch(GOOGLE_SHEETS_WEBAPP_URL, {
-        method: 'POST',
-        body: JSON.stringify(newUser),
-        headers: {'Content-Type': 'application/json'}
-    }).then(res => res.json())
-      .then(data => console.log('User berhasil dikirim:', data))
-      .catch(err => console.error('Gagal kirim user:', err));
-}
+        function reRender() {
+            const app = document.getElementById('app');
+            if (!currentUser) {
+                app.innerHTML = renderLogin();
+            } else {
+                app.innerHTML = renderDashboard();
+            }
+            // Render ulang icon Lucide setelah DOM berubah
+            lucide.createIcons();
+            
+            // Pasang Event Listeners setelah HTML dirender
+            attachEventListeners();
+        }
 
         // ==========================================
         // FUNGSI AKSI (LOGIC)
@@ -153,7 +111,6 @@ function handleCreateUser(e) {
             const expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 Hari
 
             const newVoucher = {
-                type: 'voucher', // tanda untuk Google Apps Script
                 id: Date.now().toString(),
                 code: generateRandomCode(),
                 customerName: name,
@@ -170,20 +127,6 @@ function handleCreateUser(e) {
             generatedVoucher = newVoucher;
             saveData();
             reRender();
-
-            // Kirim data ke Google Sheets via Web Apps
-            fetch(GOOGLE_SHEETS_WEBAPP_URL, {
-                method: 'POST',
-                body: JSON.stringify(newVoucher),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Kirim voucer ke Google Sheets:', data);
-            })
-            .catch(err => {
-                console.error('Gagal kirim voucer ke Google Sheets:', err);
-            });
         }
 
         function handleSearchVoucher(e) {
@@ -240,7 +183,6 @@ function handleCreateUser(e) {
             }
             
             const newUser = {
-                type: 'user', // tanda untuk Google Apps Script
                 id: Date.now().toString(),
                 username: newUsername,
                 password: newPassword,
@@ -252,27 +194,576 @@ function handleCreateUser(e) {
             saveData();
             alert(`Akun marketing "${newName}" berhasil dibuat!`);
             reRender();
-
-            // Kirim data user ke Google Sheets via Web Apps
-            fetch(GOOGLE_SHEETS_WEBAPP_URL, {
-                method: 'POST',
-                body: JSON.stringify(newUser),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Kirim user baru ke Google Sheets:', data);
-            })
-            .catch(err => {
-                console.error('Gagal kirim user ke Google Sheets:', err);
-            });
         }
 
-        // (Sisa kode tetap sama...)
+        // ==========================================
+        // FUNGSI CANVAS & WHATSAPP
+        // ==========================================
+        function getVoucherById(id) {
+            return vouchers.find(v => v.id === id);
+        }
 
-        // ... seluruh sisa script tanpa perubahan untuk render dan event listener ...
+        function generateVoucherCanvas(voucher) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
 
+            // Background Utama
+            const gradient = ctx.createLinearGradient(0, 0, 800, 400);
+            gradient.addColorStop(0, '#4f46e5'); // Indigo 600
+            gradient.addColorStop(1, '#7e22ce'); // Purple 700
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 400);
+
+            // Garis Putus-putus
+            ctx.beginPath();
+            ctx.setLineDash([10, 15]);
+            ctx.moveTo(600, 0);
+            ctx.lineTo(600, 400);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Lingkaran potongan
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(600, 0, 20, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(600, 400, 20, 0, Math.PI * 2); ctx.fill();
+
+            // Teks Toko
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillText('TURJA COMPUTER', 50, 70);
+
+            // Nilai Voucer
+            ctx.font = 'bold 72px sans-serif';
+            ctx.fillStyle = '#fde047';
+            ctx.fillText('100 Rb', 50, 150);
+
+            // Box Kode
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            if(ctx.roundRect) {
+                ctx.beginPath(); ctx.roundRect(50, 180, 400, 80, 15); ctx.fill();
+            } else {
+                ctx.fillRect(50, 180, 400, 80); // Fallback browser lama
+            }
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 48px monospace';
+            ctx.fillText(voucher.code, 80, 240);
+
+            // Info Pelanggan
+            ctx.font = '20px sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('Kepada', 50, 310);
+            ctx.fillText('No. WA', 50, 340);
+            ctx.fillText('Alamat', 50, 370);
+
+            ctx.fillText(':', 130, 310);
+            ctx.fillText(':', 130, 340);
+            ctx.fillText(':', 130, 370);
+
+            ctx.font = 'bold 20px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            let custName = voucher.customerName.toUpperCase();
+            if(custName.length > 25) custName = custName.substring(0, 25) + '...';
+            ctx.fillText(custName, 150, 310);
+            ctx.fillText(voucher.customerPhone || '-', 150, 340);
+            
+            let custAddr = voucher.customerAddress || '-';
+            if(custAddr.length > 35) custAddr = custAddr.substring(0, 35) + '...';
+            ctx.fillText(custAddr, 150, 370);
+
+            // Info Kanan
+            ctx.font = 'bold 24px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Berlaku s/d:', 630, 100);
+            
+            ctx.font = '24px sans-serif';
+            ctx.fillStyle = '#fde047';
+            const dateStr = new Date(voucher.expiresAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
+            const dateParts = dateStr.split(' ');
+            ctx.fillText((dateParts[0] || '') + ' ' + (dateParts[1] || ''), 630, 140);
+            ctx.fillText(dateParts[2] || '', 630, 170);
+
+            ctx.font = 'bold 18px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Turja Computer', 630, 260);
+
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText('Tunjukkan voucer', 630, 320);
+            ctx.fillText('ke kasir/admin.', 630, 345);
+
+            return canvas;
+        }
+
+        window.downloadVoucher = function(id) {
+            const voucher = getVoucherById(id);
+            if(!voucher) return;
+            const canvas = generateVoucherCanvas(voucher);
+            const link = document.createElement('a');
+            link.download = `Voucer-TurjaComputer-${voucher.customerName.replace(/\s+/g, '-')}-${voucher.code}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        window.shareWhatsApp = function(id) {
+            const voucher = getVoucherById(id);
+            if(!voucher) return;
+            const expDate = new Date(voucher.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const text = `Halo *${voucher.customerName}*! 🎉\n\nIni adalah VOUCER SPESIAL senilai *100 Rb* dari *Turja Computer* untuk Anda.\n\nKode Voucer: *${voucher.code}*\nBerlaku sampai: *${expDate}*\n\nAlamat yang tercatat: ${voucher.customerAddress || '-'}\n\nSilakan tunjukkan pesan ini atau gambar voucer kepada admin di toko kami untuk mendapatkan potongan harga.\n\nTerima kasih!`;
+            
+            let waUrl = `https://wa.me/`;
+            if (voucher.customerPhone) {
+                let phone = voucher.customerPhone.replace(/\D/g, ''); 
+                if (phone.startsWith('0')) phone = '62' + phone.substring(1); 
+                waUrl += `${phone}?text=${encodeURIComponent(text)}`;
+            } else {
+                waUrl += `?text=${encodeURIComponent(text)}`;
+            }
+            window.open(waUrl, '_blank');
+        }
+
+        window.switchAdminTab = function(tab) {
+            activeAdminTab = tab;
+            reRender();
+        }
+
+        // ==========================================
+        // FUNGSI RENDER HTML
+        // ==========================================
+        
+        // --- VIEW: LOGIN ---
+        function renderLogin() {
+            return `
+            <div class="min-h-screen flex flex-col items-center justify-center p-4">
+                <div class="mb-8 text-center">
+                    <div class="bg-indigo-600 inline-block p-4 rounded-2xl text-white shadow-lg mb-4">
+                        <i data-lucide="ticket" class="w-12 h-12"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-800">Sistem Manajemen Voucer</h1>
+                    <p class="text-slate-500 mt-2">Login untuk mengelola promosi Turja Computer</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+                    <form id="login-form" class="space-y-5">
+                        ${loginError ? `
+                        <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center gap-2">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i> ${loginError}
+                        </div>` : ''}
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+                            <input type="text" id="username" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan username" required />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                            <input type="password" id="password" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" required />
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 mt-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-semibold shadow-md transition-all">
+                            Masuk ke Sistem
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-6 border-t border-slate-100">
+                        <p class="text-xs text-center text-slate-400">
+                            <strong>Demo Akun Admin:</strong><br/>
+                            User: admin | Pass: password123
+                        </p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- VIEW: NAVBAR & DASHBOARD WRAPPER ---
+        function renderDashboard() {
+            const isMarketing = currentUser.role === 'marketing';
+            return `
+            <!-- Navbar -->
+            <nav class="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-10 shadow-sm">
+                <div class="max-w-6xl mx-auto flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-lg ${isMarketing ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'}">
+                            <i data-lucide="ticket" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-slate-800 leading-tight">PromoVoucer</h1>
+                            <span class="text-xs font-medium text-slate-500 capitalize">${currentUser.role} Area</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex flex-col items-end">
+                            <span class="text-sm font-bold text-slate-700">${currentUser.name}</span>
+                            <span class="text-xs font-medium text-slate-400 capitalize">${currentUser.role}</span>
+                        </div>
+                        <button onclick="handleLogout()" class="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors" title="Keluar">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="max-w-6xl mx-auto p-6">
+                ${isMarketing ? renderMarketingDashboard() : renderAdminDashboard()}
+            </main>`;
+        }
+
+        // --- VIEW: MARKETING DASHBOARD ---
+        function renderMarketingDashboard() {
+            const myVouchers = vouchers.filter(v => v.createdBy === currentUser.name);
+            
+            let myVouchersHTML = '';
+            if(myVouchers.length === 0) {
+                myVouchersHTML = `
+                <div class="p-10 text-center text-slate-500 flex flex-col items-center">
+                    <i data-lucide="ticket" class="w-12 h-12 text-slate-200 mb-3"></i>
+                    <p>Belum ada voucer yang dibuat hari ini.</p>
+                </div>`;
+            } else {
+                const rows = myVouchers.map(v => {
+                    const isExpired = new Date(v.expiresAt) < new Date() && v.status !== 'used';
+                    let statusBadge = '';
+                    if (v.status === 'used') {
+                        statusBadge = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">Terpakai</span>`;
+                    } else if (isExpired) {
+                        statusBadge = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Kedaluwarsa</span>`;
+                    } else {
+                        statusBadge = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Aktif</span>`;
+                    }
+
+                    return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4">
+                            <p class="font-mono font-bold text-indigo-600">${v.code}</p>
+                            <p class="font-medium text-slate-800 mt-0.5">${v.customerName}</p>
+                        </td>
+                        <td class="p-4 text-slate-600">${new Date(v.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                        <td class="p-4">${statusBadge}</td>
+                        <td class="p-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="shareWhatsApp('${v.id}')" class="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors" title="Bagikan ke WhatsApp">
+                                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="downloadVoucher('${v.id}')" class="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors" title="Download Gambar Tiket">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                myVouchersHTML = `
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-sm">
+                            <th class="p-4 font-medium">Info Voucer</th>
+                            <th class="p-4 font-medium">Berlaku Sampai</th>
+                            <th class="p-4 font-medium">Status</th>
+                            <th class="p-4 font-medium text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">${rows}</tbody>
+                </table>`;
+            }
+
+            let generatedHTML = '';
+            if (generatedVoucher) {
+                generatedHTML = `
+                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-2xl shadow-lg text-white animate-fade-in border border-indigo-500 mt-6">
+                    <h3 class="font-semibold text-indigo-100 mb-4 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i> Voucer Berhasil Dibuat!
+                    </h3>
+                    <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20 text-center mb-4">
+                        <p class="text-3xl font-mono font-bold tracking-widest">${generatedVoucher.code}</p>
+                    </div>
+                    <div class="text-sm text-indigo-100 space-y-2 mb-6">
+                        <p>Nilai Voucer: <span class="font-bold text-yellow-300">100 Rb</span></p>
+                        <p>Pelanggan: <span class="font-semibold text-white">${generatedVoucher.customerName}</span></p>
+                        <p>WA: <span class="font-semibold text-white">${generatedVoucher.customerPhone}</span></p>
+                        <p>Berlaku s/d: <span class="font-semibold text-yellow-300">
+                            ${new Date(generatedVoucher.expiresAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
+                        </span></p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-emerald-500 hover:bg-emerald-600 text-white">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim WA
+                        </button>
+                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-colors bg-white hover:bg-slate-100 text-indigo-600">
+                            <i data-lucide="download" class="w-4 h-4"></i> Download
+                        </button>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Kiri: Form -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">Buat Voucer</h2>
+                                <p class="text-xs text-slate-500">Masa berlaku 1 minggu</p>
+                            </div>
+                        </div>
+                        
+                        <form id="create-voucher-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Pelanggan *</label>
+                                <input type="text" id="cust-name" placeholder="Cth: Budi Santoso" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">No. WhatsApp *</label>
+                                <input type="tel" id="cust-phone" placeholder="Cth: 08123456789" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat (Desa & Kec) *</label>
+                                <input type="text" id="cust-address" placeholder="Cth: Desa Sukamaju, Kec. Jati" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                            </div>
+                            <button type="submit" class="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="ticket" class="w-4 h-4"></i> Generate Voucer
+                            </button>
+                        </form>
+                    </div>
+                    ${generatedHTML}
+                </div>
+
+                <!-- Kanan: Riwayat -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-slate-800">Riwayat Voucer yang Anda Buat</h2>
+                            <div class="text-sm text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-medium">Total: ${myVouchers.length}</div>
+                        </div>
+                        <div class="overflow-x-auto">${myVouchersHTML}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- VIEW: ADMIN DASHBOARD ---
+        function renderAdminDashboard() {
+            let contentHTML = '';
+            
+            if (activeAdminTab === 'verify') {
+                contentHTML = renderAdminVerify();
+            } else {
+                contentHTML = renderAdminUsers();
+            }
+
+            return `
+            <div class="space-y-6">
+                <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200 w-fit mx-auto">
+                    <button onclick="switchAdminTab('verify')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i> Verifikasi Voucer
+                    </button>
+                    <button onclick="switchAdminTab('users')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all ${activeAdminTab === 'users' ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-50'}">
+                        <i data-lucide="users" class="w-5 h-5"></i> Kelola Tim Marketing
+                    </button>
+                </div>
+                ${contentHTML}
+            </div>`;
+        }
+
+        // --- SUB-VIEW: ADMIN VERIFY ---
+        function renderAdminVerify() {
+            let resultHTML = '';
+            if (searchResult) {
+                if (searchResult.status === 'not_found') {
+                    resultHTML = `
+                    <div class="flex items-start gap-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-100">
+                        <i data-lucide="x-circle" class="w-6 h-6 mt-0.5 shrink-0"></i>
+                        <div>
+                            <h4 class="font-bold">Voucer Tidak Ditemukan</h4>
+                            <p class="text-sm opacity-90">Kode salah atau belum terdaftar.</p>
+                        </div>
+                    </div>`;
+                } else if (searchResult.status === 'used') {
+                    resultHTML = `
+                    <div class="flex items-start gap-4 p-4 bg-amber-50 text-amber-800 rounded-xl border border-amber-200">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 mt-0.5 shrink-0"></i>
+                        <div>
+                            <h4 class="font-bold">Voucer Sudah Terpakai</h4>
+                            <div class="mt-2 bg-white/60 p-3 rounded-lg text-sm">
+                                <p>Pemilik: <strong>${searchResult.voucher.customerName}</strong></p>
+                                <p>Dipakai: ${new Date(searchResult.voucher.usedAt).toLocaleString('id-ID')}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                } else if (searchResult.status === 'expired') {
+                    resultHTML = `
+                    <div class="flex items-start gap-4 p-4 bg-slate-100 text-slate-700 rounded-xl border border-slate-300">
+                        <i data-lucide="clock" class="w-6 h-6 mt-0.5 shrink-0 text-slate-500"></i>
+                        <div>
+                            <h4 class="font-bold">Voucer Sudah Kedaluwarsa</h4>
+                            <p class="text-sm opacity-90">Batas waktu penggunaan 1 minggu telah lewat.</p>
+                            <p class="text-xs font-mono mt-1 bg-white inline-block px-2 py-1 rounded">Exp: ${new Date(searchResult.voucher.expiresAt).toLocaleDateString('id-ID')}</p>
+                        </div>
+                    </div>`;
+                } else if (searchResult.status === 'found') {
+                    resultHTML = `
+                    <div class="bg-emerald-50 rounded-xl border border-emerald-200 overflow-hidden">
+                        <div class="p-4 bg-emerald-500 text-white flex items-center gap-3">
+                            <i data-lucide="check-circle" class="w-6 h-6"></i>
+                            <h4 class="font-bold text-lg">Voucer Valid!</h4>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-emerald-700/70 font-medium mb-1">Kode</p>
+                                    <p class="font-mono font-bold text-slate-800 text-lg">${searchResult.voucher.code}</p>
+                                </div>
+                                <div>
+                                    <p class="text-emerald-700/70 font-medium mb-1">Pelanggan</p>
+                                    <p class="font-bold text-slate-800 text-lg">${searchResult.voucher.customerName}</p>
+                                </div>
+                            </div>
+                            <button onclick="handleRedeemVoucher()" class="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md active:scale-95 transition-all">
+                                Gunakan Voucer
+                            </button>
+                        </div>
+                    </div>`;
+                }
+            }
+
+            const usedVouchers = vouchers.filter(v => v.status === 'used').reverse();
+            let historyHTML = '';
+            if (usedVouchers.length === 0) {
+                historyHTML = `<div class="p-8 text-center text-slate-500">Belum ada voucer yang digunakan.</div>`;
+            } else {
+                const rows = usedVouchers.map(v => `
+                    <tr>
+                        <td class="p-4 text-slate-600">${new Date(v.usedAt).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'})}</td>
+                        <td class="p-4 font-mono font-medium text-slate-700">${v.code}</td>
+                        <td class="p-4 font-medium text-slate-800">${v.customerName}</td>
+                    </tr>
+                `).join('');
+                historyHTML = `
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-y border-slate-100">
+                        <tr>
+                            <th class="p-4 font-medium text-slate-500">Waktu Dipakai</th>
+                            <th class="p-4 font-medium text-slate-500">Kode</th>
+                            <th class="p-4 font-medium text-slate-500">Pelanggan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">${rows}</tbody>
+                </table>`;
+            }
+
+            return `
+            <div class="space-y-8">
+                <!-- Scanner -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 max-w-2xl mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="inline-block bg-emerald-100 p-3 rounded-2xl text-emerald-600 mb-4">
+                            <i data-lucide="shield-check" class="w-8 h-8"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800">Verifikasi Kode Voucer</h2>
+                    </div>
+
+                    <form id="verify-form" class="relative max-w-md mx-auto">
+                        <input type="text" id="search-code" placeholder="Cth: VCH-ABC123" class="w-full pl-12 pr-32 py-4 text-lg font-mono rounded-xl border-2 border-slate-200 focus:outline-none focus:ring-0 focus:border-emerald-500 uppercase" />
+                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+                        <button type="submit" class="absolute right-2 top-2 bottom-2 bg-slate-800 hover:bg-slate-900 text-white px-6 rounded-lg font-semibold">Cek</button>
+                    </form>
+
+                    <div class="mt-8 pt-8 border-t border-slate-100 max-w-md mx-auto animate-fade-in">
+                        ${resultHTML}
+                    </div>
+                </div>
+
+                <!-- Log History -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden max-w-4xl mx-auto">
+                    <div class="p-6 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-800">Voucer yang Telah Digunakan</h3>
+                    </div>
+                    <div class="overflow-x-auto">${historyHTML}</div>
+                </div>
+            </div>`;
+        }
+
+        // --- SUB-VIEW: ADMIN USERS ---
+        function renderAdminUsers() {
+            const marketingUsers = users.filter(u => u.role === 'marketing');
+            let usersRows = '';
+            
+            if (marketingUsers.length === 0) {
+                usersRows = `<tr><td colspan="3" class="p-6 text-center text-slate-500">Belum ada akun tim marketing. Buat di sebelah kiri.</td></tr>`;
+            } else {
+                usersRows = marketingUsers.map(u => `
+                    <tr>
+                        <td class="p-4 font-bold text-slate-800">${u.name}</td>
+                        <td class="p-4 font-mono text-slate-600">${u.username}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Marketing</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            return `
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
+                                <i data-lucide="user-plus" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Buat Akun Marketing</h2>
+                        </div>
+                        
+                        <form id="create-user-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                                <input type="text" id="new-name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Username Login</label>
+                                <input type="text" id="new-username" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                                <input type="text" id="new-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <button type="submit" class="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold">Buat Akun</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100">
+                            <h2 class="text-lg font-bold text-slate-800">Daftar Akun Tim Marketing</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 text-sm">
+                                        <th class="p-4 font-medium">Nama</th>
+                                        <th class="p-4 font-medium">Username</th>
+                                        <th class="p-4 font-medium">Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-sm">${usersRows}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ==========================================
         // INISIALISASI & PENGIKATAN EVENT LISTENER
+        // ==========================================
         function attachEventListeners() {
             // Form Login
             const loginForm = document.getElementById('login-form');
@@ -291,9 +782,11 @@ function handleCreateUser(e) {
             if (createUserForm) createUserForm.addEventListener('submit', handleCreateUser);
         }
 
+        // Jalankan saat halaman pertama kali dimuat
         document.addEventListener('DOMContentLoaded', () => {
             reRender();
         });
+
     </script>
 </body>
 </html>
