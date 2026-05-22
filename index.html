@@ -29,7 +29,7 @@
         // MANAJEMEN STATE & DATA (Menggunakan LocalStorage)
         // ==========================================
         const defaultUsers = [
-            { id: '1', username: '123', password: '123', role: 'admin', name: 'Administrator Utama' }
+            { id: '1', username: 'admin', password: '123', role: 'admin', name: 'Administrator Utama' }
         ];
 
         let users = JSON.parse(localStorage.getItem('tc_users')) || defaultUsers;
