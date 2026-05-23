@@ -975,6 +975,19 @@ function doPost(e) {
             });
 
 
+
+
+            db.sales.push(newSale);
+            showToast('Data penjualan berhasil disimpan (Lokal)', 'success');
+            
+            closeModal('modal-penjualan');
+            e.target.reset();
+            renderSales();
+            if(currentUser.role === 'marketing') renderVouchers();
+            
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+
             
 
         }
