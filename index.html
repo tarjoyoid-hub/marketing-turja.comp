@@ -408,23 +408,66 @@
 
     <script>
         /**
-         * PANDUAN INTEGRASI GOOGLE SHEETS
-         * ----------------------------------------------------
-         * Karena lingkungan ini adalah Web Statis (GitHub Pages), Anda tidak bisa langsung
-         * mengakses file lokal atau database backend. Cara terbaik menyimpan ke Google Sheets
-         * adalah menggunakan "Google Apps Script (GAS) Web App".
+         * =========================================================================================
+         * 🚀 PANDUAN SUPER JELAS INTEGRASI GOOGLE SHEETS (UNTUK GITHUB PAGES) 🚀
+         * =========================================================================================
+         * Karena GitHub Pages statis, kita butuh "Google Apps Script (GAS)" sebagai API (jembatan) 
+         * dari HTML ini ke Google Sheets. Ikuti 4 langkah mudah ini:
          * 
-         * Langkah-langkah nanti:
-         * 1. Buka Google Sheets -> Ekstensi -> Apps Script.
-         * 2. Buat fungsi doPost(e) dan doGet(e) untuk menerima JSON.
-         * 3. Deploy sebagai Web App (Akses: "Anyone").
-         * 4. Ganti konstanta `MOCK_DATABASE` di bawah menjadi fungsi `fetch(URL_WEB_APP)`.
+         * --- LANGKAH 1: SIAPKAN GOOGLE SHEETS ---
+         * 1. Buka Google Sheets, buat Spreadsheet baru.
+         * 2. Buat 3 Sheet/Tab di bawah, beri nama PERSIS seperti ini (huruf besar/kecil berpengaruh):
+         *    - Sheet 1 ganti nama jadi: Marketing
+         *    - Sheet 2 ganti nama jadi: Vouchers
+         *    - Sheet 3 ganti nama jadi: Sales
+         * 3. Di Sheet 'Sales', isi baris pertama (A1 sampai I1) sebagai header: 
+         *    waktuInput | marketing | pembeli | hp | alamat | kategori | produk | voucer | harga
          * 
-         * Untuk saat ini, agar aplikasi berjalan sempurna saat diuji, kita gunakan In-Memory Database 
-         * yang disimulasikan agar memiliki feel yang sama.
+         * --- LANGKAH 2: MASUKKAN KODE KE GOOGLE APPS SCRIPT ---
+         * 1. Di Google Sheets Anda, klik menu [Ekstensi] -> [Apps Script].
+         * 2. Hapus semua kode bawaan yang ada di sana (function myFunction() dll).
+         * 3. COPY kode di bawah ini dan PASTE ke editor Apps Script tersebut:
+         
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(e.parameter.sheetName);
+    var data = JSON.parse(e.postData.contents); // Ambil data JSON dari aplikasi
+    var rowData = Object.values(data); // Ubah JSON ke bentuk array/baris
+    sheet.appendRow(rowData); // Masukkan ke baris terbawah
+    
+    return ContentService.createTextOutput(JSON.stringify({"status": "success", "message": "Data tersimpan"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+         * 
+         * 4. Klik ikon Save (Simpan/Disket).
+         * 
+         * --- LANGKAH 3: DEPLOY & DAPATKAN URL API ---
+         * 1. Di pojok kanan atas Apps Script, klik tombol biru [Terapkan] / [Deploy].
+         * 2. Pilih [Deployment Baru] / [New deployment].
+         * 3. Klik ikon gerigi (Pilih jenis) -> Pilih [Aplikasi Web] / [Web app].
+         * 4. Isi setelan berikut:
+         *    - Deskripsi: Bebas (misal: "API V1")
+         *    - Jalankan sebagai: "Saya" (Me)
+         *    - Siapa yang memiliki akses: "Siapa saja" (Anyone) -> SANGAT PENTING!
+         * 5. Klik Terapkan/Deploy. (Jika diminta Otorisasi Akses, klik Izinkan/Advanced -> Go to App).
+         * 6. SALIN "URL Aplikasi Web" (Bentuknya: https://script.google.com/macros/s/AKfycb.../exec).
+         * 
+         * --- LANGKAH 4: HUBUNGKAN KE APLIKASI INI ---
+         * 1. Paste URL yang Anda salin tadi ke variabel GOOGLE_MACRO_URL di bawah.
+         * 2. Cari fungsi `handleSavePenjualan()` di kode ini.
+         * 3. Ikuti instruksi di dalam fungsi tersebut untuk mengaktifkan kode pengiriman datanya.
+         * =========================================================================================
          */
 
-        // Initial Data State
+        // 🟢 PASTE URL GOOGLE APPS SCRIPT ANDA DI SINI:
+        const GOOGLE_MACRO_URL = 'https://script.google.com/macros/s/AKfycbyeiD9ceDHLE9Nub23_MLdNq-VTOCivkWVVu_iyon6TEh5eV7tYhaUDqzjja7ZYw0Os/exec';
+
+        // Initial Data State (In-Memory Database)
         let db = {
             admin: { user: 'Admin', pass: '123' },
             marketing: [{ id: 1, nama: 'Tim Marketing 1', user: 'User', pass: '123' }],
@@ -860,6 +903,13 @@
 
         function handleSavePenjualan(e) {
             e.preventDefault();
+            
+            // Tombol loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            submitBtn.disabled = true;
+
             const pembeli = document.getElementById('p-pembeli').value;
             const hp = document.getElementById('p-hp').value;
             const alamat = document.getElementById('p-alamat').value;
@@ -873,9 +923,10 @@
                 const v = db.vouchers.find(x => x.code === voucer);
                 if(!v) {
                     showToast('Kode voucer tidak ditemukan di sistem!', 'error');
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
                     return;
                 }
-                // Jika ingin update status voucer menjadi 'Digunakan'
                 v.status = 'Digunakan'; 
             }
 
@@ -888,15 +939,44 @@
                 pembeli, hp, alamat, kategori, produk, voucer, harga
             };
 
-            db.sales.push(newSale);
-            showToast('Data penjualan berhasil disimpan', 'success');
+
+            if(GOOGLE_MACRO_URL === 'https://script.google.com/macros/s/AKfycbyeiD9ceDHLE9Nub23_MLdNq-VTOCivkWVVu_iyon6TEh5eV7tYhaUDqzjja7ZYw0Os/exec') {
+                showToast('URL Google Apps Script belum diatur!', 'error');
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            fetch(GOOGLE_MACRO_URL + '?sheetName=Sales', {
+                method: 'POST',
+                body: JSON.stringify(newSale)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    showToast('Data penjualan berhasil masuk ke Google Sheets', 'success');
+                    // Simpan ke memori lokal juga agar UI langsung update tanpa refresh
+                    db.sales.push(newSale); 
+                    closeModal('modal-penjualan');
+                    e.target.reset();
+                    renderSales();
+                    if(currentUser.role === 'marketing') renderVouchers();
+                } else {
+                    showToast('Gagal menyimpan ke Google Sheets: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Terjadi kesalahan jaringan saat ke Google Sheets', 'error');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            });
+            --- AKHIR DARI KODE G-SHEETS --- */
+
             
-            closeModal('modal-penjualan');
-            e.target.reset();
-            renderSales();
-            if(currentUser.role === 'marketing') renderVouchers(); // Refresh status voucer jika ada yg dipakai
-            
-            // PENTING: Sinkronisasi ke GSheet
+
         }
 
     </script>
