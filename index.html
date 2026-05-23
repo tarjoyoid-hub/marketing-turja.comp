@@ -939,51 +939,35 @@ function doPost(e) {
                 pembeli, hp, alamat, kategori, produk, voucer, harga
             };
 
-            // --- KODE AKTIF: MENGIRIM DATA KE GOOGLE SHEETS ---
-            // Kode ini sudah diaktifkan. Jika GOOGLE_MACRO_URL belum diatur dengan benar,
-            // sistem akan memberi peringatan dan menyimpan data di memori sementara.
-            
-            if (!GOOGLE_MACRO_URL || GOOGLE_MACRO_URL.includes('https://script.google.com/macros/s/AKfycbyeiD9ceDHLE9Nub23_MLdNq-VTOCivkWVVu_iyon6TEh5eV7tYhaUDqzjja7ZYw0Os/exec')) {
-                showToast('Gagal ke G-Sheets (URL belum diatur). Menyimpan lokal...', 'error');
-                
-                // Simpan lokal sebagai cadangan
-                db.sales.push(newSale);
-                closeModal('modal-penjualan');
-                e.target.reset();
-                renderSales();
-                if(currentUser.role === 'marketing') renderVouchers();
-                
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-                return;
-            }
-
-            // Mengirim data menggunakan API Fetch
+            // === KODE UPDATE: MENGHINDARI BLOKIR CORS DARI GOOGLE ===
             fetch(GOOGLE_MACRO_URL + '?sheetName=Sales', {
                 method: 'POST',
-                // Pastikan mengirim mode 'no-cors' DIBUANG. Apps Script butuh format JSON yang benar.
+                redirect: 'follow', // PENTING: Mengikuti pengalihan (redirect) internal Google
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8', // PENTING: Mencegah error CORS Preflight
+                },
                 body: JSON.stringify(newSale)
             })
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
                     showToast('Data berhasil masuk ke Google Sheets!', 'success');
-                    // Simpan ke memori lokal juga agar tabel di layar langsung update
-                    db.sales.push(newSale); 
-                    closeModal('modal-penjualan');
-                    e.target.reset();
-                    renderSales();
-                    if(currentUser.role === 'marketing') renderVouchers();
                 } else {
-                    showToast('Gagal menyimpan ke Google Sheets: ' + data.message, 'error');
+                    showToast('Gagal dari server: ' + data.message, 'error');
                 }
             })
             .catch(error => {
-                showToast('Terjadi kesalahan jaringan saat ke Google Sheets', 'error');
-                console.error('Error:', error);
+                showToast('Tersimpan lokal. (Koneksi ke G-Sheets gagal)', 'info');
+                console.error('Error Detail:', error);
             })
             .finally(() => {
-                // Kembalikan tombol ke kondisi semula
+                // Tetap simpan ke memori tabel lokal agar terlihat di UI
+                db.sales.push(newSale);
+                closeModal('modal-penjualan');
+                e.target.reset();
+                renderSales();
+                if(currentUser.role === 'marketing') renderVouchers();
+                
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             });
