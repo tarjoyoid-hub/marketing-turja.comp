@@ -132,6 +132,7 @@
             container.innerHTML = ''; 
             
             const toast = document.createElement('div');
+            // Menjadikan box notifikasi melayang vertikal di tengah dengan bayangan tebal (shadow-2xl)
             toast.className = `p-6 rounded-3xl flex flex-col items-center text-center gap-4 shadow-2xl border border-slate-200 bg-white text-sm pointer-events-auto transition-all duration-300 transform scale-95 opacity-0 animate-fade-in max-w-sm w-full`;
             
             let icon = 'check-circle';
@@ -258,9 +259,12 @@
             e.preventDefault();
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            const address = document.getElementById('cust-address').value;
+            // Menggabungkan input desa dan kecamatan secara otomatis
+            const desa = document.getElementById('cust-desa').value.trim();
+            const kec = document.getElementById('cust-kec').value.trim();
+            const fullAddress = `Desa ${desa}, Kec. ${kec}`;
 
-            if (!name.trim()) return;
+            if (!name.trim() || !desa || !kec) return;
 
             const now = new Date();
             const expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 Hari
@@ -270,7 +274,7 @@
                 code: generateRandomCode(),
                 customerName: name,
                 customerPhone: phone,
-                customerAddress: address,
+                customerAddress: fullAddress,
                 status: 'active',
                 createdBy: currentUser.name,
                 createdAt: now.toISOString(),
@@ -450,6 +454,7 @@
         window.switchAdminTab = function(tab) {
             activeAdminTab = tab;
             editingSaleId = null; 
+            toggleDrawer(false); // Otomatis tutup laci drawer saat tab dipilih
             reRender();
         }
 
@@ -678,19 +683,10 @@
             const voucher = getVoucherById(id);
             if(!voucher) return;
             
-            // Generate canvas gambar
-            const canvas = generateVoucherCanvas(voucher);
-            
-            // Simulasikan unduhan gambar otomatis agar gambar tersimpan di perangkat penerima
-            const link = document.createElement('a');
-            link.download = `Voucher-TurjaComputer-${voucher.code}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
             const expDate = new Date(voucher.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             
-            // Pesan teks yang dioptimasi agar meminta user melampirkan berkas gambar yang baru terunduh otomatis
-            const text = `Halo *${voucher.customerName}*! 🎉\n\nIni adalah VOUCER SPESIAL senilai *100 Rb* dari *Turja Computer* untuk Anda.\n\nKode Voucer: *${voucher.code}*\nBerlaku sampai: *${expDate}*\n\nAlamat yang tercatat: ${voucher.customerAddress || '-'}\n\n*Catatan:* File gambar tiket voucer digital Anda telah otomatis diunduh ke perangkat Anda. Mohon lampirkan berkas gambar tersebut bersama pesan ini untuk dikirimkan kepada pelanggan.\n\nTerima kasih!`;
+            // Mengganti draf download otomatis dengan link instruksi unduh manual sederhana
+            const text = `Halo *${voucher.customerName}*! 🎉\n\nIni adalah VOUCER SPESIAL senilai *100 Rb* dari *Turja Computer* untuk Anda.\n\nKode Voucer: *${voucher.code}*\nBerlaku sampai: *${expDate}*\n\nAlamat yang tercatat: ${voucher.customerAddress || '-'}\n\nSilakan tunjukkan pesan ini atau gambar voucer kepada admin di toko kami untuk mendapatkan potongan harga.\n\nTerima kasih!`;
             
             let waUrl = `https://wa.me/`;
             if (voucher.customerPhone) {
@@ -941,7 +937,7 @@
                             <i data-lucide="message-circle" class="w-4 h-4"></i> Bagikan WA
                         </button>
                         <!-- Tombol unduh tiket diubah menjadi MERAH sesuai permintaan -->
-                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-700 text-white transition-all transform active:scale-95 shadow-lg shadow-red-600/10">
+                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-red-650 hover:bg-red-700 text-white transition-all transform active:scale-95 shadow-lg shadow-red-600/10">
                             <i data-lucide="download" class="w-4 h-4"></i> Unduh Tiket
                         </button>
                     </div>
@@ -982,9 +978,16 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-2">No. WhatsApp Pelanggan *</label>
                             <input type="tel" id="cust-phone" placeholder="Cth: 08123456789" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-2">Alamat Pelanggan (Desa & Kecamatan) *</label>
-                            <input type="text" id="cust-address" placeholder="Cth: Desa Sukamaju, Kec. Jati" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
+                        <!-- Alamat pelanggan dipecah menjadi 2 kolom (Desa & Kecamatan) sejajar sesuai permintaan -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Desa *</label>
+                                <input type="text" id="cust-desa" placeholder="Cth: Sukamaju" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Kecamatan *</label>
+                                <input type="text" id="cust-kec" placeholder="Cth: Jati" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
+                            </div>
                         </div>
                         <button type="submit" class="w-full py-3.5 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/10 active:scale-[0.99] flex items-center justify-center gap-2">
                             <i data-lucide="sparkles" class="w-4 h-4"></i> Generate Cyber Pass
@@ -1033,7 +1036,7 @@
                             <p class="font-bold text-slate-900 text-sm">${v.customerName}</p>
                             <p class="text-xs text-slate-500 mt-0.5">${v.customerPhone || '-'}</p>
                         </td>
-                        <td class="p-4 text-xs text-slate-555 max-w-[200px] truncate">${v.customerAddress || '-'}</td>
+                        <td class="p-4 text-xs text-slate-505 max-w-[200px] truncate">${v.customerAddress || '-'}</td>
                         <td class="p-4 text-xs text-slate-600 font-semibold">${new Date(v.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td class="p-4">${statusBadge}</td>
                         <td class="p-4 text-right">
@@ -1144,7 +1147,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-655 mb-2">Harga Final Penjualan (Rp) *</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Harga Final Penjualan (Rp) *</label>
                             <!-- Input tipe dirubah ke text dengan inputmode numeric agar pemisah ribuan otomatis bekerja -->
                             <input type="text" id="sale-harga" value="${initialHargaValue}" oninput="formatNumberInput(event)" inputmode="numeric" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 font-bold text-slate-800 text-base outline-none rounded-xl" placeholder="Cth: 1.500.000" />
                         </div>
@@ -1168,7 +1171,7 @@
             } else {
                 salesRows = mySales.map((s, index) => `
                     <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
-                        <td class="p-4 text-slate-550 font-mono text-xs">${index + 1}</td>
+                        <td class="p-4 text-slate-555 font-mono text-xs">${index + 1}</td>
                         <td class="p-4 font-bold text-slate-955 text-sm">${s.pembeli}</td>
                         <td class="p-4 text-slate-550 text-xs">${s.hp || '-'}</td>
                         <td class="p-4 text-slate-550 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
@@ -1312,10 +1315,10 @@
                         <td class="p-4 text-indigo-600 text-sm font-semibold">${u.username}</td>
                         <td class="p-4 text-slate-500 text-sm">${u.password}</td>
                         <td class="p-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider font-mono">Marketing</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider">Marketing</span>
                         </td>
                         <td class="p-4">
-                            <button onclick="startEditUser('${u.id}')" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-amber-200 font-mono">
+                            <button onclick="startEditUser('${u.id}')" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-amber-200">
                                 <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit Akun
                             </button>
                         </td>
@@ -1490,8 +1493,8 @@
                         <td class="p-4 text-slate-400 text-xs">${new Date(s.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
                         <td class="p-4 font-bold text-indigo-600 text-sm">${s.createdBy}</td>
                         <td class="p-4 font-bold text-slate-900 text-sm">${s.pembeli}</td>
-                        <td class="p-4 text-slate-555 text-xs">${s.hp || '-'}</td>
-                        <td class="p-4 text-slate-555 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
+                        <td class="p-4 text-slate-505 text-xs">${s.hp || '-'}</td>
+                        <td class="p-4 text-slate-505 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
                         <td class="p-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-fuchsia-50 text-fuchsia-600 border border-fuchsia-100">${s.produk || '-'}</span>
                         </td>
@@ -1536,7 +1539,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
-                                <tr class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200">
+                                <tr class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200 font-mono">
                                     <th class="p-4 font-bold">No</th>
                                     <th class="p-4 font-bold">Waktu Input</th>
                                     <th class="p-4 font-bold">Tim Marketing</th>
@@ -1604,7 +1607,7 @@
                             <!-- Diubah menjadi 1 kolom penuh ke bawah sesuai permintaan -->
                             <div class="space-y-3 text-xs">
                                 <div>
-                                    <p class="text-slate-450 font-bold mb-1 uppercase tracking-wider font-mono">KODE VOUCER</p>
+                                    <p class="text-slate-450 font-bold mb-1 uppercase tracking-wider">KODE VOUCER</p>
                                     <p class="font-mono font-bold text-indigo-600 bg-indigo-50 py-1.5 px-3 rounded-lg border border-indigo-100 inline-block">${searchResult.voucher.code}</p>
                                 </div>
                                 <div>
