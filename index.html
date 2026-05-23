@@ -943,7 +943,7 @@ function doPost(e) {
             // Kode ini sudah diaktifkan. Jika GOOGLE_MACRO_URL belum diatur dengan benar,
             // sistem akan memberi peringatan dan menyimpan data di memori sementara.
             
-            if (!GOOGLE_MACRO_URL || GOOGLE_MACRO_URL.includes('ISI_DENGAN_URL')) {
+            if (!GOOGLE_MACRO_URL || GOOGLE_MACRO_URL.includes('https://script.google.com/macros/s/AKfycbyeiD9ceDHLE9Nub23_MLdNq-VTOCivkWVVu_iyon6TEh5eV7tYhaUDqzjja7ZYw0Os/exec')) {
                 showToast('Gagal ke G-Sheets (URL belum diatur). Menyimpan lokal...', 'error');
                 
                 // Simpan lokal sebagai cadangan
