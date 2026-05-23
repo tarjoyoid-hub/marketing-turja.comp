@@ -9,16 +9,17 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Menggunakan font Inter dan Fira Code untuk tampilan yang jauh lebih modern dan bersih */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap');
+        /* Mengimpor font Inter untuk tampilan yang sangat bersih, premium, dan rapi */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            letter-spacing: -0.01em;
+        /* Memaksa semua elemen tanpa terkecuali menggunakan font Inter agar seragam dan rapi */
+        *, ::before, ::after {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
         }
         
-        .font-mono {
-            font-family: 'Fira Code', monospace;
+        /* Font khusus monospace untuk tampilan kode voucer agar presisi */
+        .font-mono, .voucher-code-text {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
         }
 
         /* Smooth Fade In Animations */
@@ -50,8 +51,8 @@
     <!-- Container Utama -->
     <div id="app" class="w-full flex-grow"></div>
 
-    <!-- Container Toast Notification Custom -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- Container Toast Notification Custom (Diposisikan di tengah layar) -->
+    <div id="toast-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"></div>
 
     <!-- Custom Modal Confirm Container -->
     <div id="confirm-modal-container" class="fixed inset-0 bg-slate-900/45 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
@@ -59,9 +60,9 @@
             <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-200">
                 <i data-lucide="help-circle" class="w-8 h-8"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-2" id="modal-title">Konfirmasi Tindakan</h3>
+            <h3 class="text-lg font-bold text-slate-900 mb-2 font-mono" id="modal-title">Konfirmasi Tindakan</h3>
             <p class="text-slate-500 text-sm mb-6 leading-relaxed" id="modal-desc">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
-            <div class="flex gap-3">
+            <div class="flex gap-3 font-mono">
                 <button id="modal-cancel-btn" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl transition-all">Batal</button>
                 <button id="modal-confirm-btn" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-600/30">Ya, Setuju</button>
             </div>
@@ -73,10 +74,19 @@
         // MANAJEMEN STATE & DATA (Menggunakan LocalStorage)
         // ==========================================
         const defaultUsers = [
-            { id: '1', username: 'admin', password: 'password123', role: 'admin', name: 'Administrator Utama' }
+            { id: '1', username: 'Admin', password: '123', role: 'admin', name: 'Administrator Utama' }
         ];
 
         let users = JSON.parse(localStorage.getItem('tc_users')) || defaultUsers;
+        
+        // Memeriksa dan memigrasikan akun admin lama secara otomatis agar user tidak kebingungan
+        const oldAdminIdx = users.findIndex(u => u.role === 'admin' && u.username === 'admin' && u.password === 'password123');
+        if (oldAdminIdx > -1) {
+            users[oldAdminIdx].username = 'Admin';
+            users[oldAdminIdx].password = '123';
+            localStorage.setItem('tc_users', JSON.stringify(users));
+        }
+
         let vouchers = JSON.parse(localStorage.getItem('tc_vouchers')) || [];
         let sales = JSON.parse(localStorage.getItem('tc_sales')) || [];
         let currentUser = JSON.parse(localStorage.getItem('tc_currentUser')) || null;
@@ -113,48 +123,59 @@
         }
 
         // ==========================================
-        // SYSTEM TOAST NOTIFICATION & MODAL CUSTOM
+        // SYSTEM TOAST NOTIFICATION & MODAL CUSTOM (SOLID & DI TENGAH)
         // ==========================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
+            
+            // Bersihkan toast sebelumnya agar tidak tumpang tindih di tengah layar
+            container.innerHTML = ''; 
+            
             const toast = document.createElement('div');
-            toast.className = `p-4 rounded-xl flex items-center gap-3 shadow-xl border text-sm pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 glass-card animate-fade-in`;
+            toast.className = `p-6 rounded-3xl flex flex-col items-center text-center gap-4 shadow-2xl border border-slate-200 bg-white text-sm pointer-events-auto transition-all duration-300 transform scale-95 opacity-0 animate-fade-in max-w-sm w-full`;
             
             let icon = 'check-circle';
             let iconColor = 'text-emerald-500';
             let borderColor = 'border-emerald-500/20';
-            let textColor = 'text-slate-800';
+            let bgIcon = 'bg-emerald-500/10';
 
             if (type === 'error') {
                 icon = 'x-circle';
                 iconColor = 'text-red-500';
                 borderColor = 'border-red-500/20';
+                bgIcon = 'bg-red-500/10';
             } else if (type === 'warning') {
                 icon = 'alert-triangle';
                 iconColor = 'text-amber-500';
                 borderColor = 'border-amber-500/20';
+                bgIcon = 'bg-amber-500/10';
             }
 
             toast.innerHTML = `
-                <div class="${iconColor}"><i data-lucide="${icon}" class="w-5 h-5"></i></div>
-                <div class="${textColor} font-semibold">${message}</div>
+                <!-- Lingkaran pembungkus ikon yang diperbesar -->
+                <div class="w-16 h-16 ${bgIcon} ${iconColor} rounded-full flex items-center justify-center border ${borderColor}">
+                    <i data-lucide="${icon}" class="w-8 h-8"></i>
+                </div>
+                <!-- Teks Notifikasi diletakkan di bawah -->
+                <div class="text-slate-800 font-semibold text-base leading-relaxed">${message}</div>
             `;
-            toast.classList.add(borderColor);
             container.appendChild(toast);
             lucide.createIcons();
 
             // Animasi masuk
             setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
+                toast.classList.remove('scale-95', 'opacity-0');
+                toast.classList.add('scale-100', 'opacity-100');
             }, 10);
 
-            // Hapus otomatis setelah 3 detik
+            // Hapus otomatis setelah 2.5 detik
             setTimeout(() => {
-                toast.classList.add('opacity-0', 'scale-95');
+                toast.classList.remove('scale-100', 'opacity-100');
+                toast.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => {
                     toast.remove();
                 }, 300);
-            }, 3000);
+            }, 2500);
         }
 
         function showCustomConfirm(title, description, onConfirm) {
@@ -185,14 +206,22 @@
         }
 
         // ==========================================
+        // FUNGSI INPUT FORMAT RUPIAH OTOMATIS
+        // ==========================================
+        window.formatNumberInput = function(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            e.target.value = value ? Number(value).toLocaleString('id-ID') : "";
+        };
+
+        // ==========================================
         // FUNGSI AKSI (LOGIC)
         // ==========================================
         function handleLogin(e) {
             e.preventDefault();
-            const usernameInput = document.getElementById('username').value;
+            const usernameInput = document.getElementById('username').value.trim();
             const passwordInput = document.getElementById('password').value;
             
-            const user = users.find(u => u.username === usernameInput && u.password === passwordInput);
+            const user = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
             if (user) {
                 currentUser = user;
                 loginError = '';
@@ -370,6 +399,45 @@
         }
 
         // ==========================================
+        // FUNGSI UPDATE USERNAME & PASSWORD ADMIN
+        // ==========================================
+        function handleUpdateAdminSettings(e) {
+            e.preventDefault();
+            const newAdminUsername = document.getElementById('admin-username').value.trim();
+            const newAdminPassword = document.getElementById('admin-password').value.trim();
+
+            if (!newAdminUsername || !newAdminPassword) {
+                showToast("Username dan Password Admin tidak boleh kosong!", "error");
+                return;
+            }
+
+            const adminIdx = users.findIndex(u => u.role === 'admin');
+            if (adminIdx > -1) {
+                users[adminIdx].username = newAdminUsername;
+                users[adminIdx].password = newAdminPassword;
+                
+                // Sinkronkan sesi admin saat ini
+                if (currentUser && currentUser.role === 'admin') {
+                    currentUser.username = newAdminUsername;
+                    currentUser.password = newAdminPassword;
+                }
+                
+                saveData();
+                showToast("Informasi login Admin berhasil diperbarui!", "success");
+                activeAdminTab = 'verify';
+                reRender();
+            } else {
+                showToast("Akun admin gagal dimodifikasi!", "error");
+            }
+        }
+
+        // Fungsi membatalkan ubah pengaturan Admin
+        window.cancelAdminSettings = function() {
+            activeAdminTab = 'verify';
+            reRender();
+        }
+
+        // ==========================================
         // FUNGSI PENJUALAN (MARKETING & ADMIN)
         // ==========================================
         window.switchMarketingTab = function(tab) {
@@ -382,13 +450,11 @@
         window.switchAdminTab = function(tab) {
             activeAdminTab = tab;
             editingSaleId = null; 
-            toggleDrawer(false); // Otomatis tutup laci drawer saat tab dipilih
             reRender();
         }
 
         // Fungsi mengendalikan visibilitas drawer menu garis 3
         window.toggleDrawer = function(open) {
-            isDrawerOpen = open;
             const drawer = document.getElementById('nav-drawer');
             const backdrop = document.getElementById('drawer-backdrop');
             
@@ -405,6 +471,9 @@
 
         function handleCreateSale(e) {
             e.preventDefault();
+            // Membersihkan titik ribuan dari harga sebelum disimpan
+            const cleanedHarga = document.getElementById('sale-harga').value.replace(/\D/g, "");
+            
             const newSale = {
                 id: Date.now().toString(),
                 pembeli: document.getElementById('sale-pembeli').value,
@@ -412,7 +481,7 @@
                 alamat: document.getElementById('sale-alamat').value,
                 produk: document.getElementById('sale-produk').value,
                 kodeVoucher: document.getElementById('sale-voucher').value,
-                harga: document.getElementById('sale-harga').value,
+                harga: cleanedHarga,
                 createdBy: currentUser.name,
                 createdAt: new Date().toISOString()
             };
@@ -433,12 +502,14 @@
             e.preventDefault();
             const index = sales.findIndex(s => s.id === editingSaleId);
             if (index > -1) {
+                const cleanedHarga = document.getElementById('sale-harga').value.replace(/\D/g, "");
+                
                 sales[index].pembeli = document.getElementById('sale-pembeli').value;
                 sales[index].hp = document.getElementById('sale-hp').value;
                 sales[index].alamat = document.getElementById('sale-alamat').value;
                 sales[index].produk = document.getElementById('sale-produk').value;
                 sales[index].kodeVoucher = document.getElementById('sale-voucher').value;
-                sales[index].harga = document.getElementById('sale-harga').value;
+                sales[index].harga = cleanedHarga;
                 saveData();
                 showToast('Laporan penjualan berhasil dimodifikasi!');
             }
@@ -485,7 +556,7 @@
             canvas.height = 400;
             const ctx = canvas.getContext('2d');
 
-            // Background Utama Gradasi Cyberpunk Premium
+            // Background Utama Gradasi Cyberpunk Premium menggunakan default system sans-serif
             const gradient = ctx.createLinearGradient(0, 0, 800, 400);
             gradient.addColorStop(0, '#0f172a'); // Slate 900
             gradient.addColorStop(0.5, '#1e1b4b'); // Indigo 950
@@ -521,10 +592,10 @@
             ctx.font = 'bold 36px sans-serif';
             ctx.fillText('TURJA COMPUTER', 50, 75);
 
-            // Sub judul toko
+            // Sub judul toko diubah slogan menjadi "Smart Choice for Smart Users"
             ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
             ctx.font = '600 14px sans-serif';
-            ctx.fillText('CYBER SECURITY & COMPUTER RETAIL', 50, 105);
+            ctx.fillText('Smart Choice for Smart Users', 50, 105);
 
             // Nilai Voucer
             ctx.font = '800 84px sans-serif';
@@ -549,23 +620,25 @@
             ctx.font = 'bold 44px monospace';
             ctx.fillText(voucher.code, 85, 258);
 
-            // Info Pelanggan
-            ctx.font = '500 16px sans-serif';
+            // Info Pelanggan (Diubah menjadi 1 Kolom Vertikal Rapi Menyesuaikan Teks sesuai permintaan)
+            ctx.font = '500 15px sans-serif';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.fillText('PENERIMA', 50, 315);
-            ctx.fillText('WHATSAPP', 230, 315);
-            ctx.fillText('ALAMAT', 50, 365);
+            ctx.fillText('Penerima :', 50, 315);
+            ctx.fillText('WhatsApp :', 50, 345);
+            ctx.fillText('Alamat   :', 50, 375);
 
-            ctx.font = 'bold 18px sans-serif';
             ctx.fillStyle = '#f8fafc';
-            let custName = voucher.customerName.toUpperCase();
-            if(custName.length > 18) custName = custName.substring(0, 18) + '...';
-            ctx.fillText(custName, 50, 340);
-            ctx.fillText(voucher.customerPhone || '-', 230, 340);
+            ctx.font = 'bold 16px sans-serif';
             
+            let custName = voucher.customerName.toUpperCase();
+            if(custName.length > 25) custName = custName.substring(0, 25) + '...';
+            ctx.fillText(custName, 150, 315);
+
+            ctx.fillText(voucher.customerPhone || '-', 150, 345);
+
             let custAddr = voucher.customerAddress || '-';
-            if(custAddr.length > 45) custAddr = custAddr.substring(0, 45) + '...';
-            ctx.fillText(custAddr, 150, 365);
+            if(custAddr.length > 32) custAddr = custAddr.substring(0, 32) + '...';
+            ctx.fillText(custAddr, 150, 375);
 
             // Info Kanan (Masa Berlaku)
             ctx.font = 'bold 16px sans-serif';
@@ -604,8 +677,20 @@
         window.shareWhatsApp = function(id) {
             const voucher = getVoucherById(id);
             if(!voucher) return;
+            
+            // Generate canvas gambar
+            const canvas = generateVoucherCanvas(voucher);
+            
+            // Simulasikan unduhan gambar otomatis agar gambar tersimpan di perangkat penerima
+            const link = document.createElement('a');
+            link.download = `Voucher-TurjaComputer-${voucher.code}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
             const expDate = new Date(voucher.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            const text = `Halo *${voucher.customerName}*! 🎉\n\nIni adalah VOUCER SPESIAL senilai *100 Rb* dari *Turja Computer* untuk Anda.\n\nKode Voucer: *${voucher.code}*\nBerlaku sampai: *${expDate}*\n\nAlamat yang tercatat: ${voucher.customerAddress || '-'}\n\nSilakan tunjukkan pesan ini atau gambar voucer kepada admin di toko kami untuk mendapatkan potongan harga.\n\nTerima kasih!`;
+            
+            // Pesan teks yang dioptimasi agar meminta user melampirkan berkas gambar yang baru terunduh otomatis
+            const text = `Halo *${voucher.customerName}*! 🎉\n\nIni adalah VOUCER SPESIAL senilai *100 Rb* dari *Turja Computer* untuk Anda.\n\nKode Voucer: *${voucher.code}*\nBerlaku sampai: *${expDate}*\n\nAlamat yang tercatat: ${voucher.customerAddress || '-'}\n\n*Catatan:* File gambar tiket voucer digital Anda telah otomatis diunduh ke perangkat Anda. Mohon lampirkan berkas gambar tersebut bersama pesan ini untuk dikirimkan kepada pelanggan.\n\nTerima kasih!`;
             
             let waUrl = `https://wa.me/`;
             if (voucher.customerPhone) {
@@ -618,6 +703,12 @@
             window.open(waUrl, '_blank');
         }
 
+        window.switchAdminTab = function(tab) {
+            activeAdminTab = tab;
+            editingSaleId = null; 
+            reRender();
+        }
+
         // ==========================================
         // FUNGSI RENDER HTML
         // ==========================================
@@ -627,11 +718,13 @@
             return `
             <div class="min-h-screen flex flex-col items-center justify-center p-4">
                 <div class="mb-6 text-center animate-fade-in">
-                    <div class="bg-gradient-to-tr from-indigo-500 to-indigo-600 inline-block p-4 rounded-3xl text-white shadow-2xl shadow-indigo-600/10 border border-indigo-400/20 mb-4">
-                        <i data-lucide="cpu" class="w-14 h-14"></i>
+                    <!-- Logo laptop berlatar belakang merah sesuai permintaan -->
+                    <div class="bg-red-600 inline-block p-4 rounded-3xl text-white shadow-2xl shadow-red-600/20 border border-red-500/20 mb-4">
+                        <i data-lucide="laptop" class="w-14 h-14"></i>
                     </div>
                     <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">TURJA COMPUTER</h1>
-                    <p class="text-indigo-600 text-sm font-semibold tracking-wider mt-1">Cyber Portal & Voucher Hub</p>
+                    <!-- Slogan diubah menjadi hijau "Smart Choice for Smart Users" -->
+                    <p class="text-emerald-600 text-sm font-semibold tracking-wider mt-1">Smart Choice for Smart Users</p>
                 </div>
 
                 <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/80 w-full max-w-md border border-slate-200/60 animate-fade-in relative overflow-hidden">
@@ -640,12 +733,13 @@
 
                     <form id="login-form" class="space-y-5 relative z-10">
                         ${loginError ? `
-                        <div class="bg-red-50 text-red-600 border border-red-200 p-3.5 rounded-xl text-sm flex items-center gap-2">
+                        <div class="bg-red-50 text-red-600 border border-red-200 p-3.5 rounded-xl text-sm flex items-center gap-2 font-mono">
                             <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i> ${loginError}
                         </div>` : ''}
                         
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Username</label>
+                            <!-- Font Label login diselaraskan dengan input: Tidak uppercase penuh, kapital awal kata saja -->
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Username</label>
                             <div class="relative">
                                 <input type="text" id="username" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" placeholder="Masukkan username" required />
                                 <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
@@ -653,24 +747,21 @@
                         </div>
                         
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Password</label>
+                            <!-- Font Label login diselaraskan dengan input: Tidak uppercase penuh, kapital awal kata saja -->
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Password</label>
                             <div class="relative">
                                 <input type="password" id="password" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" placeholder="••••••••" required />
                                 <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                             </div>
                         </div>
                         
-                        <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-xl shadow-indigo-600/10 hover:shadow-indigo-600/20 transition-all transform active:scale-[0.98]">
-                            Masuk ke Portal
-                        </button>
+                        <!-- Tombol Login Berwarna Merah (Konsep Keluar Akun: bg-red-50 text-red-600) & pendek mengikuti teksnya sesuai permintaan -->
+                        <div class="flex justify-center pt-2">
+                            <button type="submit" class="flex items-center justify-center gap-2 px-10 py-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/50 rounded-xl font-bold transition-all transform active:scale-[0.98] shadow-sm">
+                                <i data-lucide="log-in" class="w-4 h-4"></i> Login
+                            </button>
+                        </div>
                     </form>
-
-                    <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-                        <p class="text-xs text-slate-400">
-                            Demo Akses Admin Utama:<br/>
-                            <code class="text-indigo-600 bg-slate-50 px-2.5 py-1.5 rounded-lg inline-block mt-2 font-mono border border-slate-100 font-bold">user: admin | pass: password123</code>
-                        </p>
-                    </div>
                 </div>
             </div>`;
         }
@@ -680,21 +771,21 @@
             const isMarketing = currentUser.role === 'marketing';
             return `
             <!-- Navbar -->
-            <nav class="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-45 px-6 py-4 text-slate-800 shadow-sm">
+            <nav class="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-45 px-6 py-4 text-slate-800 shadow-sm font-mono">
                 <div class="max-w-7xl mx-auto flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
                             <i data-lucide="cpu" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h1 class="font-extrabold tracking-tight text-slate-950 leading-tight text-lg">TURJA COMPUTER</h1>
+                            <h1 class="font-extrabold tracking-tight text-slate-955 leading-tight text-lg">TURJA COMPUTER</h1>
                             <span class="inline-block text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 mt-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/50">${currentUser.role} Area</span>
                         </div>
                     </div>
                     
                     <div class="flex items-center gap-4">
                         <div class="hidden md:flex flex-col items-end">
-                            <span class="text-sm font-extrabold text-slate-900">${currentUser.name}</span>
+                            <span class="text-sm font-extrabold text-slate-900 font-sans">${currentUser.name}</span>
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID: 0${currentUser.id || '9'}</span>
                         </div>
                         <!-- Tombol Garis Tiga (Hamburger Menu) -->
@@ -714,8 +805,10 @@
                     <!-- Drawer Header -->
                     <div class="flex justify-between items-center pb-4 border-b border-slate-100">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="cpu" class="w-5 h-5 text-indigo-600"></i>
-                            <span class="font-bold text-slate-900">Turja Hub Menu</span>
+                            <!-- Diubah menjadi ikon laptop senada halaman login sesuai permintaan -->
+                            <i data-lucide="laptop" class="w-5 h-5 text-red-600"></i>
+                            <!-- Diubah menjadi Turja Computer sesuai permintaan -->
+                            <span class="font-bold text-slate-900">Turja Computer</span>
                         </div>
                         <button onclick="toggleDrawer(false)" class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600">
                             <i data-lucide="x" class="w-5 h-5"></i>
@@ -751,41 +844,35 @@
             </main>`;
         }
 
-        // Fungsi pembantu me-render tombol navigasi untuk Marketing
+        // Fungsi pembantu me-render tombol navigasi untuk Marketing (Tab drawer menggunakan warna HIJAU emerald sesuai permintaan)
         function renderMarketingNavButtons() {
             return `
-            <button onclick="switchMarketingTab('create_voucher')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_voucher' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
-                <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> Buat Voucer Baru
+            <button onclick="switchMarketingTab('create_voucher')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_voucher' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
+                <i data-lucide="ticket" class="w-4.5 h-4.5"></i> Buat Voucer Baru
             </button>
-            <button onclick="switchMarketingTab('vouchers')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'vouchers' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
-                <i data-lucide="ticket" class="w-4.5 h-4.5"></i> Daftar Voucer Aktif
+            <button onclick="switchMarketingTab('vouchers')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'vouchers' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
+                <i data-lucide="list-filter" class="w-4.5 h-4.5"></i> Daftar Voucer Aktif
             </button>
-            <button onclick="switchMarketingTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'create_sale' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
-                <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Catat Penjualan
-            </button>
-            <button onclick="switchMarketingTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'sales_history' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+            <button onclick="switchMarketingTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeMarketingTab === 'sales_history' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
                 <i data-lucide="database" class="w-4.5 h-4.5"></i> Data Penjualan Anda
             </button>
             `;
         }
 
-        // Fungsi pembantu me-render tombol navigasi untuk Admin
+        // Fungsi pembantu me-render tombol navigasi untuk Admin (Tab drawer menggunakan warna HIJAU emerald sesuai permintaan)
         function renderAdminNavButtons() {
             return `
-            <button onclick="switchAdminTab('verify')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+            <button onclick="switchAdminTab('verify')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'verify' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
                 <i data-lucide="shield-check" class="w-4.5 h-4.5"></i> Verifikasi Voucer
             </button>
-            <button onclick="switchAdminTab('create_user')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_user' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' : 'text-slate-600 hover:bg-slate-50'}">
-                <i data-lucide="user-plus" class="w-4.5 h-4.5"></i> Buat Akun Marketing
-            </button>
-            <button onclick="switchAdminTab('users')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-600 hover:bg-slate-50'}">
+            <button onclick="switchAdminTab('users')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'users' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
                 <i data-lucide="users" class="w-4.5 h-4.5"></i> Daftar Tim Marketing
             </button>
-            <button onclick="switchAdminTab('create_sale')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'create_sale' ? 'bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-600/25' : 'text-slate-600 hover:bg-slate-50'}">
-                <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i> Input Penjualan Pusat
-            </button>
-            <button onclick="switchAdminTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'sales_history' ? 'bg-slate-700 text-white shadow-lg shadow-slate-700/25' : 'text-slate-600 hover:bg-slate-50'}">
+            <button onclick="switchAdminTab('sales_history')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'sales_history' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
                 <i data-lucide="database" class="w-4.5 h-4.5"></i> Semua Data Penjualan
+            </button>
+            <button onclick="switchAdminTab('admin_settings')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeAdminTab === 'admin_settings' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}">
+                <i data-lucide="settings" class="w-4.5 h-4.5"></i> Pengaturan Akun
             </button>
             `;
         }
@@ -813,20 +900,21 @@
                     <!-- Ticket Design Wireframe -->
                     <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-6 rounded-2xl border border-white/5 relative mb-6">
                         <!-- Top header -->
-                        <div class="flex justify-between items-start mb-4">
+                        <div class="flex justify-between items-start mb-4 text-white">
                             <div>
-                                <h3 class="font-extrabold tracking-tight text-white text-base">TURJA COMPUTER</h3>
-                                <p class="text-[9px] font-bold text-indigo-400 tracking-wider">CYBER SECURITY & SYSTEMS</p>
+                                <h3 class="font-extrabold tracking-tight text-base">TURJA COMPUTER</h3>
+                                <!-- Slogan diubah menjadi "Smart Choice for Smart Users" -->
+                                <p class="text-[9px] font-bold text-indigo-400 tracking-wider">Smart Choice for Smart Users</p>
                             </div>
                             <div class="text-right">
-                                <span class="text-[9px] font-bold text-slate-500 block uppercase">MASA AKTIF</span>
-                                <span class="text-xs font-bold text-red-400">1 MINGGU</span>
+                                <span class="text-[9px] font-bold text-slate-505 block uppercase">Masa Aktif</span>
+                                <span class="text-xs font-bold text-red-400">1 Minggu</span>
                             </div>
                         </div>
 
                         <!-- Price Tag -->
                         <div class="my-6">
-                            <span class="text-[10px] text-indigo-300 font-bold block">VOUCHER DISKON</span>
+                            <span class="text-[10px] text-indigo-300 font-bold block">Voucher Diskon</span>
                             <span class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">Rp 100.000</span>
                         </div>
 
@@ -835,24 +923,25 @@
                             ${generatedVoucher.code}
                         </div>
 
-                        <!-- Footer Info -->
-                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 pt-2 border-t border-white/5">
+                        <!-- Footer Info (Diubah menjadi 1 kolom penuh ke bawah sesuai permintaan) -->
+                        <div class="space-y-3 text-[10px] text-slate-400 pt-3 border-t border-white/5">
                             <div>
-                                <span class="block text-[8px] text-slate-500 font-bold">CUSTOMER</span>
+                                <span class="block text-[8px] text-slate-505 font-bold">Customer</span>
                                 <span class="font-bold text-slate-200 truncate block text-xs">${generatedVoucher.customerName}</span>
                             </div>
                             <div>
-                                <span class="block text-[8px] text-slate-500 font-bold">ALAMAT</span>
+                                <span class="block text-[8px] text-slate-505 font-bold">Alamat</span>
                                 <span class="font-semibold text-slate-200 truncate block text-xs">${generatedVoucher.customerAddress}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex gap-3">
-                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-550 text-white transition-all transform active:scale-95 shadow-lg shadow-emerald-600/20">
+                        <button onclick="shareWhatsApp('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-555 text-white transition-all transform active:scale-95 shadow-lg shadow-emerald-600/20">
                             <i data-lucide="message-circle" class="w-4 h-4"></i> Bagikan WA
                         </button>
-                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-indigo-650 hover:bg-indigo-700 text-white transition-all transform active:scale-95 shadow-lg">
+                        <!-- Tombol unduh tiket diubah menjadi MERAH sesuai permintaan -->
+                        <button onclick="downloadVoucher('${generatedVoucher.id}')" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-700 text-white transition-all transform active:scale-95 shadow-lg shadow-red-600/10">
                             <i data-lucide="download" class="w-4 h-4"></i> Unduh Tiket
                         </button>
                     </div>
@@ -860,7 +949,7 @@
             } else {
                 // Ilustrasi kartu placeholder modern
                 previewHTML = `
-                <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center text-slate-400 flex flex-col items-center justify-center min-h-[350px] bg-white shadow-inner">
+                <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center text-slate-455 flex flex-col items-center justify-center min-h-[350px] bg-white shadow-inner">
                     <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
                         <i data-lucide="ticket" class="w-8 h-8 text-slate-400"></i>
                     </div>
@@ -874,26 +963,27 @@
                 <!-- Form Buat Voucher -->
                 <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-xl">
                     <div class="flex items-center gap-3 mb-6">
+                        <!-- Ikon diubah menjadi voucer/tiket sesuai permintaan -->
                         <div class="bg-indigo-50 p-2.5 rounded-xl text-indigo-600 border border-indigo-100">
-                            <i data-lucide="plus-circle" class="w-5.5 h-5.5"></i>
+                            <i data-lucide="ticket" class="w-5.5 h-5.5"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-slate-950">Buat Voucer Diskon</h2>
-                            <p class="text-xs text-slate-500">Nilai voucer otomatis diset Rp 100.000</p>
+                            <h2 class="text-lg font-bold text-slate-955">Buat Voucer Diskon</h2>
+                            <p class="text-xs text-slate-505">Nilai voucer otomatis diset Rp 100.000</p>
                         </div>
                     </div>
                     
                     <form id="create-voucher-form" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Pelanggan *</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Nama Pelanggan *</label>
                             <input type="text" id="cust-name" placeholder="Cth: Budi Santoso" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">No. WhatsApp Pelanggan *</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">No. WhatsApp Pelanggan *</label>
                             <input type="tel" id="cust-phone" placeholder="Cth: 08123456789" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Alamat Pelanggan (Desa & Kecamatan) *</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Alamat Pelanggan (Desa & Kecamatan) *</label>
                             <input type="text" id="cust-address" placeholder="Cth: Desa Sukamaju, Kec. Jati" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none rounded-xl text-slate-800 text-sm transition-all" required />
                         </div>
                         <button type="submit" class="w-full py-3.5 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/10 active:scale-[0.99] flex items-center justify-center gap-2">
@@ -904,7 +994,7 @@
 
                 <!-- Live Card Preview -->
                 <div class="flex flex-col justify-center h-full">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 px-1">Live Voucher Preview</h3>
+                    <h3 class="text-xs font-semibold text-slate-500 mb-4 px-1">Live Voucher Preview</h3>
                     ${previewHTML}
                 </div>
             </div>`;
@@ -917,17 +1007,17 @@
             let myVouchersHTML = '';
             if(myVouchers.length === 0) {
                 myVouchersHTML = `
-                <div class="p-16 text-center text-slate-400 flex flex-col items-center bg-white rounded-3xl">
+                <div class="p-16 text-center text-slate-405 flex flex-col items-center bg-white rounded-3xl">
                     <i data-lucide="ticket" class="w-14 h-14 text-slate-300 mb-4"></i>
                     <p class="font-bold text-slate-800 text-base">Belum Ada Voucer Terdaftar</p>
-                    <p class="text-xs text-slate-500 mt-1">Anda belum pernah membuat voucer apa pun menggunakan akun ini.</p>
+                    <p class="text-xs text-slate-505 mt-1">Anda belum pernah membuat voucer apa pun menggunakan akun ini.</p>
                 </div>`;
             } else {
                 const rows = myVouchers.map(v => {
                     const isExpired = new Date(v.expiresAt) < new Date() && v.status !== 'used';
                     let statusBadge = '';
                     if (v.status === 'used') {
-                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200/50"><span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse"></span>Terpakai</span>`;
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-505 border border-slate-200/50"><span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse"></span>Terpakai</span>`;
                     } else if (isExpired) {
                         statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100"><span class="w-1.5 h-1.5 bg-red-550 rounded-full animate-pulse"></span>Expired</span>`;
                     } else {
@@ -943,7 +1033,7 @@
                             <p class="font-bold text-slate-900 text-sm">${v.customerName}</p>
                             <p class="text-xs text-slate-500 mt-0.5">${v.customerPhone || '-'}</p>
                         </td>
-                        <td class="p-4 text-xs text-slate-500 max-w-[200px] truncate">${v.customerAddress || '-'}</td>
+                        <td class="p-4 text-xs text-slate-555 max-w-[200px] truncate">${v.customerAddress || '-'}</td>
                         <td class="p-4 text-xs text-slate-600 font-semibold">${new Date(v.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td class="p-4">${statusBadge}</td>
                         <td class="p-4 text-right">
@@ -962,7 +1052,7 @@
                 myVouchersHTML = `
                 <table class="w-full text-left border-collapse min-w-[700px]">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                        <tr class="bg-slate-50 text-slate-505 text-xs uppercase tracking-wider border-b border-slate-200">
                             <th class="p-4 font-bold">Kode</th>
                             <th class="p-4 font-bold">Pelanggan</th>
                             <th class="p-4 font-bold">Alamat</th>
@@ -993,13 +1083,16 @@
             </div>`;
         }
 
-        // --- SUB-VIEW: MARKETING CREATE SALE (FORM ONLY) ---
+        // --- SUB-VIEW: TIM MARKETING & ADMIN - CATAT PENJUALAN (FORM ONLY) ---
         function renderMarketingCreateSale() {
             const editSale = editingSaleId ? sales.find(s => s.id === editingSaleId) : null;
             const formId = editingSaleId ? 'edit-sale-form' : 'create-sale-form';
             const formTitle = editingSaleId ? 'Edit Data Penjualan' : 'Catat Penjualan Produk';
             const btnText = editingSaleId ? 'Simpan Perubahan' : 'Catat Transaksi';
             const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-fuchsia-600 hover:bg-fuchsia-500';
+
+            // Formating nominal awal jika dalam mode edit
+            const initialHargaValue = editSale ? Number(editSale.harga).toLocaleString('id-ID') : '';
 
             return `
             <div class="max-w-2xl mx-auto animate-fade-in">
@@ -1013,30 +1106,30 @@
                             </div>
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900">${formTitle}</h2>
-                                <p class="text-xs text-slate-500 mt-1">${editingSaleId ? 'Lakukan perubahan data pembeli atau rincian transaksi' : 'Masukkan informasi penjualan baru untuk dilaporkan ke admin'}</p>
+                                <p class="text-xs text-slate-555 mt-1">${editingSaleId ? 'Lakukan perubahan data pembeli atau rincian transaksi' : 'Masukkan informasi penjualan baru untuk dilaporkan ke admin'}</p>
                             </div>
                         </div>
-                        ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                        ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="p-2 text-slate-400 hover:text-slate-655 hover:bg-slate-100 rounded-xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
                     </div>
                     
                     <form id="${formId}" class="space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Pembeli *</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Nama Pembeli *</label>
                                 <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">No HP Pembeli</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">No. HP Pembeli</label>
                                 <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: 081234567" />
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Alamat Lengkap</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Alamat Lengkap</label>
                             <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: Jl. Pahlawan No. 12" />
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Produk yang Dijual *</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Produk yang Dijual *</label>
                                 <select id="sale-produk" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 bg-white text-slate-800 text-sm outline-none rounded-xl">
                                     <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Kategori Produk...</option>
                                     <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
@@ -1046,27 +1139,26 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Kode Voucer Diskon (Jika Ada)</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Kode Voucer Diskon (Jika Ada)</label>
                                 <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 uppercase text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: VCH-ABC123" />
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Harga Final Penjualan (Rp) *</label>
-                            <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 font-bold text-slate-800 text-base outline-none rounded-xl" placeholder="Cth: 1500000" />
+                            <label class="block text-xs font-semibold text-slate-655 mb-2">Harga Final Penjualan (Rp) *</label>
+                            <!-- Input tipe dirubah ke text dengan inputmode numeric agar pemisah ribuan otomatis bekerja -->
+                            <input type="text" id="sale-harga" value="${initialHargaValue}" oninput="formatNumberInput(event)" inputmode="numeric" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 font-bold text-slate-800 text-base outline-none rounded-xl" placeholder="Cth: 1.500.000" />
                         </div>
                         
                         <div class="flex gap-3 pt-4">
-                            ${editingSaleId ? `
-                            <button type="button" onclick="cancelEditSale()" class="w-1/2 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors">Batal</button>
-                            ` : ''}
-                            <button type="submit" class="${editingSaleId ? 'w-1/2' : 'w-full'} py-3.5 ${btnClass} text-white rounded-xl font-extrabold shadow-lg shadow-fuchsia-600/10 transition-colors">${btnText}</button>
+                            <button type="button" onclick="cancelEditSale()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors">Batal</button>
+                            <button type="submit" class="w-1/2 py-3.5 ${btnClass} text-white rounded-xl font-extrabold shadow-lg shadow-fuchsia-600/10 transition-colors">${btnText}</button>
                         </div>
                     </form>
                 </div>
             </div>`;
         }
 
-        // --- SUB-VIEW: MARKETING SALES HISTORY (TABLE ONLY) ---
+        // --- SUB-VIEW: TIM MARKETING - SALES HISTORY (TABLE WITH BTN TO INPUT ON TOP) ---
         function renderMarketingSalesHistory() {
             const mySales = sales.filter(s => s.createdBy === currentUser.name);
             let salesRows = '';
@@ -1076,10 +1168,10 @@
             } else {
                 salesRows = mySales.map((s, index) => `
                     <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
-                        <td class="p-4 text-slate-500 font-mono text-xs">${index + 1}</td>
+                        <td class="p-4 text-slate-550 font-mono text-xs">${index + 1}</td>
                         <td class="p-4 font-bold text-slate-955 text-sm">${s.pembeli}</td>
-                        <td class="p-4 text-slate-500 text-xs">${s.hp || '-'}</td>
-                        <td class="p-4 text-slate-500 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
+                        <td class="p-4 text-slate-550 text-xs">${s.hp || '-'}</td>
+                        <td class="p-4 text-slate-550 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
                         <td class="p-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-fuchsia-50 text-fuchsia-600 border border-fuchsia-100">${s.produk || '-'}</span>
                         </td>
@@ -1097,35 +1189,47 @@
             }
 
             return `
-            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden animate-fade-in shadow-xl">
-                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
-                            <i data-lucide="database" class="w-5.5 h-5.5"></i>
+            <div class="max-w-5xl mx-auto space-y-4 animate-fade-in">
+                <!-- Tombol "Catat Penjualan" dipindah ke atas tabel riwayat marketing -->
+                <div class="flex justify-end">
+                    <button onclick="switchMarketingTab('create_sale')" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/10 active:scale-95 transition-all text-sm">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Catat Penjualan Baru
+                    </button>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xl">
+                    <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
+                                <i data-lucide="database" class="w-5.5 h-5.5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900">Riwayat Penjualan Anda</h2>
+                                <p class="text-xs text-slate-500">Kumpulan berkas transaksi yang telah Anda laporkan</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">Riwayat Penjualan Anda</h2>
-                            <p class="text-xs text-slate-500">Kumpulan berkas transaksi yang telah Anda laporkan</p>
+                        <!-- Font diselaraskan ke Inter & ditambahkan ikon trending-up sesuai permintaan -->
+                        <div class="text-xs text-fuchsia-600 bg-fuchsia-50 border border-fuchsia-100 px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                            <i data-lucide="trending-up" class="w-3.5 h-3.5 shrink-0"></i> Total: ${mySales.length} Transaksi
                         </div>
                     </div>
-                    <div class="text-xs text-fuchsia-600 bg-fuchsia-50 border border-fuchsia-100 px-3.5 py-1.5 rounded-full font-bold">Total: ${mySales.length} Transaksi</div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[700px]">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                                <th class="p-4 font-bold">No</th>
-                                <th class="p-4 font-bold">Pembeli</th>
-                                <th class="p-4 font-bold">No. HP</th>
-                                <th class="p-4 font-bold">Alamat</th>
-                                <th class="p-4 font-bold">Kategori Produk</th>
-                                <th class="p-4 font-bold">Voucer Klaim</th>
-                                <th class="p-4 font-bold">Harga Final</th>
-                                <th class="p-4 font-bold">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">${salesRows}</tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-4 font-bold">No</th>
+                                    <th class="p-4 font-bold">Pembeli</th>
+                                    <th class="p-4 font-bold">No. HP</th>
+                                    <th class="p-4 font-bold">Alamat</th>
+                                    <th class="p-4 font-bold">Kategori Produk</th>
+                                    <th class="p-4 font-bold">Voucer Klaim</th>
+                                    <th class="p-4 font-bold">Harga Final</th>
+                                    <th class="p-4 font-bold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-700">${salesRows}</tbody>
+                        </table>
+                    </div>
                 </div>
             </div>`;
         }
@@ -1142,6 +1246,8 @@
                 return renderAdminCreateSale();
             } else if (activeAdminTab === 'sales_history') {
                 return renderAdminSalesHistory();
+            } else if (activeAdminTab === 'admin_settings') {
+                return renderAdminSettings();
             }
             return '';
         }
@@ -1163,53 +1269,53 @@
                                 <i data-lucide="${editingUserId ? 'edit' : 'user-plus'}" class="w-6 h-6"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-slate-950">${formTitle}</h2>
+                                <h2 class="text-lg font-bold text-slate-955">${formTitle}</h2>
                                 <p class="text-[11px] text-slate-500 mt-0.5">${editingUserId ? 'Ubah informasi hak akses login marketing' : 'Berikan hak akses login sistem untuk tim marketing baru'}</p>
                             </div>
                         </div>
-                        ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl" title="Batal"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                        ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="p-2 text-slate-400 hover:text-slate-655 hover:bg-slate-100 rounded-xl" title="Batal"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
                     </div>
                     
                     <form id="${formId}" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Lengkap Tim *</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Nama Lengkap Tim *</label>
                             <input type="text" id="new-name" value="${editUser ? editUser.name : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-slate-800 text-sm rounded-xl" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Username Login *</label>
-                            <input type="text" id="new-username" value="${editUser ? editUser.username : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-slate-800 text-sm rounded-xl" />
+                            <label class="block text-xs font-semibold text-slate-605 mb-2">Username Login *</label>
+                            <input type="text" id="new-username" value="${editUser ? editUser.username : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-slate-800 text-sm rounded-xl" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Password Login *</label>
-                            <input type="text" id="new-password" value="${editUser ? editUser.password : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-slate-800 text-sm rounded-xl" />
+                            <label class="block text-xs font-semibold text-slate-605 mb-2">Password Login *</label>
+                            <input type="text" id="new-password" value="${editUser ? editUser.password : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-slate-800 text-sm rounded-xl" />
                         </div>
                         <div class="flex gap-3 pt-3">
-                            ${editingUserId ? `<button type="button" onclick="cancelEditUser()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors">Batal</button>` : ''}
-                            <button type="submit" class="${editingUserId ? 'w-1/2' : 'w-full'} py-3 ${btnClass} text-white rounded-xl font-extrabold transition-all">${btnText}</button>
+                            <button type="button" onclick="cancelEditUser()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-655 rounded-xl font-bold transition-colors">Batal</button>
+                            <button type="submit" class="w-1/2 py-3 ${btnClass} text-white rounded-xl font-extrabold transition-all">${btnText}</button>
                         </div>
                     </form>
                 </div>
             </div>`;
         }
 
-        // --- SUB-VIEW: ADMIN - DAFTAR TIM MARKETING (TABLE ONLY) ---
+        // --- SUB-VIEW: ADMIN - DAFTAR TIM MARKETING (TABLE WITH BTN TO REGISTER ON TOP) ---
         function renderAdminUsers() {
             const marketingUsers = users.filter(u => u.role === 'marketing');
             let usersRows = '';
             
             if (marketingUsers.length === 0) {
-                usersRows = `<tr><td colspan="5" class="p-12 text-center text-slate-400 bg-white">Belum ada akun marketing terdaftar. Pilih tab "Buat Akun Marketing" untuk memulai.</td></tr>`;
+                usersRows = `<tr><td colspan="5" class="p-12 text-center text-slate-400 bg-white">Belum ada akun marketing terdaftar. Silakan buat menggunakan tombol diatas.</td></tr>`;
             } else {
                 usersRows = marketingUsers.map(u => `
                     <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
-                        <td class="p-4 font-bold text-slate-950 text-sm">${u.name}</td>
-                        <td class="p-4 font-mono text-indigo-600 text-sm">${u.username}</td>
-                        <td class="p-4 font-mono text-slate-500 text-sm">${u.password}</td>
+                        <td class="p-4 font-bold text-slate-955 text-sm">${u.name}</td>
+                        <td class="p-4 text-indigo-600 text-sm font-semibold">${u.username}</td>
+                        <td class="p-4 text-slate-500 text-sm">${u.password}</td>
                         <td class="p-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider">Marketing</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider font-mono">Marketing</span>
                         </td>
                         <td class="p-4">
-                            <button onclick="startEditUser('${u.id}')" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-amber-200">
+                            <button onclick="startEditUser('${u.id}')" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-amber-200 font-mono">
                                 <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit Akun
                             </button>
                         </td>
@@ -1218,7 +1324,14 @@
             }
 
             return `
-            <div class="max-w-4xl mx-auto animate-fade-in">
+            <div class="max-w-4xl mx-auto space-y-4 animate-fade-in">
+                <!-- Tombol "Buat Akun Marketing" dipindah ke atas tabel tim marketing sesuai permintaan -->
+                <div class="flex justify-end">
+                    <button onclick="switchAdminTab('create_user')" class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-600/10 active:scale-95 transition-all text-sm">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Buat Akun Marketing
+                    </button>
+                </div>
+
                 <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xl">
                     <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                         <div class="flex items-center gap-3">
@@ -1230,12 +1343,12 @@
                                 <p class="text-xs text-slate-500">Mencakup semua data akun dengan akses login marketing</p>
                             </div>
                         </div>
-                        <div class="text-xs text-indigo-400 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full font-bold">Total: ${marketingUsers.length} Akun</div>
+                        <div class="text-xs text-indigo-400 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full font-bold font-mono">Total: ${marketingUsers.length} Akun</div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                                <tr class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200">
                                     <th class="p-4 font-bold">Nama Lengkap</th>
                                     <th class="p-4 font-bold">Username</th>
                                     <th class="p-4 font-bold">Password</th>
@@ -1250,13 +1363,56 @@
             </div>`;
         }
 
+        // --- SUB-VIEW: ADMIN - PENGATURAN AKUN LOGIN ADMIN (FORM ONLY) ---
+        function renderAdminSettings() {
+            const adminUser = users.find(u => u.role === 'admin');
+            return `
+            <div class="max-w-md mx-auto animate-fade-in">
+                <div class="bg-white border border-slate-200 p-8 rounded-3xl shadow-xl relative">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-amber-50 text-amber-600 p-3 rounded-2xl border border-amber-100">
+                                <i data-lucide="settings" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-955">Pengaturan Akun</h2>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Ubah kredensial username & password Admin Utama</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="admin-settings-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Username Admin Baru *</label>
+                            <input type="text" id="admin-username" value="${adminUser ? adminUser.username : 'Admin'}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-slate-800 text-sm rounded-xl" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-655 mb-2">Password Admin Baru *</label>
+                            <input type="text" id="admin-password" value="${adminUser ? adminUser.password : '123'}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-slate-800 text-sm rounded-xl" />
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <!-- Tombol Batal Ditambahkan sesuai permintaan -->
+                            <button type="button" onclick="cancelAdminSettings()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-all transform active:scale-95">
+                                Batal
+                            </button>
+                            <button type="submit" class="w-1/2 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow-lg transition-all transform active:scale-95">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+        }
+
         // --- SUB-VIEW: ADMIN CREATE SALE (FORM ONLY) ---
         function renderAdminCreateSale() {
             const editSale = editingSaleId ? sales.find(s => s.id === editingSaleId) : null;
             const formId = editingSaleId ? 'edit-sale-form' : 'create-sale-form';
             const formTitle = editingSaleId ? 'Edit Data Penjualan' : 'Kasir Utama - Catat Penjualan';
             const btnText = editingSaleId ? 'Simpan Perubahan' : 'Catat Penjualan';
-            const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-fuchsia-600 hover:bg-fuchsia-500 shadow-lg shadow-fuchsia-600/10';
+            const btnClass = editingSaleId ? 'bg-amber-600 hover:bg-amber-500' : 'bg-fuchsia-600 hover:bg-fuchsia-505 shadow-lg shadow-fuchsia-600/10';
+
+            const initialHargaValue = editSale ? Number(editSale.harga).toLocaleString('id-ID') : '';
 
             return `
             <div class="max-w-2xl mx-auto animate-fade-in">
@@ -1273,27 +1429,27 @@
                                 <p class="text-xs text-slate-500 mt-1">${editingSaleId ? 'Lakukan perubahan data transaksi tim marketing' : 'Input transaksi penjualan manual langsung dari kasir Admin Pusat'}</p>
                             </div>
                         </div>
-                        ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-100 rounded-xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
+                        ${editingSaleId ? `<button type="button" onclick="cancelEditSale()" class="p-2 text-slate-400 hover:text-slate-655 hover:bg-slate-100 rounded-xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>` : ''}
                     </div>
                     
                     <form id="${formId}" class="space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama Pembeli *</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Nama Pembeli *</label>
                                 <input type="text" id="sale-pembeli" value="${editSale ? editSale.pembeli : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">No HP Pembeli</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">No. HP Pembeli</label>
                                 <input type="text" id="sale-hp" value="${editSale ? editSale.hp : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: 081234567" />
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Alamat Lengkap</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-2">Alamat Lengkap</label>
                             <input type="text" id="sale-alamat" value="${editSale ? editSale.alamat : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: Jl. Pahlawan No. 12" />
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Produk yang Dijual *</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Produk yang Dijual *</label>
                                 <select id="sale-produk" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 bg-white text-slate-800 text-sm outline-none rounded-xl">
                                     <option value="" disabled ${!editSale ? 'selected' : ''}>Pilih Kategori Produk...</option>
                                     <option value="Printer" ${editSale && editSale.produk === 'Printer' ? 'selected' : ''}>Printer</option>
@@ -1303,27 +1459,25 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Kode Voucer Diskon (Jika Ada)</label>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Kode Voucer Diskon (Jika Ada)</label>
                                 <input type="text" id="sale-voucher" value="${editSale ? editSale.kodeVoucher : ''}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 uppercase text-slate-800 text-sm outline-none rounded-xl" placeholder="Cth: VCH-ABC123" />
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Harga Final Penjualan (Rp) *</label>
-                            <input type="number" id="sale-harga" value="${editSale ? editSale.harga : ''}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 font-bold text-slate-800 text-base outline-none rounded-xl" placeholder="Cth: 1500000" />
+                            <label class="block text-xs font-semibold text-slate-655 mb-2">Harga Final Penjualan (Rp) *</label>
+                            <input type="text" id="sale-harga" value="${initialHargaValue}" oninput="formatNumberInput(event)" inputmode="numeric" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-fuchsia-500/10 focus:border-fuchsia-500 font-bold text-slate-800 text-base outline-none rounded-xl" placeholder="Cth: 1.500.000" />
                         </div>
                         
-                        <div class="flex gap-3 pt-4">
-                            ${editingSaleId ? `
+                        <div class="flex gap-3 pt-4 font-mono">
                             <button type="button" onclick="cancelEditSale()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors py-3">Batal</button>
-                            ` : ''}
-                            <button type="submit" class="${editingSaleId ? 'w-1/2' : 'w-full'} py-3.5 ${btnClass} text-white rounded-xl font-extrabold shadow-lg transition-colors">${btnText}</button>
+                            <button type="submit" class="w-1/2 py-3.5 ${btnClass} text-white rounded-xl font-extrabold shadow-lg transition-colors">${btnText}</button>
                         </div>
                     </form>
                 </div>
             </div>`;
         }
 
-        // --- SUB-VIEW: ADMIN SALES HISTORY (TABLE ONLY) ---
+        // --- SUB-VIEW: ADMIN SALES HISTORY (TABLE WITH BTN TO INPUT ON TOP) ---
         function renderAdminSalesHistory() {
             let salesRows = '';
             
@@ -1332,12 +1486,12 @@
             } else {
                 salesRows = sales.map((s, index) => `
                     <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
-                        <td class="p-4 text-slate-500 font-mono text-xs">${index + 1}</td>
+                        <td class="p-4 text-slate-555 font-mono text-xs">${index + 1}</td>
                         <td class="p-4 text-slate-400 text-xs">${new Date(s.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
                         <td class="p-4 font-bold text-indigo-600 text-sm">${s.createdBy}</td>
                         <td class="p-4 font-bold text-slate-900 text-sm">${s.pembeli}</td>
-                        <td class="p-4 text-slate-500 text-xs">${s.hp || '-'}</td>
-                        <td class="p-4 text-slate-500 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
+                        <td class="p-4 text-slate-555 text-xs">${s.hp || '-'}</td>
+                        <td class="p-4 text-slate-555 text-xs max-w-[150px] truncate">${s.alamat || '-'}</td>
                         <td class="p-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-fuchsia-50 text-fuchsia-600 border border-fuchsia-100">${s.produk || '-'}</span>
                         </td>
@@ -1355,39 +1509,51 @@
             }
 
             return `
-            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xl max-w-6xl mx-auto">
-                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
-                            <i data-lucide="database" class="w-5.5 h-5.5"></i>
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xl max-w-6xl mx-auto space-y-4 p-6">
+                <!-- Tombol "Catat Penjualan" dipindah ke atas tabel riwayat admin sesuai permintaan -->
+                <div class="flex justify-end">
+                    <button onclick="switchAdminTab('create_sale')" class="flex items-center gap-2 px-5 py-2.5 bg-fuchsia-600 hover:bg-fuchsia-750 text-white rounded-xl font-bold shadow-lg shadow-fuchsia-600/10 active:scale-95 transition-all text-sm">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Input Penjualan Kasir
+                    </button>
+                </div>
+
+                <div class="border border-slate-100 rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
+                                <i data-lucide="database" class="w-5.5 h-5.5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 font-sans">Semua Data Penjualan</h2>
+                                <p class="text-xs text-slate-500">Kumpulan laporan transaksi penjualan dari seluruh tim Turja Computer</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">Semua Data Penjualan</h2>
-                            <p class="text-xs text-slate-500">Kumpulan laporan transaksi penjualan dari seluruh tim Turja Computer</p>
+                        <!-- Font diselaraskan ke Inter & ditambahkan ikon trending-up sesuai permintaan -->
+                        <div class="text-xs text-fuchsia-600 bg-fuchsia-50 border border-fuchsia-100 px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                            <i data-lucide="trending-up" class="w-3.5 h-3.5 shrink-0"></i> Total: ${sales.length} Transaksi
                         </div>
                     </div>
-                    <div class="text-xs text-fuchsia-400 bg-fuchsia-50 border border-fuchsia-100 px-3.5 py-1.5 rounded-full font-bold">Total: ${sales.length} Transaksi</div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[1000px]">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                                <th class="p-4 font-bold">No</th>
-                                <th class="p-4 font-bold">Waktu Input</th>
-                                <th class="p-4 font-bold">Tim Marketing</th>
-                                <th class="p-4 font-bold">Pembeli</th>
-                                <th class="p-4 font-bold">No. HP</th>
-                                <th class="p-4 font-bold">Alamat</th>
-                                <th class="p-4 font-bold">Kategori Produk</th>
-                                <th class="p-4 font-bold">Voucer Klaim</th>
-                                <th class="p-4 font-bold">Harga Final</th>
-                                <th class="p-4 font-bold">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
-                            ${salesRows}
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-4 font-bold">No</th>
+                                    <th class="p-4 font-bold">Waktu Input</th>
+                                    <th class="p-4 font-bold">Tim Marketing</th>
+                                    <th class="p-4 font-bold">Pembeli</th>
+                                    <th class="p-4 font-bold">No. HP</th>
+                                    <th class="p-4 font-bold">Alamat</th>
+                                    <th class="p-4 font-bold">Kategori Produk</th>
+                                    <th class="p-4 font-bold">Voucer Klaim</th>
+                                    <th class="p-4 font-bold">Harga Final</th>
+                                    <th class="p-4 font-bold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+                                ${salesRows}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>`;
         }
@@ -1435,15 +1601,16 @@
                             <h4 class="font-bold">Voucer Terverifikasi Valid!</h4>
                         </div>
                         <div class="p-5 space-y-4 text-slate-700">
-                            <div class="grid grid-cols-2 gap-4 text-xs">
+                            <!-- Diubah menjadi 1 kolom penuh ke bawah sesuai permintaan -->
+                            <div class="space-y-3 text-xs">
                                 <div>
-                                    <p class="text-slate-400 font-bold mb-1 uppercase tracking-wider">KODE VOUCER</p>
+                                    <p class="text-slate-450 font-bold mb-1 uppercase tracking-wider font-mono">KODE VOUCER</p>
                                     <p class="font-mono font-bold text-indigo-600 bg-indigo-50 py-1.5 px-3 rounded-lg border border-indigo-100 inline-block">${searchResult.voucher.code}</p>
                                 </div>
                                 <div>
-                                    <p class="text-slate-400 font-bold mb-1 uppercase tracking-wider">PELANGGAN</p>
-                                    <p class="font-bold text-slate-800 text-base">${searchResult.voucher.customerName}</p>
-                                    <p class="text-[10px] text-slate-500 mt-1 truncate">${searchResult.voucher.customerAddress}</p>
+                                    <p class="text-slate-455 font-bold mb-1 uppercase tracking-wider font-sans">PELANGGAN</p>
+                                    <p class="font-bold text-slate-800 text-base font-sans">${searchResult.voucher.customerName}</p>
+                                    <p class="text-[10px] text-slate-550 mt-1 font-sans">${searchResult.voucher.customerAddress}</p>
                                 </div>
                             </div>
                             <button onclick="handleRedeemVoucher()" class="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-550 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/10 hover:shadow-emerald-650/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
@@ -1457,27 +1624,27 @@
             const usedVouchers = vouchers.filter(v => v.status === 'used').reverse();
             let historyHTML = '';
             if (usedVouchers.length === 0) {
-                historyHTML = `<div class="p-8 text-center text-slate-450 bg-white">Belum ada voucer yang diklaim kasir hari ini.</div>`;
+                historyHTML = `<div class="p-8 text-center text-slate-455 bg-white font-mono text-sm">Belum ada voucer yang diklaim kasir hari ini.</div>`;
             } else {
                 const rows = usedVouchers.map(v => `
-                    <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700">
-                        <td class="p-4 text-slate-500 font-semibold text-xs">
+                    <tr class="hover:bg-slate-50/80 border-b border-slate-150 transition-colors text-slate-700 font-mono text-xs">
+                        <td class="p-4 text-slate-555 font-semibold">
                             ${new Date(v.usedAt).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'})}
                         </td>
-                        <td class="p-4 font-mono font-bold text-indigo-600 text-xs">${v.code}</td>
-                        <td class="p-4 font-bold text-slate-800 text-sm">${v.customerName}</td>
+                        <td class="p-4 font-mono font-bold text-indigo-600">${v.code}</td>
+                        <td class="p-4 font-bold text-slate-800 font-sans text-sm">${v.customerName}</td>
                     </tr>
                 `).join('');
                 historyHTML = `
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                    <thead class="bg-slate-50 text-slate-555 text-xs uppercase tracking-wider border-b border-slate-200 font-mono">
                         <tr>
                             <th class="p-4 font-bold">Waktu Klaim</th>
                             <th class="p-4 font-bold">Kode</th>
                             <th class="p-4 font-bold">Pelanggan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">${rows}</tbody>
+                    <tbody class="divide-y divide-slate-800/40">${rows}</tbody>
                 </table>`;
             }
 
@@ -1546,6 +1713,10 @@
             // Form Edit Penjualan
             const editSaleForm = document.getElementById('edit-sale-form');
             if (editSaleForm) editSaleForm.addEventListener('submit', handleEditSaleSubmit);
+
+            // Form Update Admin Settings
+            const adminSettingsForm = document.getElementById('admin-settings-form');
+            if (adminSettingsForm) adminSettingsForm.addEventListener('submit', handleUpdateAdminSettings);
         }
 
         // Jalankan saat halaman pertama kali dimuat
