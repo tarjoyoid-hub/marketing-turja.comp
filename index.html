@@ -939,23 +939,36 @@ function doPost(e) {
                 pembeli, hp, alamat, kategori, produk, voucer, harga
             };
 
-
-            if(GOOGLE_MACRO_URL === 'https://script.google.com/macros/s/AKfycbyeiD9ceDHLE9Nub23_MLdNq-VTOCivkWVVu_iyon6TEh5eV7tYhaUDqzjja7ZYw0Os/exec') {
-                showToast('URL Google Apps Script belum diatur!', 'error');
+            // --- KODE AKTIF: MENGIRIM DATA KE GOOGLE SHEETS ---
+            // Kode ini sudah diaktifkan. Jika GOOGLE_MACRO_URL belum diatur dengan benar,
+            // sistem akan memberi peringatan dan menyimpan data di memori sementara.
+            
+            if (!GOOGLE_MACRO_URL || GOOGLE_MACRO_URL.includes('ISI_DENGAN_URL')) {
+                showToast('Gagal ke G-Sheets (URL belum diatur). Menyimpan lokal...', 'error');
+                
+                // Simpan lokal sebagai cadangan
+                db.sales.push(newSale);
+                closeModal('modal-penjualan');
+                e.target.reset();
+                renderSales();
+                if(currentUser.role === 'marketing') renderVouchers();
+                
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
                 return;
             }
 
+            // Mengirim data menggunakan API Fetch
             fetch(GOOGLE_MACRO_URL + '?sheetName=Sales', {
                 method: 'POST',
+                // Pastikan mengirim mode 'no-cors' DIBUANG. Apps Script butuh format JSON yang benar.
                 body: JSON.stringify(newSale)
             })
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    showToast('Data penjualan berhasil masuk ke Google Sheets', 'success');
-                    // Simpan ke memori lokal juga agar UI langsung update tanpa refresh
+                    showToast('Data berhasil masuk ke Google Sheets!', 'success');
+                    // Simpan ke memori lokal juga agar tabel di layar langsung update
                     db.sales.push(newSale); 
                     closeModal('modal-penjualan');
                     e.target.reset();
@@ -970,26 +983,10 @@ function doPost(e) {
                 console.error('Error:', error);
             })
             .finally(() => {
+                // Kembalikan tombol ke kondisi semula
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             });
-
-
-
-
-            db.sales.push(newSale);
-            showToast('Data penjualan berhasil disimpan (Lokal)', 'success');
-            
-            closeModal('modal-penjualan');
-            e.target.reset();
-            renderSales();
-            if(currentUser.role === 'marketing') renderVouchers();
-            
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-
-            
-
         }
 
     </script>
