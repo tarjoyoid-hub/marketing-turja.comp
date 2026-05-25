@@ -289,12 +289,10 @@
                         <div class="absolute top-0 right-0 -mt-8 -mr-8 w-24 h-24 border-2 border-yellow-400 opacity-20 rounded-full"></div>
                         <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 border-2 border-yellow-400 opacity-20 rounded-full"></div>
                         
-                        <!-- Header: Logo & Nama Toko -->
+                        <!-- Header: Nama Toko diperbesar -->
                         <div class="text-center pb-3 mb-4 border-b border-yellow-500 border-opacity-30 flex flex-col items-center">
-                            <!-- Logo Bintang Emas -->
-                            <div class="bg-yellow-400 text-red-950 rounded-full w-8 h-8 flex items-center justify-center font-black mb-2 shadow-lg text-lg">★</div>
-                            <h5 class="text-xl font-black text-yellow-400 uppercase tracking-widest drop-shadow-md">TURJA COMPUTER</h5>
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-white opacity-90 mt-1">Voucher Diskon Eksklusif</h4>
+                            <h5 class="text-3xl font-black text-yellow-400 uppercase tracking-widest drop-shadow-md">TURJA COMPUTER</h5>
+                            <h4 class="text-sm font-bold uppercase tracking-wider text-white opacity-90 mt-1">Voucher Diskon Eksklusif</h4>
                         </div>
 
                         <!-- Data Penerima (RATA TENGAH / CENTER ALIGNED) -->
@@ -461,6 +459,17 @@
                 }
             }
             return dateStr; // fallback jika format tidak sesuai
+        }
+
+        // Helper memformat nomor WA (Contoh: 085642600600 -> 0856-4260-0600)
+        function formatWAForDisplay(wa) {
+            if (!wa) return "-";
+            let clean = wa.replace(/[^0-9]/g, '');
+            let res = [];
+            for (let i = 0; i < clean.length; i += 4) {
+                res.push(clean.substring(i, i + 4));
+            }
+            return res.join('-');
         }
 
         // Fungsi pembentuk kode voucer acak
@@ -842,7 +851,7 @@
                     
                     // Show display 
                     document.getElementById('disp-v-pelanggan').textContent = pel;
-                    document.getElementById('disp-v-nowa').textContent = nowa;
+                    document.getElementById('disp-v-nowa').textContent = formatWAForDisplay(nowa);
                     document.getElementById('disp-v-alamat').textContent = `${desa}, Kec. ${kecamatan}`;
                     document.getElementById('disp-v-kode').textContent = kode;
                     document.getElementById('disp-v-tanggal').textContent = formattedDate;
@@ -982,60 +991,48 @@
             canvas.height = 420;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // 1. Diagonal Gradient Background
-            const grad = ctx.createRadialGradient(300, 210, 50, 300, 210, 400);
-            grad.addColorStop(0, '#be123c');    // rose-700
-            grad.addColorStop(0.5, '#881337');  // rose-900
-            grad.addColorStop(1, '#4c0519');    // rose-950
+            // 1. Diagonal Gradient Background (Sama dengan preview visual)
+            const grad = ctx.createLinearGradient(0, 0, 600, 420);
+            grad.addColorStop(0, '#991b1b');    // red-800
+            grad.addColorStop(0.5, '#7f1d1d');  // red-900
+            grad.addColorStop(1, '#450a0a');    // red-950
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 600, 420);
 
             // 2. Ornamen Lingkaran Emas
             ctx.strokeStyle = 'rgba(234, 179, 8, 0.2)'; 
             ctx.lineWidth = 2;
-            
             ctx.beginPath(); ctx.arc(600, 0, 100, 0, 2 * Math.PI); ctx.stroke();
             ctx.beginPath(); ctx.arc(0, 420, 100, 0, 2 * Math.PI); ctx.stroke();
 
-            // 3. Bingkai Utama Emas Tipis
-            ctx.strokeStyle = '#facc15'; // Yellow-400 / Gold
-            ctx.lineWidth = 2;
-            ctx.strokeRect(12, 12, 576, 396);
-            ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)'; // Bingkai Dalam
-            ctx.lineWidth = 1;
-            ctx.strokeRect(18, 18, 564, 384);
+            // 3. Bingkai Putih Putus-Putus Tebal
+            ctx.strokeStyle = '#ffffff'; 
+            ctx.lineWidth = 4;
+            ctx.setLineDash([12, 8]); // Pola garis putus-putus
+            ctx.strokeRect(15, 15, 570, 390);
+            ctx.setLineDash([]); // Reset agar garis elemen lain tidak putus-putus
 
-            // 4. Logo Voucer (Bintang Emas di dalam Lingkaran)
-            ctx.fillStyle = '#facc15';
-            ctx.beginPath();
-            ctx.arc(300, 55, 18, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#4c0519'; // dark red inner
-            ctx.font = '24px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('★', 300, 64);
-
-            // Header: Nama Toko diperbesar
+            // 4. Header: Nama Toko diperbesar rata tengah (TANPA LOGO)
             ctx.textAlign = 'center';
             ctx.fillStyle = '#facc15'; 
-            ctx.font = '900 32px "Arial Black", sans-serif'; 
-            ctx.fillText('TURJA COMPUTER', 300, 102);
+            ctx.font = '900 36px "Arial Black", sans-serif'; 
+            ctx.fillText('TURJA COMPUTER', 300, 75);
 
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('VOUCHER DISKON EKSKLUSIF', 300, 124);
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText('VOUCHER DISKON EKSKLUSIF', 300, 100);
 
             // Garis pembatas header
             ctx.strokeStyle = 'rgba(234, 179, 8, 0.4)';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(150, 136); ctx.lineTo(450, 136); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(100, 115); ctx.lineTo(500, 115); ctx.stroke();
 
             // 5. Data Penerima (RATA TENGAH) Box Diperbesar
             ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-            const boxX = 100;
-            const boxY = 150;
-            const boxW = 400;
-            const boxH = 105;
+            const boxX = 80;
+            const boxY = 135;
+            const boxW = 440;
+            const boxH = 110;
             
             ctx.beginPath();
             if (ctx.roundRect) {
@@ -1048,18 +1045,21 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
+            // Format Nomor WA Terpisah
+            const formattedWA = formatWAForDisplay(nowa);
+
             // Teks Informasi Penerima Diperbesar
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 26px sans-serif';
-            ctx.fillText(pelanggan, 300, 185); // Nama
+            ctx.font = 'bold 28px sans-serif';
+            ctx.fillText(pelanggan, 300, 172); // Nama
 
             ctx.fillStyle = '#fde047'; // text-yellow-300
-            ctx.font = 'bold 18px monospace';
-            ctx.fillText(nowa, 300, 215); // No WA
+            ctx.font = 'bold 20px monospace';
+            ctx.fillText(formattedWA, 300, 202); // No WA (Telah di-format)
 
             ctx.fillStyle = '#e2e8f0'; // text-gray-200
-            ctx.font = '15px sans-serif';
-            ctx.fillText(`${desa}, Kec. ${kecamatan}`, 300, 240); // Alamat
+            ctx.font = '16px sans-serif';
+            ctx.fillText(`${desa}, Kec. ${kecamatan}`, 300, 228); // Alamat
 
             // 6. Bagian Bawah: Kode Voucer & Nilai Diskon Besar
             // Kode Voucer (Kiri)
@@ -1094,10 +1094,10 @@
             ctx.font = '900 46px "Arial Black", sans-serif';
             ctx.fillText('100 Rb', 550, 338);
 
-            // 7. Teks Instruksi Baru (Bawah)
+            // 7. Teks Instruksi (Bawah)
             ctx.textAlign = 'center';
             ctx.fillStyle = '#fecaca'; // text-red-200
-            ctx.font = 'italic 13px sans-serif';
+            ctx.font = 'italic 14px sans-serif';
             ctx.fillText('Tunjukan Kode Voucer ini Saat Belanja Laptop atau Komputer', 300, 375);
 
             // 8. Tanggal Kedaluwarsa
