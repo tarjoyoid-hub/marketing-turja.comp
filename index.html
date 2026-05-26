@@ -127,12 +127,10 @@
 
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <h2 class="text-xl font-bold mb-4 text-gray-800">Daftar Akun Marketing</h2>
-                    <table class="w-full text-left border-collapse min-w-[600px]">
+                    <table class="w-full text-left border-collapse min-w-[300px]">
                         <thead>
                             <tr class="bg-green-50 border-b border-green-200">
                                 <th class="p-3 text-green-900 font-semibold">Nama Lengkap</th>
-                                <th class="p-3 text-green-900 font-semibold">Username</th>
-                                <th class="p-3 text-green-900 font-semibold">Password</th>
                                 <th class="p-3 text-center text-green-900 font-semibold">Aksi</th>
                             </tr>
                         </thead>
@@ -736,7 +734,7 @@
                 menus.push({ id: 'admin-verifikasi', label: 'Verifikasi Voucer', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' });
                 // Ikon SVG modern untuk Marketing (Manusia ganda)
                 menus.push({ id: 'admin-marketing', label: 'Marketing', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' });
-                // Ikon SVG modern untuk Daftar Voucer Global Admin (Tiket) - SEKARANG MUNCUL JUGA DI HALAMAN ADMIN
+                // Ikon SVG modern untuk Daftar Voucer (Tiket/Kupon horizontal)
                 menus.push({ id: 'user-daftarvoucer', label: 'Daftar Voucer', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' });
                 // Ikon SVG modern untuk Data Penjualan (Kantung koin)
                 menus.push({ id: 'data-penjualan', label: 'Data Penjualan', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' });
@@ -915,10 +913,9 @@
                 res.data.forEach(user => {
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition";
+                    // Tampilan disesuaikan: Hanya menampilkan Nama Lengkap dan Aksi saja
                     tr.innerHTML = `
-                        <td class="p-3">${user.Nama}</td>
-                        <td class="p-3">${user.Username}</td>
-                        <td class="p-3 text-gray-500">${user.Password}</td>
+                        <td class="p-3 font-semibold text-gray-800">${user.Nama}</td>
                         <td class="p-3 text-center">
                             <button onclick="openEditMarketing('${user.ID}', '${user.Nama}', '${user.Username}', '${user.Password}')" class="bg-yellow-500 text-white px-3 py-1.5 rounded hover:bg-yellow-600 text-sm font-semibold transition shadow-sm">Edit</button>
                         </td>
@@ -1134,7 +1131,7 @@
             hideLoading();
 
             if (res.status === 'success') {
-                showToast("Data Penjualan Berhasil Disimpan");
+                showToast("Data Penjualan Berhasil Simpan");
                 e.target.reset();
                 closeModalPenjualan(); 
                 loadPenjualan(); 
