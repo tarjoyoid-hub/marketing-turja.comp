@@ -74,7 +74,7 @@
     <!-- MAIN APP LAYOUT (DASHBOARD) -->
     <div id="app-layout" class="hidden min-h-screen flex flex-col md:flex-row relative">
         
-        <!-- Navbar Mobile (Hamburger Menu Posisi Atas - Diubah Menampilkan Nama Pengguna Dinamis dan Ikon Power Baru) -->
+        <!-- Navbar Mobile -->
         <div id="mobile-navbar" class="md:hidden bg-green-800 text-white p-4 flex justify-between items-center z-30 sticky top-0 w-full shadow-md">
             <h1 class="font-bold text-lg" id="mobile-nav-title">Dashboard</h1>
             <button onclick="logout()" class="focus:outline-none p-2 bg-green-900 hover:bg-green-950 rounded transition text-white" title="Logout">
@@ -105,15 +105,15 @@
         <!-- Main Content -->
         <div class="flex-1 bg-gray-100 p-4 md:p-8 w-full max-w-full overflow-x-hidden md:min-h-screen pb-24 md:pb-8">
             
-            <!-- ADMIN: VERIFIKASI VOUCER (Rata Tengah) -->
-            <div id="tab-admin-verifikasi" class="hidden-tab bg-white p-6 rounded-lg shadow border-t-4 border-green-700 flex flex-col items-center text-center">
+            <!-- ADMIN: VERIFIKASI VOUCER (Diperbaiki agar Rata Tengah Sempurna di Laptop & HP) -->
+            <div id="tab-admin-verifikasi" class="hidden-tab bg-white p-6 rounded-lg shadow border-t-4 border-green-700 text-center">
                 <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
                 <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer</p>
-                <div class="flex flex-col md:flex-row gap-4 mb-6 w-full max-w-xl">
-                    <input type="text" id="verify-code" placeholder="Masukkan Kode Voucer" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600">
-                    <button onclick="verifyVoucher()" class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 font-medium shadow-sm transition">Verifikasi</button>
+                <div class="flex flex-col md:flex-row gap-4 mb-6 w-full max-w-xl mx-auto justify-center items-center">
+                    <input type="text" id="verify-code" placeholder="Masukkan Kode Voucer" class="flex-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600">
+                    <button onclick="verifyVoucher()" class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 font-medium shadow-sm transition w-full md:w-auto">Verifikasi</button>
                 </div>
-                <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full max-w-xl text-left"></div>
+                <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full max-w-xl text-left mx-auto"></div>
             </div>
 
             <!-- ADMIN: MARKETING -->
@@ -286,15 +286,15 @@
                 </div>
             </div>
 
-            <!-- USER: DAFTAR VOUCER -->
+            <!-- USER / ADMIN: DAFTAR VOUCER (Mendukung peran ganda Admin & User secara dinamis) -->
             <div id="tab-user-daftarvoucer" class="hidden-tab bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Daftar Voucer Anda</h2>
-                    <button onclick="loadVouchers()" class="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-gray-800 font-medium transition">Refresh</button>
+                    <h2 class="text-xl font-bold text-gray-800" id="voucher-list-title">Daftar Voucer Anda</h2>
+                    <button onclick="loadVouchers()" class="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">Refresh</button>
                 </div>
                 <table class="w-full text-left border-collapse text-sm min-w-[900px]">
                     <thead>
-                        <tr class="bg-green-50 border-b border-green-200">
+                        <tr class="bg-green-50 border-b border-green-200" id="voucher-list-header-row">
                             <th class="p-2 text-green-900 font-semibold">Kode</th>
                             <th class="p-2 text-green-900 font-semibold">Pelanggan</th>
                             <th class="p-2 text-green-900 font-semibold">No WA</th>
@@ -552,7 +552,6 @@
             document.getElementById('form-tambah-marketing').reset();
         }
 
-        // Trigger buka & tutup modal penjualan
         function openModalPenjualan() {
             document.getElementById('modal-tambah-penjualan').classList.remove('hidden');
         }
@@ -561,7 +560,6 @@
             document.getElementById('form-tambah-penjualan-form').reset();
         }
 
-        // Trigger buka & tutup modal generator voucer
         function openModalVoucer() {
             document.getElementById('modal-buat-voucer').classList.remove('hidden');
         }
@@ -707,7 +705,6 @@
             restoreVoucherPreview();
             
             // Set initial settings state in Admin Panel
-            // String() ditambahkan di sini agar deteksi Boolean di Google Sheets tetap konsisten
             if (currentUser.role === 'Admin') {
                 document.getElementById('setting-akses-penjualan').checked = String(appSettings.aksesPenjualanUser) === 'true';
                 document.getElementById('setting-masa-berlaku').value = appSettings.masaAktifVoucer || 30;
@@ -739,6 +736,8 @@
                 menus.push({ id: 'admin-verifikasi', label: 'Verifikasi Voucer', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' });
                 // Ikon SVG modern untuk Marketing (Manusia ganda)
                 menus.push({ id: 'admin-marketing', label: 'Marketing', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' });
+                // Ikon SVG modern untuk Daftar Voucer Global Admin (Tiket) - SEKARANG MUNCUL JUGA DI HALAMAN ADMIN
+                menus.push({ id: 'user-daftarvoucer', label: 'Daftar Voucer', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' });
                 // Ikon SVG modern untuk Data Penjualan (Kantung koin)
                 menus.push({ id: 'data-penjualan', label: 'Data Penjualan', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' });
                 // Ikon SVG modern untuk Pengaturan Akun (Gir mekanis)
@@ -751,7 +750,6 @@
                 // Ikon SVG modern untuk Daftar Voucer (Tiket/Kupon horizontal)
                 menus.push({ id: 'user-daftarvoucer', label: 'Daftar Voucer', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' });
                 
-                // String() ditambahkan di sini agar deteksi Boolean di Google Sheets tetap konsisten
                 if (String(appSettings.aksesPenjualanUser) === 'true') {
                     menus.push({ id: 'data-penjualan', label: 'Data Penjualan', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' });
                     document.getElementById('btn-toggle-penjualan-container').classList.remove('hidden');
@@ -1052,7 +1050,36 @@
 
         async function loadVouchers() {
             showLoading();
-            const res = await callGAS('getVouchers', { filterUser: currentUser.name });
+            const payload = {};
+            // Jika masuk sebagai Admin, sistem tidak memfilter berdasarkan nama pembuat
+            if (currentUser.role !== 'Admin') {
+                payload.filterUser = currentUser.name;
+                document.getElementById('voucher-list-title').textContent = "Daftar Voucer Anda";
+                document.getElementById('voucher-list-header-row').innerHTML = `
+                    <th class="p-2 text-green-900 font-semibold">Kode</th>
+                    <th class="p-2 text-green-900 font-semibold">Pelanggan</th>
+                    <th class="p-2 text-green-900 font-semibold">No WA</th>
+                    <th class="p-2 text-green-900 font-semibold">Desa/Kel</th>
+                    <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
+                    <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
+                    <th class="p-2 text-green-900 font-semibold">Status</th>
+                    <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
+                `;
+            } else {
+                document.getElementById('voucher-list-title').textContent = "Daftar Seluruh Voucer";
+                document.getElementById('voucher-list-header-row').innerHTML = `
+                    <th class="p-2 text-green-900 font-semibold">Kode</th>
+                    <th class="p-2 text-green-900 font-semibold">Pelanggan</th>
+                    <th class="p-2 text-green-900 font-semibold">No WA</th>
+                    <th class="p-2 text-green-900 font-semibold">Desa/Kel</th>
+                    <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
+                    <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
+                    <th class="p-2 text-green-900 font-semibold">Status</th>
+                    <th class="p-2 text-green-900 font-semibold">Pembuat (Marketing)</th>
+                    <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
+                `;
+            }
+            const res = await callGAS('getVouchers', payload);
             hideLoading();
             
             const tbody = document.getElementById('voucher-list-body');
@@ -1061,6 +1088,7 @@
                 res.data.forEach(v => {
                     const statusClass = v.Status === 'Aktif' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200';
                     const indonesianDate = formatDateToIndonesian(v['Berlaku Sampai']);
+                    const marketingCell = currentUser.role === 'Admin' ? `<td class="p-2 font-medium">${v.Pembuat || '-'}</td>` : '';
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition whitespace-nowrap";
                     tr.innerHTML = `
@@ -1071,6 +1099,7 @@
                         <td class="p-2">${v.Kecamatan}</td>
                         <td class="p-2">${indonesianDate}</td>
                         <td class="p-2"><span class="px-2 py-1 rounded text-xs font-bold shadow-sm ${statusClass}">${v.Status}</span></td>
+                        ${marketingCell}
                         <td class="p-2 text-center flex gap-1 justify-center items-center">
                             <button onclick="shareSingleWA('${v.Kode}', '${indonesianDate}', '${v['No WA']}')" class="bg-green-600 text-white px-2.5 py-1.5 rounded hover:bg-green-700 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Share WA">
                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
