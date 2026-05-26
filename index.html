@@ -701,8 +701,9 @@
             restoreVoucherPreview();
             
             // Set initial settings state in Admin Panel
+            // String() ditambahkan di sini agar deteksi Boolean di Google Sheets tetap konsisten
             if (currentUser.role === 'Admin') {
-                document.getElementById('setting-akses-penjualan').checked = appSettings.aksesPenjualanUser === 'true';
+                document.getElementById('setting-akses-penjualan').checked = String(appSettings.aksesPenjualanUser) === 'true';
                 document.getElementById('setting-masa-berlaku').value = appSettings.masaAktifVoucer || 30;
             }
         }
@@ -738,7 +739,8 @@
                 menus.push({ id: 'user-daftarvoucer', label: 'Daftar Voucer', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16' });
                 menus.push({ id: 'user-buatvoucer', label: 'Buat Voucer', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' });
                 
-                if (appSettings.aksesPenjualanUser === 'true') {
+                // String() ditambahkan di sini agar deteksi Boolean di Google Sheets tetap konsisten
+                if (String(appSettings.aksesPenjualanUser) === 'true') {
                     menus.push({ id: 'data-penjualan', label: 'Data Penjualan', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z' });
                     document.getElementById('btn-toggle-penjualan-container').classList.remove('hidden');
                 } else {
@@ -1180,7 +1182,7 @@
             
             // Pojok Kanan Atas
             ctx.beginPath();
-            ctx.arc(600, 0, 96, 0, 2 * Math.PI);
+            ctx.arc(680, 0, 96, 0, 2 * Math.PI);
             ctx.stroke();
 
             // Pojok Kiri Bawah
