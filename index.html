@@ -674,12 +674,10 @@
             document.getElementById('modal-logout-confirm').classList.remove('hidden');
         }
 
-        // Menutup dialog konfirmasi kustom
         function closeLogoutConfirm() {
             document.getElementById('modal-logout-confirm').classList.add('hidden');
         }
 
-        // Eksekusi logout jika dikonfirmasi Ya
         function executeLogout() {
             sessionStorage.removeItem('authUser');
             sessionStorage.removeItem('currentTab');
@@ -733,7 +731,7 @@
                 menus.push({ id: 'admin-marketing', label: 'Marketing', icon: 'M12 4v16m8-8H4' });
                 menus.push({ id: 'admin-verifikasi', label: 'Verifikasi Voucer', icon: 'M5 13l4 4L19 7' });
                 menus.push({ id: 'data-penjualan', label: 'Data Penjualan', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' });
-                menus.push({ id: 'admin-pengaturan', label: 'Pengaturan Akun', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(0 0) 2.37-2.37.996.608 2.296.07 2.572-1.065z' });
+                menus.push({ id: 'admin-pengaturan', label: 'Pengaturan Akun', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' });
                 
                 document.getElementById('btn-toggle-penjualan-container').classList.remove('hidden');
             } else {
@@ -1006,6 +1004,7 @@
             const kecamatan = document.getElementById('v-kecamatan').value;
             const kode = generateRandomCode();
 
+            // Tampilkan loading overlay persis saat memuat daftar voucer
             showLoading();
             callGAS('createVoucher', {
                 kode, pelanggan: pel, nowa: nowa, desa: desa, kecamatan: kecamatan, pembuat: currentUser.name
@@ -1175,8 +1174,8 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 600, 420);
 
-            // 2. Ornamen Lingkaran Emas Aesthetic (Border-2 Yellow-400 Opacity-20)
-            ctx.strokeStyle = 'rgba(234, 179, 8, 0.2)'; 
+            // 2. Ornamen Lingkaran Emas Transparan di Pojok (Sama persis dengan border-2 border-yellow-400 opacity-20)
+            ctx.strokeStyle = 'rgba(250, 204, 21, 0.2)'; 
             ctx.lineWidth = 2;
             
             // Pojok Kanan Atas
@@ -1189,11 +1188,11 @@
             ctx.arc(0, 420, 96, 0, 2 * Math.PI);
             ctx.stroke();
 
-            // 3. Bingkai Putih Putus-Putus Ganda Tebal (Sesuai spesifikasi gambar)
+            // 3. Bingkai Putih Putus-Putus Ganda Tebal (Sesuai spesifikasi gambar) - Agak ke tepi lagi (jarak 8px dari tepi)
             ctx.strokeStyle = '#ffffff'; 
             ctx.lineWidth = 4;
             ctx.setLineDash([12, 8]); // Pola putus-putus
-            ctx.strokeRect(15, 15, 570, 390);
+            ctx.strokeRect(8, 8, 584, 404); // x: 8, y: 8, width: 600-16 = 584, height: 420-16 = 404
             ctx.setLineDash([]); // Reset agar garis lain tidak putus-putus
 
             // 4. Header Tengah: TURJA COMPUTER (Tanpa Logo)
@@ -1294,24 +1293,24 @@
             ctx.lineTo(450, 385);
             ctx.stroke();
 
-            // Teks Expiry
+            // Teks Expiry (Diperbesar ukuran font menjadi 15px)
             const text1 = "Berlaku s/d: ";
             const text2 = tanggal;
             
-            ctx.font = '12px sans-serif';
+            ctx.font = '15px sans-serif';
             const w1 = ctx.measureText(text1).width;
-            ctx.font = 'bold 12px sans-serif';
+            ctx.font = 'bold 15px sans-serif';
             const w2 = ctx.measureText(text2).width;
             
             const startX = 300 - (w1 + w2) / 2;
             ctx.textAlign = 'left';
             
             ctx.fillStyle = '#d1d5db'; // text-gray-300
-            ctx.font = '12px sans-serif';
+            ctx.font = '15px sans-serif';
             ctx.fillText(text1, startX, 402);
             
             ctx.fillStyle = '#facc15'; // text-yellow-400
-            ctx.font = 'bold 12px sans-serif';
+            ctx.font = 'bold 15px sans-serif';
             ctx.fillText(text2, startX + w1, 402);
 
             // Reset alignment ke default
