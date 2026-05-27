@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Voucer & Penjualan V.5</title>
+    <title>Turja Computer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden-tab { display: none; }
@@ -131,8 +131,6 @@
                         <thead>
                             <tr class="bg-green-50 border-b border-green-200">
                                 <th class="p-3 text-green-900 font-semibold">Nama Lengkap</th>
-                                <th class="p-3 text-green-900 font-semibold">Username</th>
-                                <th class="p-3 text-green-900 font-semibold">Password</th>
                                 <th class="p-3 text-center text-green-900 font-semibold">Aksi</th>
                             </tr>
                         </thead>
@@ -289,12 +287,12 @@
             <!-- USER: DAFTAR VOUCER -->
             <div id="tab-user-daftarvoucer" class="hidden-tab bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Daftar Voucer Anda</h2>
+                    <h2 class="text-xl font-bold text-gray-800" id="voucher-list-title">Daftar Voucer Anda</h2>
                     <button onclick="loadVouchers()" class="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-gray-800 font-medium transition">Refresh</button>
                 </div>
                 <table class="w-full text-left border-collapse text-sm min-w-[900px]">
                     <thead>
-                        <tr class="bg-green-50 border-b border-green-200">
+                        <tr class="bg-green-50 border-b border-green-200" id="voucher-list-header-row">
                             <th class="p-2 text-green-900 font-semibold">Kode</th>
                             <th class="p-2 text-green-900 font-semibold">Pelanggan</th>
                             <th class="p-2 text-green-900 font-semibold">No WA</th>
@@ -1248,8 +1246,9 @@
             shareSingleWA(activeVoucherData.kode, activeVoucherData.tanggal, activeVoucherData.nowa);
         }
 
+        // Diubah: Memperbarui isi pesan teks otomatis WhatsApp agar memuat kalimat sapaan kustom sesuai permintaan Anda
         function shareSingleWA(kode, tanggal, nowa) {
-            const text = `Halo! Ini kode voucer spesial Anda dari *Turja Computer*: *${kode}*.\nVoucer senilai *100 Rb* ini berlaku sampai tanggal *${tanggal}*.\nTerima kasih!`;
+            const text = `Assalamualaikum...\nSelamat, *Turja Computer* memberikan Kode Voucer Spesial *Senilai 100 Rb* untuk anda. \n\nKode Voucer: *${kode}*\n\nTunjukan voucer atau chat ini saat belanja pada kasir untuk mendapatkan potongan harga.\nBerlaku sampai tanggal *${tanggal}*.`;
             const formattedNum = formatWA(nowa);
             window.open(`https://wa.me/${formattedNum}?text=${encodeURIComponent(text)}`);
         }
@@ -1301,11 +1300,11 @@
             // 4. Header Tengah: TURJA COMPUTER (Tanpa Logo)
             ctx.textAlign = 'center';
             ctx.fillStyle = '#facc15'; // Gold/Yellow-400
-            ctx.font = '900 46px sans-serif'; 
+            ctx.font = '900 36px sans-serif'; 
             ctx.fillText('TURJA COMPUTER', 300, 75);
 
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.font = 'bold 20px sans-serif';
+            ctx.font = 'bold 16px sans-serif';
             ctx.fillText('Voucher Diskon Eksklusif', 300, 100);
 
             // Garis pembatas header
