@@ -220,10 +220,12 @@
                     <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
                     <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer</p>
                     <div class="flex flex-col gap-4 mb-6 justify-center items-center">
-                        <input type="text" id="verify-code" placeholder="Masukkan Kode Voucer" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-wide">
+                        <!-- Teks placeholder dihapus dan ditambahkan format uppercase untuk kode -->
+                        <input type="text" id="verify-code" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-widest uppercase">
                         <button onclick="verifyVoucher()" class="w-56 bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 font-medium shadow-sm transition">Verifikasi</button>
                     </div>
-                    <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full text-left mx-auto text-sm"></div>
+                    <!-- text-left diubah menjadi text-center agar selaras -->
+                    <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full text-center mx-auto text-sm"></div>
                 </div>
             </div>
 
@@ -1182,23 +1184,27 @@
             if (res.status === 'success') {
                 const v = res.data;
                 const statusColor = v.Status === 'Aktif' ? 'text-green-700 font-bold' : 'text-red-600 font-bold';
+                
+                // Tampilan hasil verifikasi diubah menjadi 1 kolom (flex-col) rata tengah tanpa label panjang
                 resDiv.innerHTML = `
-                    <h3 class="font-bold text-lg mb-2 text-gray-800 text-center">Hasil Verifikasi: <span class="${statusColor}">${v.Status}</span></h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm bg-white p-3 border rounded shadow-sm">
-                        <p><strong>Kode:</strong> <span class="font-mono text-green-700">${v.Kode}</span></p>
-                        <p><strong>Pelanggan:</strong> ${v.Pelanggan}</p>
-                        <p><strong>No WA:</strong> ${v['No WA']}</p>
-                        <p><strong>Desa/Kel:</strong> ${v['Desa/Kelurahan']}</p>
-                        <p><strong>Kecamatan:</strong> ${v.Kecamatan}</p>
-                        <p><strong>Berlaku Sampai:</strong> ${formatDateToIndonesian(v['Berlaku Sampai'])}</p>
-                        <p><strong>Pembuat (Marketing):</strong> ${v.Pembuat}</p>
+                    <h3 class="font-bold text-lg mb-4 text-gray-800 text-center">Status Voucer: <span class="${statusColor}">${v.Status}</span></h3>
+                    <div class="flex flex-col gap-1.5 text-sm bg-white p-4 border rounded-lg shadow-sm items-center text-center">
+                        <p class="font-mono text-xl text-green-700 font-black mb-1 tracking-widest">${v.Kode}</p>
+                        <p class="font-bold text-lg text-gray-800">${v.Pelanggan}</p>
+                        <p class="text-gray-600 font-semibold">${v['No WA']}</p>
+                        <p class="text-gray-500">${v['Desa/Kelurahan']}, Kec. ${v.Kecamatan}</p>
+                        
+                        <div class="w-full border-t border-gray-200 my-2"></div>
+                        
+                        <p class="text-gray-500 text-xs">Berlaku s/d: <span class="font-bold text-gray-700">${formatDateToIndonesian(v['Berlaku Sampai'])}</span></p>
+                        <p class="text-gray-400 text-xs mt-0.5">Pembuat: ${v.Pembuat}</p>
                     </div>
                     ${v.Status === 'Aktif' ? 
-                    `<button onclick="claimVoucher('${v.Kode}')" class="mt-4 w-full bg-yellow-600 text-white px-5 py-2 rounded hover:bg-yellow-700 font-medium shadow-sm">Gunakan/Klaim Voucer Ini</button>` 
+                    `<button onclick="claimVoucher('${v.Kode}')" class="mt-4 w-full bg-yellow-600 text-white px-5 py-2.5 rounded-lg hover:bg-yellow-700 font-bold shadow-md transition tracking-wide">Gunakan / Klaim Voucer Ini</button>` 
                     : ''}
                 `;
             } else {
-                resDiv.innerHTML = `<p class="text-red-600 font-bold text-center">${res.message}</p>`;
+                resDiv.innerHTML = `<p class="text-red-600 font-bold text-center py-2">${res.message}</p>`;
             }
         }
 
