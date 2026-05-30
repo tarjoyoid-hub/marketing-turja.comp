@@ -17,9 +17,13 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Smooth height transition for dropdown mobile */
-        #sidebar {
-            transition: all 0.3s ease-in-out;
+        /* Hide scrollbar for top menu */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
 </head>
@@ -83,7 +87,7 @@
     </div>
 
     <!-- MAIN APP LAYOUT (DASHBOARD) -->
-    <div id="app-layout" class="hidden min-h-screen flex flex-col md:flex-row relative">
+    <div id="app-layout" class="hidden min-h-screen flex flex-col relative">
         
         <!-- Navbar Mobile -->
         <div id="mobile-navbar" class="md:hidden bg-green-800 text-white p-4 flex justify-between items-center z-30 sticky top-0 w-full shadow-md">
@@ -93,19 +97,28 @@
             </button>
         </div>
 
-        <!-- Sidebar / Top Dropdown Menu -->
-        <div id="sidebar" class="bg-green-900 text-white w-full md:w-64 absolute md:relative left-0 top-[56px] md:top-0 z-20 hidden md:flex flex-col shadow-lg md:shadow-none md:min-h-screen border-b border-green-800 md:border-b-0">
-            <div class="p-5 hidden md:block border-b border-green-800">
-                <h2 class="text-2xl font-bold text-green-50" id="sidebar-title">Menu</h2>
-                <p class="text-sm text-green-300 mt-1" id="user-info-display">Role: -</p>
+        <!-- Desktop Top Navigation Menu -->
+        <div id="sidebar" class="bg-green-900 text-white w-full z-20 hidden md:flex items-center justify-between shadow-md px-6 border-b border-green-800 sticky top-0">
+            <div class="flex items-center py-3 border-r border-green-800 pr-6 mr-2">
+                <div class="p-2 bg-green-800 rounded-lg mr-3 shadow-inner">
+                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-white tracking-wide" id="sidebar-title">Turja Computer</h2>
             </div>
-            <nav class="flex-1 px-2 py-4 space-y-2" id="sidebar-menu">
+            
+            <nav class="flex-1 flex flex-row space-x-2 overflow-x-auto items-center py-3 no-scrollbar" id="sidebar-menu">
                 <!-- Menu Item dimasukkan via JS -->
             </nav>
-            <div class="p-4 border-t border-green-800">
-                <button onclick="logout()" class="w-full flex items-center p-2 text-gray-300 hover:bg-green-800 hover:text-white rounded transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.727 0M12 2v10"></path></svg>
-                    Logout
+
+            <div class="flex items-center border-l border-green-800 pl-6 ml-2 py-3">
+                <div class="flex flex-col text-right mr-4">
+                    <span class="text-sm font-bold text-white" id="desktop-user-name">User</span>
+                    <span class="text-[10px] uppercase tracking-wider text-green-300" id="desktop-user-role">Role</span>
+                </div>
+                <button onclick="logout()" class="p-2.5 bg-green-800 text-red-300 hover:bg-red-500 hover:text-white rounded-lg transition shadow-sm" title="Logout">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.727 0M12 2v10"></path></svg>
                 </button>
             </div>
         </div>
@@ -641,11 +654,6 @@
             initInputFormatters();
         };
 
-        // Fungsi untuk menggeser buka tutup sidebar desktop
-        window.toggleSidebar = function() {
-            document.getElementById('sidebar').classList.toggle('sidebar-closed');
-        }
-
         // UI Helpers
         function showLoading() { document.getElementById('loading').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
@@ -933,9 +941,12 @@
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('login-page').classList.remove('flex');
             document.getElementById('app-layout').classList.remove('hidden');
-            document.getElementById('user-info-display').textContent = `${currentUser.name} (${currentUser.role})`;
             
-            // Perbarui judul navbar mobile & info desktop (dengan pengecekan elemen)
+            if (document.getElementById('user-info-display')) {
+                document.getElementById('user-info-display').textContent = `${currentUser.name} (${currentUser.role})`;
+            }
+            
+            // Perbarui judul navbar mobile & info desktop
             if (document.getElementById('mobile-nav-title')) {
                 document.getElementById('mobile-nav-title').textContent = currentUser.name;
             }
@@ -950,8 +961,12 @@
             restoreVoucherPreview();
             
             if (currentUser.role === 'Admin') {
-                document.getElementById('setting-akses-penjualan').checked = String(appSettings.aksesPenjualanUser) === 'true';
-                document.getElementById('setting-masa-berlaku').value = appSettings.masaAktifVoucer || 30;
+                if (document.getElementById('setting-akses-penjualan')) {
+                    document.getElementById('setting-akses-penjualan').checked = String(appSettings.aksesPenjualanUser) === 'true';
+                }
+                if (document.getElementById('setting-masa-berlaku')) {
+                    document.getElementById('setting-masa-berlaku').value = appSettings.masaAktifVoucer || 30;
+                }
             }
         }
 
@@ -1008,8 +1023,8 @@
                 // Desktop Button
                 const btn = document.createElement('a');
                 btn.href = "#";
-                btn.className = `flex items-center p-3 rounded-lg transition whitespace-nowrap overflow-hidden ${isActive ? 'bg-green-800' : 'hover:bg-green-800'}`;
-                btn.innerHTML = `<svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${m.icon}"></path></svg> <span>${m.label}</span>`;
+                btn.className = `flex items-center px-4 py-2.5 rounded-lg transition font-medium whitespace-nowrap overflow-hidden ${isActive ? 'bg-green-800 text-yellow-400 shadow-inner' : 'text-green-100 hover:bg-green-800 hover:text-white'}`;
+                btn.innerHTML = `<svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${m.icon}"></path></svg> <span>${m.label}</span>`;
                 
                 // Mobile Button
                 const mobBtn = document.createElement('a');
