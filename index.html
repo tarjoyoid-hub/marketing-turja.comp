@@ -98,27 +98,27 @@
         </div>
 
         <!-- Desktop Top Navigation Menu -->
-        <div id="sidebar" class="bg-green-900 text-white w-full z-20 hidden md:flex items-center justify-between shadow-md px-6 border-b border-green-800 sticky top-0">
-            <div class="flex items-center py-3 border-r border-green-800 pr-6 mr-2">
-                <div class="p-2 bg-green-800 rounded-lg mr-3 shadow-inner">
-                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="sidebar" class="bg-green-900 text-white w-full z-20 hidden md:flex items-center justify-between shadow-md px-4 border-b border-green-800 sticky top-0">
+            <div class="flex items-center py-2 border-r border-green-800 pr-4 mr-2">
+                <div class="p-1.5 bg-green-800 rounded-lg mr-2 shadow-inner">
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-white tracking-wide" id="sidebar-title">Turja Computer</h2>
+                <h2 class="text-lg font-bold text-white tracking-wide" id="sidebar-title">Turja Computer</h2>
             </div>
             
-            <nav class="flex-1 flex flex-row space-x-2 overflow-x-auto items-center py-3 no-scrollbar" id="sidebar-menu">
+            <nav class="flex-1 flex flex-row space-x-1.5 overflow-x-auto items-center py-2 no-scrollbar" id="sidebar-menu">
                 <!-- Menu Item dimasukkan via JS -->
             </nav>
 
-            <div class="flex items-center border-l border-green-800 pl-6 ml-2 py-3">
-                <div class="flex flex-col text-right mr-4">
-                    <span class="text-sm font-bold text-white" id="desktop-user-name">User</span>
-                    <span class="text-[10px] uppercase tracking-wider text-green-300" id="desktop-user-role">Role</span>
+            <div class="flex items-center border-l border-green-800 pl-4 ml-2 py-2">
+                <div class="flex flex-col text-right mr-3">
+                    <span class="text-xs font-bold text-white" id="desktop-user-name">User</span>
+                    <span class="text-[9px] uppercase tracking-wider text-green-300" id="desktop-user-role">Role</span>
                 </div>
-                <button onclick="logout()" class="p-2.5 bg-green-800 text-red-300 hover:bg-red-500 hover:text-white rounded-lg transition shadow-sm" title="Logout">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.727 0M12 2v10"></path></svg>
+                <button onclick="logout()" class="p-2 bg-green-800 text-red-300 hover:bg-red-500 hover:text-white rounded-lg transition shadow-sm" title="Logout">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.727 0M12 2v10"></path></svg>
                 </button>
             </div>
         </div>
@@ -1023,8 +1023,8 @@
                 // Desktop Button
                 const btn = document.createElement('a');
                 btn.href = "#";
-                btn.className = `flex items-center px-4 py-2.5 rounded-lg transition font-medium whitespace-nowrap overflow-hidden ${isActive ? 'bg-green-800 text-yellow-400 shadow-inner' : 'text-green-100 hover:bg-green-800 hover:text-white'}`;
-                btn.innerHTML = `<svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${m.icon}"></path></svg> <span>${m.label}</span>`;
+                btn.className = `flex items-center px-3 py-2 text-sm rounded-lg transition font-medium whitespace-nowrap overflow-hidden ${isActive ? 'bg-green-800 text-yellow-400 shadow-inner' : 'text-green-100 hover:bg-green-800 hover:text-white'}`;
+                btn.innerHTML = `<svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${m.icon}"></path></svg> <span>${m.label}</span>`;
                 
                 // Mobile Button
                 const mobBtn = document.createElement('a');
