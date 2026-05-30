@@ -462,9 +462,9 @@
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No. WhatsApp</label>
-                    <input type="text" id="penj-nohp" placeholder="Contoh: 0856-4260-0600" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
+                    <input type="text" id="penj-nohp" placeholder="Contoh: 0856 4260 0600" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <div class="md:col-span-2 mb-2">
+                <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Alamat Lengkap</label>
                     <input type="text" id="penj-alamat" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
@@ -492,7 +492,7 @@
                     <input type="text" id="penj-harga" placeholder="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <!-- Input Catatan Opsional (Dahulu Status Pembayaran) -->
-                <div class="md:col-span-2 mb-8">
+                <div class="mb-8">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Catatan (Opsional)</label>
                     <input type="text" id="penj-catatan" placeholder="Kosong otomatis menjadi 'Lunas'" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
@@ -522,7 +522,7 @@
                 </div>
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No WA</label>
-                    <input type="text" id="v-nowa" placeholder="Contoh: 0856-4260-0600" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
+                    <input type="text" id="v-nowa" placeholder="Contoh: 0856 4260 0600" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Desa (Opsional)</label>
@@ -675,7 +675,7 @@
             return dateStr; // fallback jika format tidak sesuai
         }
 
-        // Helper memformat nomor WA (Contoh: 085642600600 -> 0856-4260-0600)
+        // Helper memformat nomor WA (Contoh: 085642600600 -> 0856 4260 0600)
         function formatWAForDisplay(wa) {
             if (!wa) return "-";
             let clean = wa.replace(/[^0-9]/g, '');
@@ -683,7 +683,7 @@
             for (let i = 0; i < clean.length; i += 4) {
                 res.push(clean.substring(i, i + 4));
             }
-            return res.join('-');
+            return res.join(' ');
         }
 
         // Fungsi pemicu buka dan tutup Pop-up Modals
@@ -788,7 +788,7 @@
                 });
             }
 
-            // 3. Format Otomatis Input Nomor WhatsApp (Diberi tanda hubung '-' setiap 4 angka) pada Pembuatan Voucer & Input Penjualan Baru
+            // 3. Format Otomatis Input Nomor WhatsApp (Diberi spasi setiap 4 angka) pada Pembuatan Voucer & Input Penjualan Baru
             const waInputs = ['v-nowa', 'penj-nohp'];
             waInputs.forEach(id => {
                 const waInput = document.getElementById(id);
@@ -800,16 +800,16 @@
                         // Bersihkan dari semua karakter non-angka
                         let cleanNumbers = this.value.replace(/[^0-9]/g, '');
                         
-                        // Kelompokkan setiap 4 angka dengan pemisah '-'
+                        // Kelompokkan setiap 4 angka dengan pemisah spasi
                         let grouped = [];
                         for (let i = 0; i < cleanNumbers.length; i += 4) {
                             grouped.push(cleanNumbers.substring(i, i + 4));
                         }
-                        let formattedWA = grouped.join('-');
+                        let formattedWA = grouped.join(' ');
                         
                         this.value = formattedWA;
                         
-                        // Pertahankan posisi kursor saat disisipkan tanda hubung
+                        // Pertahankan posisi kursor saat disisipkan spasi
                         let newLength = formattedWA.length;
                         let cursorOffset = newLength - originalLength;
                         let adjustedCursor = cursorPosition + cursorOffset;
