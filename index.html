@@ -240,7 +240,7 @@
             <div id="tab-data-penjualan" class="hidden-tab">
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-800">Data Penjualan</h2>
+                        <h2 class="text-xl font-bold text-gray-800">Tabel Data Penjualan</h2>
                         <div class="flex items-center gap-2">
                             <!-- Tombol Tambah dipindahkan ke sini di sebelah tombol Refresh -->
                             <span id="btn-toggle-penjualan-container" class="hidden">
@@ -279,21 +279,22 @@
             <div id="tab-admin-pengaturan" class="hidden-tab bg-white p-6 rounded-lg shadow border-t-4 border-green-700">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">Pengaturan Akun & Sistem</h2>
                 
-                <!-- Manajemen Akun Marketing diintegrasikan ke sini -->
-                <div class="mb-8 border-b pb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Manajemen Akun Marketing</h3>
-                        <button onclick="openModalMarketing()" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 font-semibold shadow transition flex items-center gap-2 text-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                <!-- Manajemen Akun Marketing diintegrasikan ke sini (Diperkecil dan dibuat presisi: max-w-md) -->
+                <div class="mb-8 border-b pb-6 max-w-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-base font-semibold text-gray-800">Manajemen Akun Marketing</h3>
+                        <button onclick="openModalMarketing()" class="bg-green-700 text-white px-3 py-1.5 rounded-lg hover:bg-green-800 font-semibold shadow transition flex items-center gap-1.5 text-xs">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             Buat Akun Baru
                         </button>
                     </div>
                     <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                        <table class="w-full text-left border-collapse min-w-[300px]">
+                        <!-- Ukuran Font Diubah Menjadi Lebih Kecil dan Presisi (text-xs) -->
+                        <table class="w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-200">
-                                    <th class="p-3 text-gray-700 font-semibold">Nama Lengkap</th>
-                                    <th class="p-3 text-center text-gray-700 font-semibold">Aksi</th>
+                                    <th class="p-2 text-gray-700 font-semibold">Nama Lengkap</th>
+                                    <th class="p-2 text-center text-gray-700 font-semibold w-24">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="marketing-list-body"></tbody>
@@ -301,33 +302,36 @@
                     </div>
                 </div>
 
-                <!-- Pengaturan Masa Berlaku Voucer -->
-                <div class="mb-8 border-b pb-6">
-                    <h3 class="text-lg font-semibold mb-3 text-gray-800">Pengaturan Voucer</h3>
-                    <label class="block text-sm text-gray-700 mb-2">Masa Berlaku Voucer Otomatis (Hari)</label>
+                <!-- Pengaturan Masa Berlaku Voucer (Disesuaikan agar seragam di max-w-md) -->
+                <div class="mb-8 border-b pb-6 max-w-md">
+                    <h3 class="text-base font-semibold mb-3 text-gray-800">Pengaturan Voucer</h3>
+                    <label class="block text-xs text-gray-700 mb-2">Masa Berlaku Voucer Otomatis (Hari)</label>
                     <div class="flex items-center gap-3">
-                        <input type="number" id="setting-masa-berlaku" min="1" max="30" placeholder="1-30" class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600">
-                        <button onclick="updateMasaBerlaku()" class="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition shadow-sm font-medium">Simpan Masa Berlaku</button>
+                        <input type="number" id="setting-masa-berlaku" min="1" max="30" placeholder="1-30" class="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-green-600">
+                        <button onclick="updateMasaBerlaku()" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 text-xs transition shadow-sm font-medium">Simpan Masa Berlaku</button>
                     </div>
-                    <p class="text-sm text-gray-500 mt-2">Menentukan berapa hari voucer berlaku dihitung dari tanggal pembuatan (Maksimal 30 Hari).</p>
+                    <p class="text-[11px] text-gray-500 mt-2">Menentukan berapa hari voucer berlaku dihitung dari tanggal pembuatan (Maksimal 30 Hari).</p>
                 </div>
 
-                <div class="mb-8 border-b pb-6">
-                    <h3 class="text-lg font-semibold mb-3 text-gray-800">Ubah Kredensial Admin</h3>
-                    <form onsubmit="updateAdminCreds(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
-                        <input type="text" id="update-admin-user" placeholder="Username Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:outline-none">
-                        <input type="password" id="update-admin-pass" placeholder="Password Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:outline-none">
-                        <button type="submit" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 md:col-span-2 font-semibold shadow-sm transition">Ubah Data Admin</button>
+                <!-- Ubah Kredensial Admin (Disesuaikan agar seragam di max-w-md) -->
+                <div class="mb-8 border-b pb-6 max-w-md">
+                    <h3 class="text-base font-semibold mb-3 text-gray-800">Ubah Kredensial Admin</h3>
+                    <form onsubmit="updateAdminCreds(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="update-admin-user" placeholder="Username Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
+                        <input type="password" id="update-admin-pass" placeholder="Password Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
+                        <button type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 md:col-span-2 text-xs font-semibold shadow-sm transition">Ubah Data Admin</button>
                     </form>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-3 text-gray-800">Akses Menu User</h3>
+
+                <!-- Akses Menu User (Disesuaikan agar seragam di max-w-md) -->
+                <div class="max-w-md">
+                    <h3 class="text-base font-semibold mb-3 text-gray-800">Akses Menu User</h3>
                     <form>
                         <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" id="setting-akses-penjualan" onchange="toggleAksesPenjualan(this.checked)" class="w-5 h-5 text-green-700 accent-green-700">
-                            <span class="text-gray-700 font-medium">Buka Menu Data Penjualan untuk User / Marketing</span>
+                            <input type="checkbox" id="setting-akses-penjualan" onchange="toggleAksesPenjualan(this.checked)" class="w-4 h-4 text-green-700 accent-green-700">
+                            <span class="text-xs text-gray-700 font-medium">Buka Menu Data Penjualan untuk User / Marketing</span>
                         </label>
-                        <p class="text-sm text-gray-500 mt-1">Jika dicentang, User (Marketing) dapat melihat tab Data Penjualan.</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Jika dicentang, User (Marketing) dapat melihat tab Data Penjualan.</p>
                     </form>
                 </div>
             </div>
@@ -1360,9 +1364,11 @@
                     const tr = document.createElement('tr');
                     tr.className = "bg-white border-b hover:bg-gray-50 transition";
                     tr.innerHTML = `
-                        <td class="p-3 font-semibold text-gray-800">${user.Nama}</td>
-                        <td class="p-3 text-center">
-                            <button onclick="openEditMarketing('${user.ID}', '${user.Nama}', '${user.Username}', '${user.Password}')" class="bg-yellow-500 text-white px-3 py-1.5 rounded hover:bg-yellow-600 text-sm font-semibold transition shadow-sm">Edit</button>
+                        <!-- Pengaturan Padding Tipis pada baris tabel agar presisi (p-2) -->
+                        <td class="p-2 font-semibold text-gray-800">${user.Nama}</td>
+                        <td class="p-2 text-center">
+                            <!-- Tombol Edit diperkecil agar pas dengan ukuran tabel baru (py-1 px-2.5 text-xs) -->
+                            <button onclick="openEditMarketing('${user.ID}', '${user.Nama}', '${user.Username}', '${user.Password}')" class="bg-yellow-500 text-white px-2.5 py-1 rounded hover:bg-yellow-600 text-xs font-semibold transition shadow-sm">Edit</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -1539,7 +1545,6 @@
                         <td class="p-2 text-center flex gap-1 justify-center items-center">
                             <button onclick="shareSingleWA('${v.Kode}', '${indonesianDate}', '${v['No WA']}')" class="bg-green-600 text-white px-2.5 py-1.5 rounded hover:bg-green-700 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Share WA">
                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                                Bagikan
                             </button>
                             <button onclick="drawAndDownloadVoucher('${v.Kode}', '${v.Pelanggan}', '${v['No WA']}', '${v['Desa/Kelurahan']}', '${v.Kecamatan}', '${indonesianDate}')" class="bg-gray-700 text-white px-2.5 py-1.5 rounded hover:bg-gray-800 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Download">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -1655,48 +1660,6 @@
                     `;
                     tbody.appendChild(tr);
                 });
-            }
-        }
-
-        function openEditPenjualan(id, pembeli, nohp, alamat, kategori, produk, voucer, harga, catatan) {
-            document.getElementById('penj-edit-id').value = id; 
-            document.getElementById('modal-penjualan-title').textContent = "Edit Data Penjualan";
-            document.getElementById('modal-penjualan-subtitle').textContent = "Perbarui detail data transaksi pelanggan";
-            document.getElementById('btn-save-penjualan').textContent = "Perbarui Data";
-
-            document.getElementById('penj-pembeli').value = pembeli;
-            document.getElementById('penj-nohp').value = nohp;
-            document.getElementById('penj-alamat').value = alamat;
-            document.getElementById('penj-kategori').value = kategori;
-            document.getElementById('penj-produk').value = produk;
-            document.getElementById('penj-voucer').value = voucer;
-            
-            document.getElementById('penj-harga').value = parseInt(harga).toLocaleString('id-ID');
-            document.getElementById('penj-catatan').value = catatan === "Lunas" ? "" : catatan; 
-
-            document.getElementById('modal-tambah-penjualan').classList.remove('hidden');
-        }
-
-        function openDeletePenjualan(id) {
-            document.getElementById('delete-penj-id').value = id;
-            document.getElementById('modal-delete-confirm').classList.remove('hidden');
-        }
-
-        function closeDeleteConfirm() {
-            document.getElementById('modal-delete-confirm').classList.add('hidden');
-        }
-
-        async function executeDeletePenj() {
-            const id = document.getElementById('delete-penj-id').value;
-            closeDeleteConfirm();
-            showLoading();
-            const res = await callGAS('deletePenjualan', { id: id });
-            hideLoading();
-            if(res.status === 'success') {
-                showToast("Data penjualan berhasil dihapus!");
-                loadPenjualan();
-            } else {
-                showToast("Gagal menghapus data: " + res.message, true);
             }
         }
 
