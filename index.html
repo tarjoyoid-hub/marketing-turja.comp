@@ -935,10 +935,16 @@
             document.getElementById('app-layout').classList.remove('hidden');
             document.getElementById('user-info-display').textContent = `${currentUser.name} (${currentUser.role})`;
             
-            // Perbarui judul navbar mobile & info desktop
-            document.getElementById('mobile-nav-title').textContent = currentUser.name;
-            document.getElementById('desktop-user-name').textContent = currentUser.name;
-            document.getElementById('desktop-user-role').textContent = currentUser.role;
+            // Perbarui judul navbar mobile & info desktop (dengan pengecekan elemen)
+            if (document.getElementById('mobile-nav-title')) {
+                document.getElementById('mobile-nav-title').textContent = currentUser.name;
+            }
+            if (document.getElementById('desktop-user-name')) {
+                document.getElementById('desktop-user-name').textContent = currentUser.name;
+            }
+            if (document.getElementById('desktop-user-role')) {
+                document.getElementById('desktop-user-role').textContent = currentUser.role;
+            }
             
             buildMenu();
             restoreVoucherPreview();
