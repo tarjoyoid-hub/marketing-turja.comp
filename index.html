@@ -215,14 +215,16 @@
             </div>
 
             <!-- ADMIN: VERIFIKASI VOUCER -->
-            <div id="tab-admin-verifikasi" class="hidden-tab bg-white p-6 rounded-lg shadow border-t-4 border-green-700 text-center">
-                <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
-                <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer</p>
-                <div class="flex flex-col md:flex-row gap-4 mb-6 w-full max-w-xl mx-auto justify-center items-center">
-                    <input type="text" id="verify-code" placeholder="Masukkan Kode Voucer" class="flex-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600">
-                    <button onclick="verifyVoucher()" class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 font-medium shadow-sm transition w-full md:w-auto">Verifikasi</button>
+            <div id="tab-admin-verifikasi" class="hidden-tab">
+                <div class="bg-white p-8 rounded-xl shadow-md border-t-4 border-green-700 text-center max-w-md mx-auto mt-4 md:mt-10">
+                    <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
+                    <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer</p>
+                    <div class="flex flex-col gap-4 mb-6 justify-center items-center">
+                        <input type="text" id="verify-code" placeholder="Masukkan Kode Voucer" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-wide">
+                        <button onclick="verifyVoucher()" class="w-56 bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 font-medium shadow-sm transition">Verifikasi</button>
+                    </div>
+                    <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full text-left mx-auto text-sm"></div>
                 </div>
-                <div id="verify-result" class="hidden bg-gray-50 p-4 border rounded-lg w-full max-w-xl text-left mx-auto"></div>
             </div>
 
             <!-- DATA PENJUALAN (ADMIN & USER) -->
