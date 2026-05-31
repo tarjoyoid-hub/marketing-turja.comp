@@ -164,7 +164,7 @@
                             <span class="text-xs text-indigo-600 font-semibold">Transaksi</span>
                         </div>
                     </div>
-                    <!-- Jumlah Voucer Aktif -->
+                    <!-- Jumlah Voucer Hack Aktif -->
                     <div class="bg-emerald-50 p-5 rounded-xl shadow-sm border-b-4 border-emerald-500 hover:bg-emerald-100 transition duration-300 flex flex-col justify-between">
                         <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Voucer Aktif</span>
                         <div class="flex items-baseline justify-between mt-2">
@@ -210,7 +210,7 @@
                             <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                             <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                             <th class="p-2 text-green-900 font-semibold">Status</th>
-                            <th class="p-2 text-green-900 font-semibold">Pembuat (Marketing)</th>
+                            <th class="p-2 text-green-900 font-semibold">Marketing</th>
                             <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
                         </tr>
                     </thead>
@@ -401,7 +401,7 @@
                         </button>
                         <button onclick="downloadVoucherImage()" class="flex items-center bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition font-medium shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download Gambar
+                            Download
                         </button>
                     </div>
                 </div>
@@ -513,7 +513,8 @@
                     <input type="text" id="penj-harga" placeholder="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="mb-8">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Catatan </label>
+                    <!-- Kolom Catatan yang Diinputkan oleh Marketing -->
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Catatan</label>
                     <input type="text" id="penj-catatan" placeholder="Kosong otomatis menjadi 'Lunas'" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
@@ -537,20 +538,19 @@
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
                 <div class="mb-2 md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan </label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan (Opsional)</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Input No WA di bawah diubah menjadi opsional (tanpa required) dan placeholder-nya dihilangkan -->
                 <div class="mb-2 md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">No WatsApp</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">No WA (Opsional)</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="mb-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Desa </label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Desa (Opsional)</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="mb-8">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan </label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan (Opsional)</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
@@ -1181,7 +1181,7 @@
                     tbody.appendChild(tr);
                 });
             } else {
-                showToast("Gagal memuat daftar voucer global", true);
+                showToast("Gagal memuat daftar voucer", true);
             }
         }
 
@@ -1625,14 +1625,16 @@
             if(res.status === 'success') {
                 let no = 1;
                 res.data.forEach(p => {
-                    const statusClass = p.Catatan === 'Belum Lunas' ? 'text-red-600 font-bold' : 'text-green-700 font-bold';
+                    // Diubah: Parameter pembanding status (Catatan) kini dicari dari kolom Catatan spreadsheet Anda yang benar
+                    const statusVal = p.Catatan || 'Lunas';
+                    const statusClass = statusVal === 'Belum Lunas' ? 'text-red-600 font-bold' : 'text-green-700 font-bold';
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition whitespace-nowrap";
                     
                     tr.innerHTML = `
                         <td class="p-2">${no++}</td>
                         <td class="p-2 text-center">
-                            <button onclick="printReceiptDirect('${p['Waktu Input']}', '${p.Pembeli}', '${p.Alamat}', '${p.Produk}', '${p['Harga Final']}', '${p.Catatan || 'Lunas'}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs font-semibold shadow-sm flex items-center gap-1 transition mx-auto" title="Cetak Struk">
+                            <button onclick="printReceiptDirect('${p['Waktu Input']}', '${p.Pembeli}', '${p.Alamat}', '${p.Produk}', '${p['Harga Final']}', '${statusVal}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs font-semibold shadow-sm flex items-center gap-1 transition mx-auto" title="Cetak Struk">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                 </svg>
@@ -1644,13 +1646,14 @@
                         <td class="p-2">${p['No HP']}</td>
                         <td class="p-2">${p.Produk}</td>
                         <td class="p-2 text-stone-600">${p.Kategori}</td>
-                        <td class="p-2 ${statusClass}">${p.Catatan || 'Lunas'}</td>
+                        <!-- Status sekarang menampilkan isi Catatan secara real-time -->
+                        <td class="p-2 ${statusClass}">${statusVal}</td>
                         <td class="p-2 text-right font-semibold">Rp ${parseInt(p['Harga Final']).toLocaleString('id-ID')}</td>
                         <td class="p-2 font-mono text-green-700 font-bold">${p['Voucer Klaim']}</td>
                         <td class="p-2">${p.Marketing}</td>
                         <td class="p-2 text-xs text-gray-500">${p['Waktu Input']}</td>
                         <td class="p-2 text-center flex gap-1 justify-center items-center">
-                            <button onclick="openEditPenjualan('${p['Waktu Input']}', '${p.Pembeli}', '${p['No HP']}', '${p.Alamat}', '${p.Kategori}', '${p.Produk}', '${p['Voucer Klaim']}', '${p['Harga Final']}', '${p.Catatan || 'Lunas'}')" class="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded transition shadow-sm" title="Edit">
+                            <button onclick="openEditPenjualan('${p['Waktu Input']}', '${p.Pembeli}', '${p['No HP']}', '${p.Alamat}', '${p.Kategori}', '${p.Produk}', '${p['Voucer Klaim']}', '${p['Harga Final']}', '${statusVal}')" class="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded transition shadow-sm" title="Edit">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                 </svg>
@@ -1664,6 +1667,50 @@
                     `;
                     tbody.appendChild(tr);
                 });
+            }
+        }
+
+        // Mengembalikan fungsi openEditPenjualan yang sebelumnya terhapus dari berkas
+        function openEditPenjualan(id, pembeli, nohp, alamat, kategori, produk, voucer, harga, catatan) {
+            document.getElementById('penj-edit-id').value = id; 
+            document.getElementById('modal-penjualan-title').textContent = "Edit Data Penjualan";
+            document.getElementById('modal-penjualan-subtitle').textContent = "Perbarui detail data transaksi pelanggan";
+            document.getElementById('btn-save-penjualan').textContent = "Perbarui Data";
+
+            document.getElementById('penj-pembeli').value = pembeli;
+            document.getElementById('penj-nohp').value = nohp;
+            document.getElementById('penj-alamat').value = alamat;
+            document.getElementById('penj-kategori').value = kategori;
+            document.getElementById('penj-produk').value = produk;
+            document.getElementById('penj-voucer').value = voucer;
+            
+            // Format ulang harga dengan separator titik sebelum disisipkan ke input
+            document.getElementById('penj-harga').value = parseInt(harga).toLocaleString('id-ID');
+            document.getElementById('penj-catatan').value = catatan === "Lunas" ? "" : catatan; 
+
+            document.getElementById('modal-tambah-penjualan').classList.remove('hidden');
+        }
+
+        function openDeletePenjualan(id) {
+            document.getElementById('delete-penj-id').value = id;
+            document.getElementById('modal-delete-confirm').classList.remove('hidden');
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('modal-delete-confirm').classList.add('hidden');
+        }
+
+        async function executeDeletePenj() {
+            const id = document.getElementById('delete-penj-id').value;
+            closeDeleteConfirm();
+            showLoading();
+            const res = await callGAS('deletePenjualan', { id: id });
+            hideLoading();
+            if(res.status === 'success') {
+                showToast("Data penjualan berhasil dihapus!");
+                loadPenjualan();
+            } else {
+                showToast("Gagal menghapus data: " + res.message, true);
             }
         }
 
@@ -1841,7 +1888,7 @@
                     <div class="text-center footer">
                         <div class="bold">TERIMA KASIH</div>
                         <div>Atas Kunjungan & Kepercayaan Anda</div>
-                        <div style="margin-top: 4px;">Barang yang sudah dibeli tidak dapat ditukar/dikembalikan</div>
+                        <div style="margin-top: 4px;">Barang yang sudah dibeli tidak dapat ditukar/dilembalikan</div>
                     </div>
                     
                     <script>
