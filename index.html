@@ -195,8 +195,8 @@
             <div id="tab-admin-daftarvoucer" class="hidden-tab bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                 <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">Daftar Seluruh Voucer</h2>
-                        <p class="text-xs text-gray-500">Memantau seluruh voucer yang dibuat oleh semua tim marketing</p>
+                        <h2 class="text-xl font-bold text-gray-800">Daftar Voucer</h2>
+                        <p class="text-xs text-gray-500">Voucer yang dibuat oleh semua marketing</p>
                     </div>
                     <button onclick="loadAdminVouchers()" class="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 transition">Refresh</button>
                 </div>
@@ -240,7 +240,7 @@
             <div id="tab-data-penjualan" class="hidden-tab">
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-800">Tabel Data Penjualan</h2>
+                        <h2 class="text-xl font-bold text-gray-800">Data Penjualan</h2>
                         <div class="flex items-center gap-2">
                             <!-- Tombol Tambah dipindahkan ke sini di sebelah tombol Refresh -->
                             <span id="btn-toggle-penjualan-container" class="hidden">
@@ -282,10 +282,10 @@
                 <!-- Manajemen Akun Marketing diintegrasikan ke sini (Diperkecil dan dibuat presisi: max-w-md) -->
                 <div class="mb-8 border-b pb-6 max-w-md">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-base font-semibold text-gray-800">Manajemen Akun Marketing</h3>
+                        <h3 class="text-base font-semibold text-gray-800">Akun Marketing</h3>
                         <button onclick="openModalMarketing()" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 font-semibold shadow transition flex items-center gap-1.5 text-xs">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                            Buat Akun Baru
+                            Buat Akun
                         </button>
                     </div>
                     <div class="overflow-x-auto border border-gray-200 rounded-lg">
@@ -331,9 +331,9 @@
                     <form>
                         <label class="flex items-center space-x-3 cursor-pointer">
                             <input type="checkbox" id="setting-akses-penjualan" onchange="toggleAksesPenjualan(this.checked)" class="w-4 h-4 text-green-700 accent-green-700">
-                            <span class="text-xs text-gray-700 font-medium">Buka Menu Data Penjualan untuk Marketing</span>
+                            <span class="text-xs text-gray-700 font-medium">Ijinkan Marketing untuk Melihat Data Penjualan</span>
                         </label>
-                        <p class="text-[12px] text-gray-500 mt-1">Jika dicentang, Marketing dapat melihat tab Data Penjualan.</p>
+                        <p class="text-[12px] text-gray-500 mt-1">Marketing dapat melihat data penjualan dan diberikan akses untuk menginput, mengedit maupun menghapus data penjualan.</p>
                     </form>
                 </div>
             </div>
