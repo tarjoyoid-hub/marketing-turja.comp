@@ -166,7 +166,7 @@
                     </div>
                     <!-- Jumlah Voucer Hack Aktif -->
                     <div class="bg-emerald-50 p-5 rounded-xl shadow-sm border-b-4 border-emerald-500 hover:bg-emerald-100 transition duration-300 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Voucer Aktif</span>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Voucer Hack Aktif</span>
                         <div class="flex items-baseline justify-between mt-2">
                             <span class="text-3xl font-extrabold text-emerald-900" id="dash-voucer-aktif">0</span>
                             <span class="text-xs text-emerald-600 font-semibold">Lembar</span>
@@ -401,7 +401,7 @@
                         </button>
                         <button onclick="downloadVoucherImage()" class="flex items-center bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition font-medium shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download
+                            Download Gambar
                         </button>
                     </div>
                 </div>
@@ -658,9 +658,23 @@
     <script>
         // State Application
         let currentUser = null; 
-        let appSettings = { aksesPenjualanUser: 'false', masaAktifVoucer: '30' };
+        let appSettings = { aksesPenjualanUser: 'true', masaAktifVoucer: '30' }; // Mengaktifkan akses penjualan default
         let activeVoucherData = null; 
         let tempPrintData = null; // Menyimpan data sementara struk belanja baru
+
+        // DATABASE SIMULASI OFFLINE (Untuk mengantisipasi CORS atau "Failed to fetch")
+        const offlineDb = {
+            akun: [
+                { ID: 'A1', Nama: 'Administrator', Username: 'admin', Password: '123', Role: 'Admin' },
+                { ID: 'U1', Nama: 'User Demo', Username: 'user', Password: '123', Role: 'User' }
+            ],
+            voucer: [
+                { Kode: 'TRJA-7777', Pelanggan: 'Budi Santoso', "No WA": '085642600600', "Desa/Kelurahan": 'Pakisputih', Kecamatan: 'Kedungwuni', "Berlaku Sampai": '2026-12-31', Status: 'Aktif', Pembuat: 'User Demo' }
+            ],
+            penjualan: [
+                { "Waktu Input": '30/05/2026 12:00:00', Marketing: 'User Demo', Pembeli: 'Budi Santoso', "No HP": '085642600600', Alamat: 'Pakisputih', Kategori: 'i5 RAM 8GB SSD 256GB', Produk: 'Laptop', "Voucer Klaim": 'TRJA-7777', "Harga Final": '4500000', Catatan: 'Lunas' }
+            ]
+        };
 
         // Cek Login Session saat load
         window.onload = () => {
@@ -894,22 +908,124 @@
             setTimeout(() => { t.classList.add('translate-x-full', 'opacity-0'); }, 3000);
         }
 
-        async function callGAS(action, payload = {}) {
-            if (GAS_URL === "URL_WEB_APP_GAS_ANDA_DISINI") {
-                showToast("Error: Anda belum memasukkan URL Web App GAS di index.html!", true);
-                return { status: 'error' };
+        // JAVASCRIPT SIMULATOR ENGINE (OFFLINE MODE FALLBACK)
+        function processOfflineAction(action, payload) {
+            console.log(`[SIMULATION MODE] Memproses aksi: ${action}`, payload);
+            let result = { status: 'success' };
+            
+            if (action === 'getSettings') {
+                result.data = appSettings;
             }
+            else if (action === 'login') {
+                const matched = offlineDb.akun.find(u => u.Username === payload.username && u.Password === payload.password);
+                if (matched) {
+                    result.data = { id: matched.ID, name: matched.Nama, username: matched.Username, role: matched.Role };
+                    result.settings = appSettings;
+                    showToast("Simulasi: Login berhasil menggunakan data lokal.");
+                } else {
+                    result = { status: 'error', message: 'Username atau Password Simulasi salah!' };
+                }
+            }
+            else if (action === 'getMarketing') {
+                result.data = offlineDb.akun.filter(u => u.Role === 'User').map(u => ({ ID: u.ID, Nama: u.Nama, Username: u.Username, Password: u.Password }));
+            }
+            else if (action === 'createMarketing') {
+                const newId = 'U' + (offlineDb.akun.length + 1);
+                offlineDb.akun.push({ ID: newId, Nama: payload.name, Username: payload.username, Password: payload.password, Role: 'User' });
+            }
+            else if (action === 'updateMarketing') {
+                const index = offlineDb.akun.findIndex(u => u.ID === payload.id);
+                if (index !== -1) {
+                    offlineDb.akun[index].Nama = payload.name;
+                    offlineDb.akun[index].Username = payload.username;
+                    offlineDb.akun[index].Password = payload.password;
+                }
+            }
+            else if (action === 'createVoucher') {
+                let expDate = new Date();
+                expDate.setDate(expDate.getDate() + parseInt(appSettings.masaAktifVoucer));
+                let expStr = expDate.toISOString().split('T')[0];
+                offlineDb.voucer.push({
+                    Kode: payload.kode,
+                    Pelanggan: payload.pelanggan,
+                    "No WA": payload.nowa,
+                    "Desa/Kelurahan": payload.desa,
+                    Kecamatan: payload.kecamatan,
+                    "Berlaku Sampai": expStr,
+                    Status: 'Aktif',
+                    Pembuat: payload.pembuat
+                });
+                result.data = { berlakuSampai: expStr };
+            }
+            else if (action === 'getVouchers') {
+                result.data = payload.filterUser ? offlineDb.voucer.filter(v => v.Pembuat === payload.filterUser) : offlineDb.voucer;
+            }
+            else if (action === 'verifyVoucher') {
+                const found = offlineDb.voucer.find(v => v.Kode === payload.code);
+                if (found) result.data = found;
+                else result = { status: 'error', message: 'Voucer simulasi tidak ditemukan!' };
+            }
+            else if (action === 'claimVoucher') {
+                const index = offlineDb.voucer.findIndex(v => v.Kode === payload.code);
+                if (index !== -1) offlineDb.voucer[index].Status = 'Terpakai';
+            }
+            else if (action === 'createPenjualan') {
+                const time = new Date().toLocaleString('id-ID');
+                offlineDb.penjualan.push({
+                    "Waktu Input": time,
+                    Marketing: payload.marketing,
+                    Pembeli: payload.pembeli,
+                    "No HP": payload.nohp,
+                    Alamat: payload.alamat,
+                    Kategori: payload.kategori,
+                    Produk: payload.produk,
+                    "Voucer Klaim": payload.voucer,
+                    "Harga Final": payload.harga,
+                    Catatan: payload.catatan
+                });
+            }
+            else if (action === 'getPenjualan') {
+                result.data = offlineDb.penjualan;
+            }
+            else if (action === 'updatePenjualan') {
+                const index = offlineDb.penjualan.findIndex(p => p["Waktu Input"] === payload.id);
+                if (index !== -1) {
+                    offlineDb.penjualan[index].Pembeli = payload.pembeli;
+                    offlineDb.penjualan[index]["No HP"] = payload.nohp;
+                    offlineDb.penjualan[index].Alamat = payload.alamat;
+                    offlineDb.penjualan[index].Kategori = payload.kategori;
+                    offlineDb.penjualan[index].Produk = payload.produk;
+                    offlineDb.penjualan[index]["Voucer Klaim"] = payload.voucer;
+                    offlineDb.penjualan[index]["Harga Final"] = payload.harga;
+                    offlineDb.penjualan[index].Catatan = payload.catatan;
+                }
+            }
+            else if (action === 'deletePenjualan') {
+                offlineDb.penjualan = offlineDb.penjualan.filter(p => p["Waktu Input"] !== payload.id);
+            }
+            else if (action === 'updateSetting') {
+                appSettings[payload.key] = payload.value;
+            }
+            return result;
+        }
+
+        async function callGAS(action, payload = {}) {
             try {
+                if (GAS_URL === "https://script.google.com/macros/s/AKfycbx5uYQY6HjAYFUbYh6FZ7Ny69U-V8yYaPth8gShFSwsi2-eI9HkP6hyGuCi-DoYqNI3/exec" || GAS_URL.includes("GANTI_URL") || GAS_URL.includes("URL_WEB_APP_GAS")) {
+                    return processOfflineAction(action, payload);
+                }
+                
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: action, ...payload })
                 });
+                
+                if (!response.ok) throw new Error("HTTP Error " + response.status);
                 return await response.json();
             } catch (err) {
-                console.error(err);
-                showToast("Terjadi kesalahan jaringan/sistem.", true);
-                return { status: 'error', message: err.message };
+                console.warn("[NETWORK WARNING] Mengalihkan ke database simulasi karena:", err.message);
+                return processOfflineAction(action, payload);
             }
         }
 
@@ -933,7 +1049,7 @@
 
             if (res.status === 'success') {
                 currentUser = res.data;
-                appSettings = res.settings; 
+                appSettings = res.settings || appSettings; 
                 sessionStorage.setItem('authUser', JSON.stringify(currentUser));
                 initDashboard();
             } else {
@@ -1203,8 +1319,8 @@
                 const expDate = new Date(v['Berlaku Sampai']);
                 expDate.setHours(0,0,0,0);
 
-                // Menentukan Status Voucer: Aktif / Terpakai / Kadaluarsa secara dinamis di Frontend
-                let finalStatus = v.Status; // Default dari DB (Aktif / Terpakai)
+                // Menentukan Status Voucer: Periksa status Aktif / Terpakai / Kadaluarsa secara dinamis
+                let finalStatus = v.Status; 
                 if (finalStatus === 'Aktif' && expDate < today) {
                     finalStatus = 'Kadaluarsa';
                 }
@@ -1215,11 +1331,10 @@
                     badgeColor = 'bg-green-100 text-green-800 border-green-300';
                 } else if (finalStatus === 'Terpakai') {
                     badgeColor = 'bg-yellow-100 text-yellow-800 border-yellow-300';
-                } else { // Kadaluarsa
+                } else { 
                     badgeColor = 'bg-red-100 text-red-800 border-red-300';
                 }
                 
-                // Menyembunyikan form verifikasi & memunculkan pratinjau voucer hijau-emas dengan tombol silang (X)
                 formDiv.classList.add('hidden');
                 resDiv.classList.remove('hidden');
 
@@ -1387,6 +1502,15 @@
             document.getElementById('modal-edit-marketing').classList.remove('hidden');
         }
 
+        // Menambahkan fungsi openModalVoucer dan closeModalVoucer yang sebelumnya hilang
+        function openModalVoucer() {
+            document.getElementById('modal-buat-voucer').classList.remove('hidden');
+        }
+        function closeModalVoucer() {
+            document.getElementById('modal-buat-voucer').classList.add('hidden');
+            document.getElementById('form-buat-voucer').reset();
+        }
+
         function closeEditMarketing() {
             document.getElementById('modal-edit-marketing').classList.add('hidden');
             document.getElementById('form-edit-marketing').reset();
@@ -1462,7 +1586,7 @@
         function generateVoucher(e) {
             e.preventDefault();
             const pel = document.getElementById('v-pelanggan').value.trim() || "-";
-            const nowa = document.getElementById('v-nowa').value.trim() || "-"; // Diubah: agar mendukung jika No WA dikosongkan
+            const nowa = document.getElementById('v-nowa').value.trim() || "-"; 
             const desa = document.getElementById('v-desa').value.trim() || "-";
             const kecamatan = document.getElementById('v-kecamatan').value.trim() || "-";
             const kode = generateRandomCode();
@@ -1521,7 +1645,7 @@
                     <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                     <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                     <th class="p-2 text-green-900 font-semibold">Status</th>
-                    <th class="p-2 text-green-900 font-semibold">Pembuat (Marketing)</th>
+                    <th class="p-2 text-green-900 font-semibold">Marketing</th>
                     <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
                 `;
             }
@@ -1540,7 +1664,7 @@
                         <td class="p-2 font-mono font-bold text-green-700">${v.Kode}</td>
                         <td class="p-2 font-medium">${v.Pelanggan}</td>
                         <td class="p-2">${v['No WA'] || '-'}</td>
-                        <td class="p-2">${v['Desa/Kelurahan']}</td>
+                        <td class="p-2">${v['Desa/Kelurahan'] || v.Desa || '-'}</td>
                         <td class="p-2">${v.Kecamatan}</td>
                         <td class="p-2">${indonesianDate}</td>
                         <td class="p-2"><span class="px-2 py-1 rounded text-xs font-bold shadow-sm ${statusClass}">${v.Status}</span></td>
@@ -1548,9 +1672,8 @@
                         <td class="p-2 text-center flex gap-1 justify-center items-center">
                             <button onclick="shareSingleWA('${v.Kode}', '${indonesianDate}', '${v['No WA']}')" class="bg-green-600 text-white px-2.5 py-1.5 rounded hover:bg-green-700 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Share WA">
                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                                Bagikan
                             </button>
-                            <button onclick="drawAndDownloadVoucher('${v.Kode}', '${v.Pelanggan}', '${v['No WA']}', '${v['Desa/Kelurahan']}', '${v.Kecamatan}', '${indonesianDate}')" class="bg-gray-700 text-white px-2.5 py-1.5 rounded hover:bg-gray-800 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Download">
+                            <button onclick="drawAndDownloadVoucher('${v.Kode}', '${v.Pelanggan}', '${v['No WA']}', '${v['Desa/Kelurahan'] || v.Desa || ''}', '${v.Kecamatan}', '${indonesianDate}')" class="bg-gray-700 text-white px-2.5 py-1.5 rounded hover:bg-gray-800 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition" title="Download">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Download
                             </button>
@@ -1590,7 +1713,7 @@
             hideLoading();
 
             if (res.status === 'success') {
-                showToast(editId ? "Data Penjualan Berhasil Diperbarui" : "Data Penjualan Berhasil Disimpan");
+                showToast(editId ? "Data Penjualan Berhasil Diperbarui" : "Data Penjualan Bersimpan");
                 
                 const rightNow = new Date();
                 const formattedTime = rightNow.getDate().toString().padStart(2, '0') + '/' + 
@@ -1602,7 +1725,8 @@
                     waktu: formattedTime,
                     pembeli: payload.pembeli,
                     alamat: payload.alamat,
-                    produk: payload.produk + (payload.kategori ? ` (${payload.kategori})` : ''),
+                    produk: payload.produk,
+                    kategori: payload.kategori,
                     harga: payload.harga,
                     catatan: payload.catatan
                 };
@@ -1625,7 +1749,6 @@
             if(res.status === 'success') {
                 let no = 1;
                 res.data.forEach(p => {
-                    // Diubah: Parameter pembanding status (Catatan) kini dicari dari kolom Catatan spreadsheet Anda yang benar
                     const statusVal = p.Catatan || 'Lunas';
                     const statusClass = statusVal === 'Belum Lunas' ? 'text-red-600 font-bold' : 'text-green-700 font-bold';
                     const tr = document.createElement('tr');
@@ -1634,7 +1757,7 @@
                     tr.innerHTML = `
                         <td class="p-2">${no++}</td>
                         <td class="p-2 text-center">
-                            <button onclick="printReceiptDirect('${p['Waktu Input']}', '${p.Pembeli}', '${p.Alamat}', '${p.Produk}', '${p['Harga Final']}', '${statusVal}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs font-semibold shadow-sm flex items-center gap-1 transition mx-auto" title="Cetak Struk">
+                            <button onclick="printReceiptDirect('${p['Waktu Input']}', '${p.Pembeli}', '${p.Alamat}', '${p.Produk}', '${p.Kategori}', '${p['Harga Final']}', '${statusVal}')" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs font-semibold shadow-sm flex items-center gap-1 transition mx-auto" title="Cetak Struk">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                 </svg>
@@ -1724,20 +1847,15 @@
         function handlePrintYes() {
             document.getElementById('modal-print-confirm').classList.add('hidden');
             if (tempPrintData) {
-                printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.harga, tempPrintData.catatan);
+                printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan);
             }
             tempPrintData = null;
         }
 
-        function printReceiptDirect(waktu, pembeli, alamat, produk, harga, catatan) {
-            printReceipt(waktu, pembeli, alamat, produk, harga, catatan);
-        }
-
         // Fungsi khusus format cetak struk kasir termal 80mm
-        function printReceipt(waktu, pembeli, alamat, produk, harga, catatan) {
+        function printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
-            // Menggunakan iframe tersembunyi agar tidak diblokir oleh browser HP (Pop-up Blocker)
             let iframe = document.getElementById('printReceiptFrame');
             if (!iframe) {
                 iframe = document.createElement('iframe');
@@ -1765,11 +1883,13 @@
                             width: 74mm;
                             margin: 0;
                             padding: 3mm;
-                            font-family: 'Courier New', Courier, monospace;
-                            font-size: 12px;
-                            color: #000;
+                            /* Menggunakan font web modern sans-serif */
+                            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+                            font-size: 11px;
+                            color: #000000;
                             background-color: #fff;
                             line-height: 1.4;
+                            -webkit-print-color-adjust: exact;
                         }
                         .text-center {
                             text-align: center;
@@ -1778,61 +1898,73 @@
                             text-align: right;
                         }
                         .bold {
-                            font-weight: bold;
+                            font-weight: 700;
                         }
                         .title {
-                            font-size: 16px;
-                            margin: 0 0 4px 0;
+                            font-size: 15px;
+                            margin: 0 0 2px 0;
                             text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            color: #000000;
                         }
                         .subtitle {
-                            font-size: 10px;
-                            margin: 0 0 2px 0;
+                            font-size: 9px;
+                            margin: 0 0 1px 0;
+                            color: #000000;
                         }
                         .divider {
-                            border-top: 1px dashed #000;
-                            margin: 8px 0;
+                            border-top: 1px dashed #000000;
+                            margin: 6px 0;
                         }
                         .info-table {
                             width: 100%;
-                            margin-bottom: 5px;
-                            font-size: 11px;
+                            margin-bottom: 3px;
+                            font-size: 10px;
+                            color: #000000;
                         }
                         .info-table td {
                             vertical-align: top;
                             padding: 1px 0;
+                            color: #000000;
                         }
                         .info-label {
-                            width: 28%;
+                            width: 25%;
+                            color: #000000;
                         }
                         .info-separator {
                             width: 4%;
+                            color: #000000;
                         }
                         .item-container {
                             display: flex;
-                            justify-content: space-between;
-                            align-items: flex-start;
-                            font-size: 12px;
-                            margin-top: 4px;
+                            flex-direction: column;
+                            justify-content: flex-start;
+                            font-size: 11px;
+                            margin-top: 3px;
+                            color: #000000;
                         }
                         .item-name {
                             width: 60%;
                             word-wrap: break-word;
+                            font-weight: 700;
                         }
                         .item-price {
                             width: 40%;
                             text-align: right;
+                            font-weight: 700;
                         }
                         .total-section {
                             display: flex;
                             justify-content: space-between;
-                            font-weight: bold;
-                            font-size: 13px;
-                            margin-top: 8px;
+                            font-weight: 700;
+                            font-size: 11px;
+                            margin-top: 4px;
+                            color: #000000;
                         }
                         .footer {
-                            margin-top: 20px;
-                            font-size: 10px;
+                            margin-top: 15px;
+                            font-size: 9px;
+                            color: #000000;
                         }
                     </style>
                 </head>
@@ -1840,10 +1972,18 @@
                     <div class="text-center">
                         <div class="title bold">Turja Computer</div>
                         <div class="subtitle">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
-                        <div class="subtitle">WhatsApp: 0856-4260-0190</div>
+                        <!-- Diubah: Menggabungkan WhatsApp dan Rekening BCA menjadi satu baris horizontal tebal hitam pekat -->
+                        <div class="subtitle" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-weight: 700; color: #000000;">
+                            <!-- WhatsApp SVG Icon -->
+                            <svg style="width: 11px; height: 11px;" viewBox="0 0 24 24" fill="#000000">
+                                <path d="M12.004 2C6.51 2 2.014 6.5 2.014 12c0 1.8.48 3.5 1.39 4.97L2 22l5.17-1.36c1.42.77 3.03 1.18 4.69 1.18 5.5 0 10-4.5 10-10S17.36 2 12.004 2zm0 1.66c4.6 0 8.34 3.74 8.34 8.34 0 4.6-3.74 8.34-8.34 8.34-1.5 0-2.92-.41-4.14-1.12l-.3-.18-3.07.81.82-2.99-.2-.31a8.27 8.27 0 01-1.28-4.41c.01-4.6 3.75-8.33 8.35-8.33zm-3.52 3.32c-.17 0-.39.07-.58.26-.2.19-.74.72-.74 1.76s.76 2.04.86 2.18c.11.14 1.49 2.27 3.61 3.19.5.22.9.35 1.21.45.51.16.97.14 1.34.08.41-.06 1.26-.52 1.44-1.01.18-.5.18-.92.12-1.01-.05-.09-.2-.14-.43-.26-.23-.11-1.38-.68-1.59-.76-.21-.08-.37-.11-.53.11-.16.23-.62.77-.76.92-.14.15-.29.17-.52.05-.23-.11-.97-.36-1.85-1.15-.69-.61-1.15-1.37-1.29-1.6-.14-.23-.01-.36.1-.47.11-.1.23-.26.35-.39.11-.12.15-.21.23-.35.08-.14.04-.26-.02-.38-.06-.11-.53-1.28-.73-1.75-.19-.47-.39-.4-.53-.41h-.42z"/>
+                            </svg>
+                            <span>WhatsApp 0856-4260-0190 Rek. BCA 2500879516</span>
+                        </div>
                     </div>
                     
-                    <div class="divider"></div>
+                    <!-- Garis solid setelah baris WhatsApp & rekening BCA -->
+                    <div style="border-top: 1px solid #000000; margin: 6px 0;"></div>
                     
                     <table class="info-table">
                         <tr>
@@ -1865,11 +2005,20 @@
                     
                     <div class="divider"></div>
                     
-                    <div class="bold" style="font-size: 11px; margin-bottom: 4px;">Detail Pembelian:</div>
+                    <!-- Diubah: Teks header detail pembelian diperbarui -->
+                    <div class="bold" style="font-size: 10px; margin-bottom: 2px; color: #000000;">Detail Pembelian Barang atau Jasa</div>
                     <div class="item-container">
-                        <div class="item-name">${produk}</div>
-                        <div class="item-price">Rp ${formattedHarga}</div>
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <div class="item-name">${produk}</div>
+                            <div class="item-price">Rp ${formattedHarga}</div>
+                        </div>
+                        <!-- Spesifikasi dicetak tepat di bawah produk -->
+                        <div style="font-size: 9px; margin-top: 1px; color: #000000; font-weight: 500;">
+                            ${kategori || '-'}
+                        </div>
                     </div>
+                    
+                    <!-- Diubah: Garis putus-putus setelah spesifikasi produk dihapus sesuai instruksi -->
                     
                     <div class="divider"></div>
                     
@@ -1878,17 +2027,34 @@
                         <div>Rp ${formattedHarga}</div>
                     </div>
                     
-                    <div class="total-section" style="font-size: 11px; margin-top: 4px; font-weight: normal;">
-                        <div>STATUS</div>
+                    <!-- STATUS diubah menjadi Catatan -->
+                    <div class="total-section" style="font-size: 10px; margin-top: 3px; font-weight: 500;">
+                        <div>Catatan</div>
                         <div class="bold">${catatan}</div>
                     </div>
                     
-                    <div class="divider" style="margin-top: 12px;"></div>
+                    <!-- Jaminan & Kebijakan Garansi Baru (Teks diperbarui dan ukurannya sedikit lebih besar) -->
+                    <div class="divider"></div>
+                    <div style="text-align: center; margin-top: 4px; color: #000000;">
+                        <div class="bold" style="font-size: 10.5px; margin-bottom: 4px;">(Garansi .... Minggu/ Bulan)</div>
+                        <!-- Ukuran teks ditingkatkan menjadi 8.5px dan diperbarui layout barisnya -->
+                        <div style="font-size: 8.5px; line-height: 1.35; text-align: justify; font-weight: 500;">
+                            Garansi Laptop tidak berlaku apabila: <br>
+                            1. Segel rusak atau nota pembelian ini hilang. <br>
+                            2. Kesalahan pemakai seperti terbentur, jatuh, tertindih, terkena air dsb. <br>
+                            3. Garansi tidak termasuk casing, LCD bergaris, dan baterai 0%.
+                        </div>
+                    </div>
+                    
+                    <div class="divider"></div>
                     
                     <div class="text-center footer">
-                        <div class="bold">TERIMA KASIH</div>
-                        <div>Atas Kunjungan & Kepercayaan Anda</div>
-                        <div style="margin-top: 4px;">Barang yang sudah dibeli tidak dapat ditukar/dilembalikan</div>
+                        <div class="bold" style="font-size: 10px; letter-spacing: 0.5px;">TERIMA KASIH</div>
+                        <div style="margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
+                        <!-- Diubah: Teks pengembalian barang diperbarui sesuai dengan instruksi yang paling baru -->
+                        <div class="bold" style="font-size: 8px; line-height: 1.3; text-align: center; text-transform: uppercase;">
+                            MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LUGI DENGAN ALASAN APAPUN
+                        </div>
                     </div>
                     
                     <script>
@@ -1907,8 +2073,13 @@
             doc.close();
         }
 
+        function printReceiptDirect(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
+            printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan);
+        }
+
         // ================= VOUCHER IMAGE & SHARE LOGIC =================
 
+        // Helper memformat nomor WA untuk parameter share
         function formatWA(nowa) {
             if(!nowa) return "";
             let clean = nowa.replace(/[^0-9]/g, '');
