@@ -166,7 +166,7 @@
                     </div>
                     <!-- Jumlah Voucer Hack Aktif -->
                     <div class="bg-emerald-50 p-5 rounded-xl shadow-sm border-b-4 border-emerald-500 hover:bg-emerald-100 transition duration-300 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Voucer Hack Aktif</span>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Voucer Aktif</span>
                         <div class="flex items-baseline justify-between mt-2">
                             <span class="text-3xl font-extrabold text-emerald-900" id="dash-voucer-aktif">0</span>
                             <span class="text-xs text-emerald-600 font-semibold">Lembar</span>
@@ -533,29 +533,35 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="text-center mb-8">
+                <!-- Teks deskripsi sub-judul diperbarui sesuai instruksi -->
                 <h2 class="text-2xl font-bold text-gray-800">Buat Voucer Baru</h2>
-                <p class="text-gray-500 mt-2 text-sm">Instansiasi data pelanggan untuk diskon</p>
+                <p class="text-gray-500 mt-2 text-sm">Input Data Calon Pelanggan Untuk Membuat Kartu Voucer</p>
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
+                <!-- Label Nama Pelanggan diubah menjadi wajib di UI, opsional secara internal diisi "WhatsApp" jika kosong -->
                 <div class="mb-2 md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan (Opsional)</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label No WA (Opsional) diubah menjadi No WhatsApp (Opsional) -->
                 <div class="mb-2 md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">No WA (Opsional)</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">No WhatsApp</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Desa diubah, opsional secara internal diisi "Selamat Terpilih" jika kosong -->
                 <div class="mb-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Desa (Opsional)</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Desa</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Kecamatan diubah, opsional secara internal diisi "Sebagai Penerima" jika kosong -->
                 <div class="mb-8">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan (Opsional)</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
+                    <!-- Teks tombol diubah menjadi "Buat Voucer" -->
                     <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-800 transition shadow-md">
-                        Buat & Simpan Voucer
+                        Buat Voucer
                     </button>
                 </div>
             </form>
@@ -563,7 +569,7 @@
     </div>
 
     <!-- MODAL EDIT MARKETING -->
-    <div id="modal-edit-marketing" class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 hidden flex justify-center items-center p-4">
+    <div id="modal-edit-marketing" class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md border-t-4 border-green-700">
             <h2 class="text-xl font-bold mb-4 text-gray-800">Edit Akun Marketing</h2>
             <form id="form-edit-marketing" onsubmit="submitEditMarketing(event)">
@@ -669,7 +675,7 @@
                 { ID: 'U1', Nama: 'User Demo', Username: 'user', Password: '123', Role: 'User' }
             ],
             voucer: [
-                { Kode: 'TRJA-7777', Pelanggan: 'Budi Santoso', "No WA": '085642600600', "Desa/Kelurahan": 'Pakisputih', Kecamatan: 'Kedungwuni', "Berlaku Sampai": '2026-12-31', Status: 'Aktif', Pembuat: 'User Demo' }
+                { Kode: 'TRJA-7777', Pelanggan: 'Budi Santoso', "No WA": '0856-4260-0600', "Desa/Kelurahan": 'Pakisputih', Kecamatan: 'Kedungwuni', "Berlaku Sampai": '2026-12-31', Status: 'Aktif', Pembuat: 'User Demo' }
             ],
             penjualan: [
                 { "Waktu Input": '30/05/2026 12:00:00', Marketing: 'User Demo', Pembeli: 'Budi Santoso', "No HP": '085642600600', Alamat: 'Pakisputih', Kategori: 'i5 RAM 8GB SSD 256GB', Produk: 'Laptop', "Voucer Klaim": 'TRJA-7777', "Harga Final": '4500000', Catatan: 'Lunas' }
@@ -723,7 +729,7 @@
             for (let i = 0; i < clean.length; i += 4) {
                 res.push(clean.substring(i, i + 4));
             }
-            return res.join(' ');
+            return res.join('-');
         }
 
         // Fungsi pemicu buka dan tutup Pop-up Modals
@@ -819,8 +825,53 @@
                 });
             }
 
-            // 3. Format Otomatis Input Nomor WhatsApp
-            const waInputs = ['v-nowa', 'penj-nohp'];
+            // 3. Format Otomatis Input Nomor WhatsApp dengan penanganan paste internasional (+62)
+            const vNowaInput = document.getElementById('v-nowa');
+            if (vNowaInput) {
+                const handleWAFormatting = function(inputValue) {
+                    let cleanNumbers = inputValue.replace(/[^0-9+]/g, '');
+                    
+                    // Logika konversi +62 atau 62 menjadi 0
+                    if (cleanNumbers.startsWith('+62')) {
+                        cleanNumbers = '0' + cleanNumbers.slice(3);
+                    } else if (cleanNumbers.startsWith('62')) {
+                        cleanNumbers = '0' + cleanNumbers.slice(2);
+                    }
+                    
+                    // Menghilangkan tanda + yang tidak valid di tengah
+                    cleanNumbers = cleanNumbers.replace(/[^0-9]/g, '');
+                    
+                    let grouped = [];
+                    for (let i = 0; i < cleanNumbers.length; i += 4) {
+                        grouped.push(cleanNumbers.substring(i, i + 4));
+                    }
+                    return grouped.join('-');
+                };
+
+                vNowaInput.addEventListener('input', function() {
+                    let cursorPosition = this.selectionStart;
+                    let originalLength = this.value.length;
+                    
+                    let formatted = handleWAFormatting(this.value);
+                    this.value = formatted;
+                    
+                    let newLength = formatted.length;
+                    let cursorOffset = newLength - originalLength;
+                    let adjustedCursor = cursorPosition + cursorOffset;
+                    if (adjustedCursor < 0) adjustedCursor = 0;
+                    this.setSelectionRange(adjustedCursor, adjustedCursor);
+                });
+
+                // Event listener khusus paste untuk menangani paste instan
+                vNowaInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    let formatted = handleWAFormatting(pastedText);
+                    this.value = formatted;
+                });
+            }
+
+            const waInputs = ['penj-nohp'];
             waInputs.forEach(id => {
                 const waInput = document.getElementById(id);
                 if (waInput) {
@@ -917,7 +968,7 @@
                 result.data = appSettings;
             }
             else if (action === 'login') {
-                const matched = offlineDb.akun.find(u => u.Username === payload.username && u.Password === payload.password);
+                const matched = offlineDb.akun.find(u => u.Username.toLowerCase() === payload.username.toLowerCase() && u.Password === payload.password);
                 if (matched) {
                     result.data = { id: matched.ID, name: matched.Nama, username: matched.Username, role: matched.Role };
                     result.settings = appSettings;
@@ -1062,6 +1113,7 @@
             document.getElementById('modal-logout-confirm').classList.remove('hidden');
         }
 
+        // Tutup modal logout
         function closeLogoutConfirm() {
             document.getElementById('modal-logout-confirm').classList.add('hidden');
         }
@@ -1502,15 +1554,6 @@
             document.getElementById('modal-edit-marketing').classList.remove('hidden');
         }
 
-        // Menambahkan fungsi openModalVoucer dan closeModalVoucer yang sebelumnya hilang
-        function openModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.remove('hidden');
-        }
-        function closeModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.add('hidden');
-            document.getElementById('form-buat-voucer').reset();
-        }
-
         function closeEditMarketing() {
             document.getElementById('modal-edit-marketing').classList.add('hidden');
             document.getElementById('form-edit-marketing').reset();
@@ -1585,15 +1628,32 @@
 
         function generateVoucher(e) {
             e.preventDefault();
-            const pel = document.getElementById('v-pelanggan').value.trim() || "-";
-            const nowa = document.getElementById('v-nowa').value.trim() || "-"; 
-            const desa = document.getElementById('v-desa').value.trim() || "-";
-            const kecamatan = document.getElementById('v-kecamatan').value.trim() || "-";
+            // Implementasi Validasi & Pengisian Default Otomatis jika kosong
+            let pelVal = document.getElementById('v-pelanggan').value.trim();
+            if (pelVal === "") {
+                pelVal = "WhatsApp";
+            }
+            
+            let nowaVal = document.getElementById('v-nowa').value.trim();
+            if (nowaVal === "") {
+                nowaVal = "-";
+            }
+            
+            let desaVal = document.getElementById('v-desa').value.trim();
+            if (desaVal === "") {
+                desaVal = "Selamat Terpilih";
+            }
+            
+            let kecVal = document.getElementById('v-kecamatan').value.trim();
+            if (kecVal === "") {
+                kecVal = "Sebagai Penerima";
+            }
+            
             const kode = generateRandomCode();
 
             showLoading();
             callGAS('createVoucher', {
-                kode, pelanggan: pel, nowa: nowa, desa: desa, kecamatan: kecamatan, pembuat: currentUser.name
+                kode, pelanggan: pelVal, nowa: nowaVal, desa: desaVal, kecamatan: kecVal, pembuat: currentUser.name
             }).then(res => {
                 hideLoading();
                 if (res.status === 'success') {
@@ -1602,14 +1662,14 @@
                     const tglExpired = res.data.berlakuSampai; 
                     const formattedDate = formatDateToIndonesian(tglExpired); 
                     
-                    document.getElementById('disp-v-pelanggan').textContent = pel;
-                    document.getElementById('disp-v-nowa').textContent = formatWAForDisplay(nowa);
-                    document.getElementById('disp-v-alamat').textContent = `${desa} ${kecamatan}`;
+                    document.getElementById('disp-v-pelanggan').textContent = pelVal;
+                    document.getElementById('disp-v-nowa').textContent = formatWAForDisplay(nowaVal);
+                    document.getElementById('disp-v-alamat').textContent = `${desaVal} ${kecVal}`;
                     document.getElementById('disp-v-kode').textContent = kode;
                     document.getElementById('disp-v-tanggal').textContent = formattedDate;
                     document.getElementById('new-voucher-display').classList.remove('hidden');
                     
-                    activeVoucherData = { kode, pelanggan: pel, nowa, desa, kecamatan, tanggal: formattedDate };
+                    activeVoucherData = { kode, pelanggan: pelVal, nowa: nowaVal, desa: desaVal, kecamatan: kecVal, tanggal: formattedDate };
                     sessionStorage.setItem('lastVoucher', JSON.stringify(activeVoucherData));
                     
                     e.target.reset();
@@ -1852,7 +1912,7 @@
             tempPrintData = null;
         }
 
-        // Fungsi khusus format cetak struk kasir termal 80mm
+        // [FIX] Mengubah semua font pada cetak struk kasir termal menjadi font web modern (Segoe UI / Sans-Serif) dan hitam pekat
         function printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
@@ -2053,7 +2113,7 @@
                         <div style="margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
                         <!-- Diubah: Teks pengembalian barang diperbarui sesuai dengan instruksi yang paling baru -->
                         <div class="bold" style="font-size: 8px; line-height: 1.3; text-align: center; text-transform: uppercase;">
-                            MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LUGI DENGAN ALASAN APAPUN
+                            MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LAGI DENGAN ALASAN APAPUN
                         </div>
                     </div>
                     
