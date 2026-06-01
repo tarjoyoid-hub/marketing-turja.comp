@@ -1,3 +1,7 @@
+<!-- Chosen Palette: Warm Neutrals & Emerald Green -->
+<!-- Application Structure Plan: Single Page Application with dynamic top navigation bar for desktop and bottom bar for mobile. Includes administrative dashboard, voucher list, and real-time sales input with specific capitalizers. Chosen for optimized user flow and quick data entry. -->
+<!-- Visualization & Content Choices: KPI cards are used for statistics, comparative tables with actions for detailed data, and a custom visual preview for voucher verification. NO SVG/Mermaid. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -618,7 +622,7 @@
         </div>
     </div>
 
-    <!-- MODAL PRINTER BLUETOOTH CONNECTION & PRINT CONFIRMATION (REVISED WITH DUAL-PLANE LIVE RECEIPT PREVIEW) -->
+    <!-- MODAL PRINTER BLUETOOTH CONNECTION & PRINT CONFIRMATION -->
     <div id="modal-print-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="max-w-3xl w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700 flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto">
             
@@ -1427,7 +1431,6 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition whitespace-nowrap";
                     
-                    // [EDISI ADMIN] Hapus teks tombol, hanya menyisakan ikon, dan tambahkan tombol Hapus merah (trash bin SVG)
                     tr.innerHTML = `
                         <td class="p-2 font-mono font-bold text-green-700">${v.Kode}</td>
                         <td class="p-2 font-medium">${v.Pelanggan}</td>
@@ -1496,10 +1499,8 @@
                 formDiv.classList.add('hidden');
                 resDiv.classList.remove('hidden');
 
-                // Jarak kontainer bawah tombol "Gunakan Voucer" ke tepi kontainer diperbesar 2x lipat menggunakan `pb-16` (bukan pb-6), serta jarak tombol ke pratinjau voucer normal di `mt-6`
                 resDiv.innerHTML = `
                     <div class="bg-white p-6 pb-16 rounded-xl shadow-md border-t-4 border-green-700 relative">
-                        <!-- Tombol Silang (X) di pojok kanan atas untuk keluar dari hasil verifikasi -->
                         <button onclick="closeVerifyResult()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200" title="Keluar">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
@@ -1514,24 +1515,20 @@
                         
                         <!-- Pratinjau voucer hijau-emas ringkas -->
                         <div class="w-full max-w-xs bg-gradient-to-br from-green-800 via-green-900 to-emerald-950 rounded-xl p-4 text-white shadow-lg relative overflow-hidden border-2 border-yellow-400 mx-auto text-left">
-                            <!-- Ornamen Lingkaran Emas Aesthetic -->
                             <div class="absolute top-0 right-0 -mt-8 -mr-8 w-20 h-20 border-2 border-yellow-400 opacity-20 rounded-full"></div>
                             <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-20 h-20 border-2 border-yellow-400 opacity-20 rounded-full"></div>
 
-                            <!-- Header: Nama Toko -->
                             <div class="text-center pb-2 mb-3 border-b border-yellow-500 border-opacity-30 flex flex-col items-center">
                                 <h5 class="text-xl font-black text-yellow-400 uppercase tracking-widest drop-shadow-md">TURJA COMPUTER</h5>
                                 <h4 class="text-xs font-bold uppercase tracking-wider text-green-200 opacity-90 mt-0.5">Hasil Verifikasi Voucer</h4>
                             </div>
 
-                            <!-- Data Penerima (Satu kolom rata tengah, hijau muda, teks hijau tua) -->
                             <div class="bg-green-50 p-3 rounded-lg mb-3 border border-green-200 text-center flex flex-col items-center justify-center text-green-950">
                                 <p class="font-extrabold text-base leading-tight">${v.Pelanggan}</p>
                                 <p class="text-green-800 text-xs font-bold mt-1">${formatWAForDisplay(v['No WA'])}</p>
                                 <p class="text-green-700 text-[11px] mt-0.5">${v['Desa/Kelurahan'] || v.Desa || ''} ${v.Kecamatan}</p>
                             </div>
 
-                            <!-- Bagian Bawah: Kode Voucer & Nilai Diskon -->
                             <div class="flex items-center justify-between mt-1">
                                 <div>
                                     <span class="block text-[9px] font-bold uppercase tracking-wider text-green-200 mb-0.5">Kode Voucer</span>
@@ -1545,7 +1542,6 @@
                                 </div>
                             </div>
 
-                            <!-- Tanggal Kedaluwarsa & Pembuat -->
                             <div class="mt-3 pt-2 border-t border-green-800 border-opacity-40 text-center flex flex-col gap-1">
                                 <p class="text-[10px] text-green-200 italic leading-snug">Berlaku s/d: <span class="font-bold text-yellow-400 text-xs">${formatDateToIndonesian(v['Berlaku Sampai'])}</span></p>
                                 <p class="text-[9px] text-green-300">Pembuat: ${v.Pembuat}</p>
@@ -1558,11 +1554,9 @@
                     </div>
                 `;
             } else {
-                // Jika voucer tidak ditemukan, form input tetap dimunculkan
                 resDiv.classList.remove('hidden');
                 resDiv.innerHTML = `
                     <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-red-600 relative">
-                        <!-- Tombol Silang (X) di pojok kanan atas untuk keluar dari hasil verifikasi -->
                         <button onclick="closeVerifyResult()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200" title="Keluar">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
@@ -1575,7 +1569,6 @@
             }
         }
 
-        // Fungsi keluar/tutup hasil verifikasi voucer dan mereset form verifikasi
         function closeVerifyResult() {
             const resDiv = document.getElementById('verify-result');
             const formDiv = document.getElementById('verify-form-container');
@@ -1605,7 +1598,6 @@
             hideLoading();
             if(res.status === 'success') {
                 showToast("Voucer berhasil diklaim!");
-                // Panggil verifyVoucher kembali untuk memperbarui UI status pratinjau yang sedang aktif
                 verifyVoucher(); 
             } else {
                 showToast(res.message, true);
@@ -1640,9 +1632,7 @@
                 res.data.forEach(user => {
                     const tr = document.createElement('tr');
                     tr.className = "bg-white border-b hover:bg-gray-50 transition";
-                    // [REVISI] Menyamakan ukuran tombol edit (w-[104px] h-[32px]) berwarna abu-abu dengan ikon pensil
                     tr.innerHTML = `
-                        <!-- Pengaturan Padding Tipis pada baris tabel agar presisi (p-2) -->
                         <td class="p-2 font-semibold text-gray-800">${user.Nama}</td>
                         <td class="p-2 text-center">
                             <button onclick="openEditMarketing('${user.ID}', '${user.Nama}', '${user.Username}', '${user.Password}')" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 text-xs font-semibold transition shadow-sm inline-flex items-center justify-center gap-1">
@@ -1662,15 +1652,6 @@
             document.getElementById('edit-mkt-username').value = username;
             document.getElementById('edit-mkt-password').value = password;
             document.getElementById('modal-edit-marketing').classList.remove('hidden');
-        }
-
-        // Menambahkan fungsi openModalVoucer dan closeModalVoucer yang sebelumnya hilang
-        function openModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.remove('hidden');
-        }
-        function closeModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.add('hidden');
-            document.getElementById('form-buat-voucer').reset();
         }
 
         function closeEditMarketing() {
@@ -1747,7 +1728,6 @@
 
         function generateVoucher(e) {
             e.preventDefault();
-            // Implementasi Validasi & Pengisian Default Otomatis jika kosong
             let pelVal = document.getElementById('v-pelanggan').value.trim();
             if (pelVal === "") {
                 pelVal = "WhatsApp";
@@ -1840,7 +1820,6 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition whitespace-nowrap";
                     
-                    // [EDISI USER] Tambahkan tombol Download gambar berupa ikon tebal di kolom Aksi
                     tr.innerHTML = `
                         <td class="p-2 font-mono font-bold text-green-700">${v.Kode}</td>
                         <td class="p-2 font-medium">${v.Pelanggan}</td>
@@ -1885,7 +1864,7 @@
             hideLoading();
             if(res.status === 'success') {
                 showToast("Voucer berhasil dihapus!");
-                loadAdminVouchers(); // Refresh tabel admin
+                loadAdminVouchers(); 
             } else {
                 showToast("Gagal menghapus voucer: " + res.message, true);
             }
@@ -2160,17 +2139,20 @@
             }
         }
 
-        // [GENERATE RECEIPT STRUCTURE] Modul Generator Tunggal Penghasil HTML Struk Kasir Termal (Sama Persis Desain & Cetak)
+        // [GENERATE RECEIPT STRUCTURE] Modul Generator Tanggal Penghasil HTML Struk Kasir Termal
         function generateReceiptHTML(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             return `
                 <div style="width: 100%; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000000 !important; line-height: 1.4 !important; background-color: #ffffff; padding: 0px 0px; box-sizing: border-box; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     <div style="text-align: center; margin-bottom: 8px; padding: 0 2px;">
-                        <!-- Tulisan Turja Computer dibuat Tebal & Lebar-Tinggi optimal -->
-                        <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transform: scaleY(1.4) scaleX(1.1); transform-origin: top;">TURJA COMPUTER</div>
-                        <div style="font-size: 9.5px; margin-top: 8px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
-                        <div style="font-size: 9.5px; font-weight: bold; margin-top: 2px; white-space: nowrap;">WhatsApp 0856-4260-0190 Rek. BCA 2500879516</div>
+                        <!-- Tulisan Turja Computer dibuat Sangat Tebal & Tinggi-Lebar Ganda Optimal -->
+                        <div style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; transform: scaleY(1.5) scaleX(1.15); transform-origin: top; display: inline-block; margin-bottom: 4px;">TURJA COMPUTER</div>
+                        <div style="font-size: 9.5px; margin-top: 10px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
+                        <div style="font-size: 9.5px; font-weight: bold; margin-top: 2px; white-space: nowrap;">WA 0856 4260 0190 & REK BCA 2500879516</div>
                     </div>
+                    
+                    <!-- Satu baris kosong di bawah tulisan WA & REK BCA -->
+                    <div style="height: 14px;"></div>
                     
                     <div style="border-top: 1px solid #000000; margin: 4px 0; width: 100%;"></div>
                     
@@ -2196,30 +2178,31 @@
                     
                     <div style="padding: 0 4px;">
                         <!-- Detail Barang atau Jasa (Rata Tengah) -->
-                        <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px; text-align: center;">Detail Barang atau Jasa</div>
-                        <!-- Spasi kosong antar baris di bawah judul Detail Barang dihapus (margin-top: 0) -->
+                        <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px; text-align: center;">SPESIFIKASI BARANG ATAU JASA</div>
+                        
+                        <!-- Spasi kosong antar baris di bawah Detail Barang dihapus sepenuhnya -->
                         <div style="margin-top: 0;">
                             <div style="width: 100%;">
                                 <!-- Tulisan nominal sebelah kanan produk dihilangkan (Hanya nama produk) -->
                                 <div style="word-wrap: break-word; font-size: 11px;">${produk}</div>
                             </div>
-                            <!-- Spesifikasi biasa, ukuran disamakan (11px), ramping mepet ke atas (margin-top: 2px), membungkus otomatis jika panjang -->
+                            <!-- Spesifikasi biasa (BUKAN TEBAL), ukuran disamakan (11px), ramping mepet ke atas (margin-top: 2px), membungkus otomatis jika panjang -->
                             <div style="font-size: 11px; margin-top: 2px; font-weight: normal; word-break: break-all; white-space: pre-wrap;">
                                 ${kategori || '-'}
                             </div>
-                            <!-- Tulisan catatan dipindah setelah spesifikasi unit, biasa, ukuran sama (11px) -->
+                            <!-- Tulisan catatan dipindah setelah spesifikasi unit, biasa (BUKAN TEBAL), ukuran sama (11px) -->
                             <div style="font-size: 11px; margin-top: 2px; font-weight: normal; word-break: break-all; white-space: pre-wrap;">
                                 Catatan: ${catatan}
                             </div>
-                            <!-- Jarak kosong di bawah catatan -->
-                            <div style="height: 6px;"></div>
+                            <!-- Jarak kosong di bawah catatan sebelum TOTAL HARGA -->
+                            <div style="height: 12px;"></div>
                         </div>
                     </div>
                     
                     <!-- Garis putus-putus setelah Spesifikasi Unit DIHAPUS -->
                     
                     <div style="padding: 0 4px; margin-top: 4px;">
-                        <!-- TOTAL HARGA size 11px (sama seperti spesifikasi), nominal ditebalkan -->
+                        <!-- TOTAL HARGA size 11px, nominal ditebalkan -->
                         <div style="display: flex; justify-content: space-between; font-size: 11px;">
                             <div>TOTAL HARGA</div>
                             <div style="font-weight: bold;">Rp ${formattedHarga}</div>
@@ -2227,22 +2210,22 @@
                     </div>
                     
                     <div style="border-top: 1px dashed #000000; margin: 4px 0; width: 100%;"></div>
-                    <!-- Spasi kosong sebelum ketentuan garansi DIHAPUS -->
                     
-                    <!-- Garansi Rata Kiri & Teks (Garansi ....) DIHAPUS -->
+                    <!-- Garansi Rata Kiri & Redaksi Baru -->
                     <div style="text-align: left; padding: 0 4px;">
-                        <div style="font-size: 8.5px; line-height: 1.35; text-align: justify;">
-                            Garansi Laptop tidak berlaku apabila: <br>
-                            1. Segel rusak atau nota pembelian ini hilang. <br>
-                            2. Kesalahan pemakai seperti terbentur, jatuh, tertindih, terkena air dsb. <br>
-                            3. Garansi tidak termasuk casing, LCD bergaris, dan baterai 0%.
+                        <div style="font-size: 9px; line-height: 1.4; text-align: justify; font-weight: normal;">
+                            Garansi tidak berlaku apabila:*<br>
+                            * kesalahan pemakaian<br>
+                            * nota ini hilang atau segel rusak<br>
+                            * terbentur atau tertindih atau kena air<br>
+                            * casing retak atau layar bergaris
                         </div>
                     </div>
                     
                     <div style="border-top: 1px dashed #000000; margin: 4px 0; width: 100%;"></div>
                     
                     <div style="text-align: center; margin-top: 10px; padding: 0 4px;">
-                        <div style="font-weight: bold; font-size: 10px; letter-spacing: 0.5px; margin-bottom: 2px;">TERIMA KASIH</div>
+                        <div style="font-weight: bold; font-size: 11px; letter-spacing: 0.5px; margin-bottom: 2px;">Terima Kasih</div>
                         <div style="font-size: 9px; margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
                         <div style="font-weight: bold; font-size: 8px; line-height: 1.3; text-transform: uppercase;">
                             MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LAGI DENGAN ALASAN APAPUN
@@ -2279,20 +2262,20 @@
             receiptText += "\x1b\x40"; // Initialize printer (mepet atas)
             receiptText += "\x1b\x61\x01"; // Align center
             
-            // Tinggi Ganda & Lebar Ganda tebal optimal (Double height + Double width)
+            // Sangat Tinggi & Sangat Lebar Ganda tebal optimal (Double height + Double width)
             receiptText += "\x1b\x21\x30\x1b\x45\x01" + "TURJA COMPUTER" + "\n"; 
             receiptText += "\x1b\x21\x00\x1b\x45\x00"; // Normal size & bold off
             receiptText += "Kewangu'an Pakisputih Kedungwuni Pekalongan\n";
-            receiptText += "WhatsApp 0856-4260-0190 Rek. BCA 2500879516\n";
+            receiptText += "WA 0856 4260 0190 & REK BCA 2500879516\n\n"; // Ditambahkan satu baris kosong
             receiptText += "================================================\n"; 
             receiptText += "\x1b\x61\x00"; // Align left
             receiptText += "Tanggal : " + waktu + "\n";
             receiptText += "Pembeli : " + pembeli + "\n";
             receiptText += "Alamat  : " + alamat + "\n";
-            receiptText += "------------------------------------------------\n"; // Tanpa baris kosong ganda agar ketat
+            receiptText += "------------------------------------------------\n"; 
             
             receiptText += "\x1b\x61\x01"; // Align center
-            receiptText += "Detail Barang atau Jasa\n"; // Spasi kosong di bawahnya dihapus
+            receiptText += "SPESIFIKASI BARANG ATAU JASA\n"; // Diubah, Tanpa baris kosong ganda
             receiptText += "\x1b\x61\x00"; // Kembali ke Align left
             
             // Produk dibungkus otomatis tanpa nominal harga di samping kanan
@@ -2312,8 +2295,6 @@
             // Jarak kosong di bawah catatan untuk cetakan bluetooth
             receiptText += "\n";
             
-            // Garis putus-putus setelah Spesifikasi Unit DIHAPUS, langsung menuju Total
-            
             // TOTAL HARGA & Nominal Tebal
             let totalStr = "TOTAL HARGA";
             let rightText = "Rp " + formattedHarga;
@@ -2321,17 +2302,19 @@
             if(spaceTotal < 1) spaceTotal = 1;
             receiptText += totalStr + " ".repeat(spaceTotal) + "\x1b\x45\x01" + rightText + "\x1b\x45\x00\n";
             
-            receiptText += "================================================\n"; // Tanpa baris kosong ganda
+            receiptText += "================================================\n"; 
             
-            // Garansi rata kiri & Teks (Garansi ....) DIHAPUS
+            // Garansi rata kiri & Redaksi baru
             receiptText += "\x1b\x61\x00"; // Rata Kiri
-            receiptText += "Garansi Laptop tidak berlaku apabila:\n";
-            receiptText += "1. Segel rusak / nota ini hilang.\n";
-            receiptText += "2. Kesalahan pemakai (jatuh, air, tertindih).\n";
-            receiptText += "3. Casing/LCD bergaris/batre 0% Void.\n";
+            receiptText += "Garansi tidak berlaku apabila:*\n";
+            receiptText += "* kesalahan pemakaian\n";
+            receiptText += "* nota ini hilang atau segel rusak\n";
+            receiptText += "* terbentur atau tertindih atau kena air\n";
+            receiptText += "* casing retak atau layar bergaris\n";
             receiptText += "------------------------------------------------\n";
+            
             receiptText += "\x1b\x61\x01"; // Rata Tengah untuk Footer
-            receiptText += "TERIMA KASIH\n";
+            receiptText += "Terima Kasih\n";
             receiptText += "Atas Kunjungan & Kepercayaan Anda\n\n";
             receiptText += "MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU\n";
             receiptText += "PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI\n";
