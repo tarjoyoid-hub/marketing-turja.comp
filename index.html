@@ -1678,15 +1678,6 @@
             document.getElementById('modal-edit-marketing').classList.remove('hidden');
         }
 
-        // Menambahkan fungsi openModalVoucer dan closeModalVoucer yang sebelumnya hilang
-        function openModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.remove('hidden');
-        }
-        function closeModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.add('hidden');
-            document.getElementById('form-buat-voucer').reset();
-        }
-
         function closeEditMarketing() {
             document.getElementById('modal-edit-marketing').classList.add('hidden');
             document.getElementById('form-edit-marketing').reset();
@@ -2180,7 +2171,8 @@
             return `
                 <div style="width: 100%; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000000 !important; line-height: 1.4 !important; background-color: #ffffff; padding: 5px 0; box-sizing: border-box; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     <div style="text-align: center; margin-bottom: 8px; padding: 0 2px;">
-                        <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transform: scaleY(1.4) scaleX(1.1); transform-origin: top;">TURJA COMPUTER</div>
+                        <!-- TURJA COMPUTER - Tinggi, tebal, & gagah maksimal -->
+                        <div style="font-size: 26px !important; font-weight: 900 !important; font-family: 'Arial Black', Impact, sans-serif !important; text-transform: uppercase; letter-spacing: 1px; transform: scaleY(1.7) scaleX(1.0); transform-origin: top; margin-top: 5px; margin-bottom: 12px; -webkit-font-smoothing: antialiased; line-height: 1.1;">TURJA COMPUTER</div>
                         <div style="font-size: 9.5px; margin-top: 8px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
                         <div style="font-size: 9.5px; font-weight: bold; margin-top: 2px; white-space: nowrap;">WhatsApp 0856-4260-0190 Rek. BCA 2500879516</div>
                     </div>
@@ -2206,22 +2198,23 @@
                     </table>
                     
                     <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
-                    <div style="height: 6px;"></div> <!-- Spasi Kosong Setelah Garis Putus -->
+                    <div style="height: 6px;"></div>
                     
                     <div style="padding: 0 4px;">
-                        <div style="font-weight: bold; font-size: 10px; margin-bottom: 8px; text-align: center;">Detail Barang atau Jasa</div> <!-- Rata Tengah & Teks Diubah -->
+                        <!-- Detail Barang atau Jasa - Rata Tengah & Teks Diubah -->
+                        <div style="font-weight: bold; font-size: 11px; margin-bottom: 8px; text-align: center;">Detail Barang atau Jasa</div>
                         <div style="margin-top: 0;">
                             <div style="width: 100%;">
                                 <div style="word-wrap: break-word;">${produk}</div>
                             </div>
-                            <!-- Spesifikasi ramping (margin 0), tebal -->
+                            <!-- Spesifikasi ramping, tebal -->
                             <div style="font-size: 10px; margin-top: 0px; font-weight: bold;">
                                 ${kategori || '-'}
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Garis Putus-putus setelah spesifikasi DIHAPUS -->
+                    <!-- Garis Putus-putus setelah spesifikasi unit telah DIHAPUS penuh -->
                     
                     <div style="padding: 0 4px; margin-top: 6px;">
                         <div style="display: flex; justify-content: space-between; font-size: 11px;">
@@ -2235,12 +2228,11 @@
                         </div>
                     </div>
                     
-                    <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
-                    <!-- Spasi kosong sebelum ketentuan garansi DIHAPUS -->
+                    <div style="border-top: 1px dashed #000000; margin: 2px 0; width: 100%;"></div>
+                    <!-- Jeda spasi kosong vertikal berlebih di atas ketentuan garansi DIHAPUS -->
                     
-                    <!-- Garansi Rata Kiri -->
-                    <div style="text-align: left; padding: 0 4px;">
-                        <!-- Teks (Garansi .... Minggu/ Bulan) DIHAPUS -->
+                    <!-- Garansi Rata Kiri & Teks Placeholder (Garansi .... Minggu/ Bulan) Bersih Dihapus -->
+                    <div style="text-align: left; padding: 0 4px; margin-top: 2px;">
                         <div style="font-size: 8.5px; line-height: 1.35; text-align: justify;">
                             Garansi Laptop tidak berlaku apabila: <br>
                             1. Segel rusak atau nota pembelian ini hilang. <br>
@@ -2269,7 +2261,6 @@
             // Format ESC/POS Murni untuk Printer Termal
             let receiptText = "";
             receiptText += "\x1b\x61\x01"; // Align center
-            // \x1b\x21\x30 mengaktifkan Tinggi Ganda (0x10) dan Lebar Ganda (0x20) sekaligus
             receiptText += "\x1b\x21\x30\x1b\x45\x01" + "TURJA COMPUTER" + "\n"; 
             receiptText += "\x1b\x21\x00\x1b\x45\x00"; // Normal size & bold off
             receiptText += "Kewangu'an Pakisputih Kedungwuni Pekalongan\n";
@@ -2279,10 +2270,10 @@
             receiptText += "Tanggal : " + waktu + "\n";
             receiptText += "Pembeli : " + pembeli + "\n";
             receiptText += "Alamat  : " + alamat + "\n";
-            receiptText += "------------------------------------------------\n\n"; // Jarak kosong setelah putus-putus
+            receiptText += "------------------------------------------------\n\n"; 
             
             receiptText += "\x1b\x61\x01"; // Align center
-            receiptText += "Detail Barang atau Jasa\n\n"; // Jarak kosong setelah judul
+            receiptText += "Detail Barang atau Jasa\n\n"; 
             receiptText += "\x1b\x61\x00"; // Kembali ke Align left
             
             // Logika format produk (tanpa harga nominal)
@@ -2295,7 +2286,7 @@
                 receiptText += "\x1b\x45\x01" + kategori.substring(0, 48) + "\x1b\x45\x00\n";
             }
             
-            // Garis putus-putus dan jarak dihapus di sini
+            // Garis putus-putus setelah spesifikasi unit DIHAPUS
             
             // TOTAL HARGA & Nominal Tebal
             let totalStr = "TOTAL HARGA";
@@ -2305,11 +2296,10 @@
             receiptText += totalStr + " ".repeat(spaceTotal) + "\x1b\x45\x01" + rightText + "\x1b\x45\x00\n";
             
             receiptText += "Catatan : " + catatan + "\n";
-            receiptText += "================================================\n"; // Jarak kosong setelah putus-putus DIHAPUS
+            receiptText += "================================================\n"; 
             
-            // Garansi rata kiri
-            receiptText += "\x1b\x61\x00"; // Rata Kiri
-            // Teks (Garansi .... Minggu/ Bulan) DIHAPUS
+            // Garansi rata kiri & teks placeholder dihapus
+            receiptText += "\x1b\x61\x00"; 
             receiptText += "Garansi Laptop tidak berlaku apabila:\n";
             receiptText += "1. Segel rusak / nota ini hilang.\n";
             receiptText += "2. Kesalahan pemakai (jatuh, air, tertindih).\n";
@@ -2334,7 +2324,6 @@
                 // Mencoba melakukan auto-reconnect jika printer tersimpan
                 if (!connectedPrinterCharacteristic && localStorage.getItem('pairedPrinterName')) {
                     showToast("Mencoba menghubungkan ulang ke printer...");
-                    // Web Bluetooth memerlukan interaksi pengguna awal untuk inisiasi ulang gatt server
                     await pairBluetoothPrinter();
                 }
 
@@ -2344,9 +2333,7 @@
                     hideLoading();
                     showToast("Struk kasir sukses dicetak!");
                 } else {
-                    // JIKA GAGAL: Tidak langsung dilempar ke PDF, melainkan diberi notifikasi dan instruksi agar menyandingkan ulang
                     showToast("Printer belum terhubung! Silakan sandingkan printer kasir Anda terlebih dahulu.", true);
-                    // Buka modal kembali untuk memberikan kesempatan menyandingkan perangkat kasir
                     document.getElementById('modal-print-confirm').classList.remove('hidden');
                 }
             } catch (err) {
@@ -2483,150 +2470,4 @@
         // Unduhan berkas gambar voucer dari canvas
         function downloadVoucherImage() {
             if(!activeVoucherData) return;
-            drawAndDownloadVoucher(activeVoucherData.kode, activeVoucherData.pelanggan, activeVoucherData.nowa, activeVoucherData.desa, activeVoucherData.kecamatan, activeVoucherData.tanggal);
-        }
-
-        function drawAndDownloadVoucher(kode, pelanggan, nowa, desa, kecamatan, tanggal) {
-            const canvas = document.getElementById('voucherCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = 600;
-            canvas.height = 420;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const grad = ctx.createLinearGradient(0, 0, 600, 420);
-            grad.addColorStop(0, '#991b1b');   
-            grad.addColorStop(0.5, '#7f1d1d');  
-            grad.addColorStop(1, '#450a0a');    
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 600, 420);
-
-            ctx.strokeStyle = 'rgba(250, 204, 21, 0.2)'; 
-            ctx.lineWidth = 2;
-            
-            ctx.beginPath();
-            ctx.arc(680, 0, 96, 0, 2 * Math.PI);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(0, 420, 96, 0, 2 * Math.PI);
-            ctx.stroke();
-
-            ctx.strokeStyle = '#ffffff'; 
-            ctx.lineWidth = 4;
-            ctx.setLineDash([12, 8]); 
-            ctx.strokeRect(8, 8, 584, 404); 
-            ctx.setLineDash([]); 
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#facc15'; 
-            ctx.font = '900 36px sans-serif'; 
-            ctx.fillText('TURJA COMPUTER', 300, 75);
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.font = 'bold 16px sans-serif';
-            ctx.fillText('Voucher Diskon Eksklusif', 300, 100);
-
-            ctx.strokeStyle = 'rgba(234, 179, 8, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(150, 112);
-            ctx.lineTo(450, 112);
-            ctx.stroke();
-
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-            const boxX = 100;
-            const boxY = 135;
-            const boxW = 400;
-            const boxH = 110;
-            
-            ctx.beginPath();
-            if (ctx.roundRect) {
-                ctx.roundRect(boxX, boxY, boxW, boxH, 10);
-            } else {
-                ctx.rect(boxX, boxY, boxW, boxH);
-            }
-            ctx.fill();
-            
-            ctx.strokeStyle = 'rgba(153, 27, 27, 0.8)'; 
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 28px sans-serif';
-            ctx.fillText(pelanggan, 300, 172); 
-
-            ctx.fillStyle = '#fde047'; 
-            ctx.font = 'bold 20px sans-serif'; 
-            ctx.fillText(formatWAForDisplay(nowa), 300, 202); 
-
-            ctx.fillStyle = '#e2e8f0'; 
-            ctx.font = '16px sans-serif';
-            ctx.fillText(`${desa} ${kecamatan}`, 300, 228); 
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#d1d5db'; 
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText('KODE VOUCER', 50, 288);
-
-            ctx.fillStyle = '#ffffff';
-            if (ctx.roundRect) {
-                ctx.beginPath();
-                ctx.roundRect(50, 296, 220, 48, 8);
-                ctx.fill();
-            } else {
-                ctx.fillRect(50, 296, 220, 48);
-            }
-
-            ctx.fillStyle = '#4c0519'; 
-            ctx.font = 'bold 26px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(kode, 160, 330);
-
-            ctx.textAlign = 'right';
-            ctx.fillStyle = '#facc15'; 
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText('NILAI VOUCHER', 550, 288);
-
-            ctx.fillStyle = '#facc15'; 
-            ctx.font = '900 46px "Arial Black", sans-serif';
-            ctx.fillText('100 Rb', 550, 338);
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fecaca'; 
-            ctx.font = 'italic 14px sans-serif';
-            ctx.fillText('Tunjukan Kode Voucer ini Saat Belanja Laptop atau Komputer', 300, 375);
-
-            ctx.strokeStyle = 'rgba(153, 27, 27, 0.4)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(180, 385);
-            ctx.lineTo(450, 385);
-            ctx.stroke();
-
-            const text1 = "Berlaku s/d: ";
-            const text2 = tanggal;
-            
-            ctx.font = '15px sans-serif';
-            const w1 = ctx.measureText(text1).width;
-            const w2 = ctx.measureText(text2).width;
-            
-            const startX = 300 - (w1 + w2) / 2;
-            ctx.textAlign = 'left';
-            
-            ctx.fillStyle = '#d1d5db'; 
-            ctx.font = '15px sans-serif';
-            ctx.fillText(text1, startX, 402);
-            
-            ctx.fillStyle = '#facc15'; 
-            ctx.font = 'bold 15px sans-serif';
-            ctx.fillText(text2, startX + w1, 402);
-
-            const link = document.createElement('a');
-            link.download = `Voucer_${kode}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-    </script>
-</body>
-</html>
+            drawAndDownloadVoucher(active
