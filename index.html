@@ -2179,9 +2179,9 @@
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             return `
                 <div style="width: 100%; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000000 !important; line-height: 1.4 !important; background-color: #ffffff; padding: 5px 0; box-sizing: border-box; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                    <div style="text-align: center; margin-bottom: 5px; padding: 0 2px;">
-                        <div style="font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transform: scaleX(1.3); transform-origin: center;">Turja Computer</div>
-                        <div style="font-size: 9.5px; margin-top: 4px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
+                    <div style="text-align: center; margin-bottom: 8px; padding: 0 2px;">
+                        <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transform: scaleY(1.4) scaleX(1.1); transform-origin: top;">TURJA COMPUTER</div>
+                        <div style="font-size: 9.5px; margin-top: 8px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
                         <div style="font-size: 9.5px; font-weight: bold; margin-top: 2px; white-space: nowrap;">WhatsApp 0856-4260-0190 Rek. BCA 2500879516</div>
                     </div>
                     
@@ -2209,7 +2209,7 @@
                     <div style="height: 6px;"></div> <!-- Spasi Kosong Setelah Garis Putus -->
                     
                     <div style="padding: 0 4px;">
-                        <div style="font-weight: bold; font-size: 10px; margin-bottom: 8px;">Detail Pembelian Barang atau Jasa</div> <!-- Spasi Kosong Setelah Judul -->
+                        <div style="font-weight: bold; font-size: 10px; margin-bottom: 8px; text-align: center;">Detail Barang atau Jasa</div> <!-- Rata Tengah & Teks Diubah -->
                         <div style="margin-top: 0;">
                             <div style="width: 100%;">
                                 <div style="word-wrap: break-word;">${produk}</div>
@@ -2221,10 +2221,9 @@
                         </div>
                     </div>
                     
-                    <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
-                    <div style="height: 6px;"></div> <!-- Spasi Kosong Setelah Garis Putus -->
+                    <!-- Garis Putus-putus setelah spesifikasi DIHAPUS -->
                     
-                    <div style="padding: 0 4px;">
+                    <div style="padding: 0 4px; margin-top: 6px;">
                         <div style="display: flex; justify-content: space-between; font-size: 11px;">
                             <div>TOTAL HARGA</div>
                             <div style="font-weight: bold;">Rp ${formattedHarga}</div>
@@ -2237,11 +2236,11 @@
                     </div>
                     
                     <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
-                    <div style="height: 6px;"></div> <!-- Spasi Kosong Setelah Garis Putus -->
+                    <!-- Spasi kosong sebelum ketentuan garansi DIHAPUS -->
                     
                     <!-- Garansi Rata Kiri -->
-                    <div style="text-align: left; margin-top: 4px; padding: 0 4px;">
-                        <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 4px;">(Garansi .... Minggu/ Bulan)</div>
+                    <div style="text-align: left; padding: 0 4px;">
+                        <!-- Teks (Garansi .... Minggu/ Bulan) DIHAPUS -->
                         <div style="font-size: 8.5px; line-height: 1.35; text-align: justify;">
                             Garansi Laptop tidak berlaku apabila: <br>
                             1. Segel rusak atau nota pembelian ini hilang. <br>
@@ -2270,7 +2269,8 @@
             // Format ESC/POS Murni untuk Printer Termal
             let receiptText = "";
             receiptText += "\x1b\x61\x01"; // Align center
-            receiptText += "\x1b\x21\x20\x1b\x45\x01" + "TURJA COMPUTER" + "\n"; // Lebar ganda & Cetak Tebal
+            // \x1b\x21\x30 mengaktifkan Tinggi Ganda (0x10) dan Lebar Ganda (0x20) sekaligus
+            receiptText += "\x1b\x21\x30\x1b\x45\x01" + "TURJA COMPUTER" + "\n"; 
             receiptText += "\x1b\x21\x00\x1b\x45\x00"; // Normal size & bold off
             receiptText += "Kewangu'an Pakisputih Kedungwuni Pekalongan\n";
             receiptText += "WhatsApp 0856-4260-0190 Rek. BCA 2500879516\n";
@@ -2280,7 +2280,10 @@
             receiptText += "Pembeli : " + pembeli + "\n";
             receiptText += "Alamat  : " + alamat + "\n";
             receiptText += "------------------------------------------------\n\n"; // Jarak kosong setelah putus-putus
-            receiptText += "Detail Pembelian Barang atau Jasa\n\n"; // Jarak kosong setelah judul
+            
+            receiptText += "\x1b\x61\x01"; // Align center
+            receiptText += "Detail Barang atau Jasa\n\n"; // Jarak kosong setelah judul
+            receiptText += "\x1b\x61\x00"; // Kembali ke Align left
             
             // Logika format produk (tanpa harga nominal)
             let leftText = produk;
@@ -2292,7 +2295,7 @@
                 receiptText += "\x1b\x45\x01" + kategori.substring(0, 48) + "\x1b\x45\x00\n";
             }
             
-            receiptText += "------------------------------------------------\n\n"; // Jarak kosong setelah putus-putus
+            // Garis putus-putus dan jarak dihapus di sini
             
             // TOTAL HARGA & Nominal Tebal
             let totalStr = "TOTAL HARGA";
@@ -2302,11 +2305,11 @@
             receiptText += totalStr + " ".repeat(spaceTotal) + "\x1b\x45\x01" + rightText + "\x1b\x45\x00\n";
             
             receiptText += "Catatan : " + catatan + "\n";
-            receiptText += "================================================\n\n"; // Jarak kosong setelah putus-putus
+            receiptText += "================================================\n"; // Jarak kosong setelah putus-putus DIHAPUS
             
             // Garansi rata kiri
             receiptText += "\x1b\x61\x00"; // Rata Kiri
-            receiptText += "(Garansi .... Minggu/ Bulan)\n";
+            // Teks (Garansi .... Minggu/ Bulan) DIHAPUS
             receiptText += "Garansi Laptop tidak berlaku apabila:\n";
             receiptText += "1. Segel rusak / nota ini hilang.\n";
             receiptText += "2. Kesalahan pemakai (jatuh, air, tertindih).\n";
