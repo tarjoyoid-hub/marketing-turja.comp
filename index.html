@@ -228,6 +228,7 @@
                     <!-- Form Input Verifikasi (Akan disembunyikan saat hasil pratinjau muncul) -->
                     <div id="verify-form-container" class="bg-white p-8 rounded-xl shadow-md border-t-4 border-green-700 text-center">
                         <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
+                        <!-- Teks petunjuk verifikasi diubah sesuai instruksi -->
                         <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer dan Silahkan Klik Tombol Verifikasi</p>
                         <div class="flex flex-col gap-4 mb-6 justify-center items-center">
                             <input type="text" id="verify-code" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-widest uppercase">
@@ -248,6 +249,7 @@
                         <div class="flex items-center gap-2">
                             <!-- Tombol Tambah dipindahkan ke sini -->
                             <span id="btn-toggle-penjualan-container" class="hidden">
+                                <!-- Tombol tambah diubah menjadi warna oranye (bg-orange-600 hover:bg-orange-700) -->
                                 <button onclick="openModalPenjualan()" class="bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 text-sm font-semibold shadow transition flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Tambah
@@ -285,14 +287,17 @@
                 
                 <!-- Manajemen Akun Marketing -->
                 <div class="mb-8 border-b pb-6 max-w-md">
+                    <!-- Penyelarasan letak tombol Buat Akun agar sejajar vertikal lurus -->
                     <div class="flex flex-row justify-between items-center mb-3">
                         <h3 class="text-base font-semibold text-gray-800">Akun Marketing</h3>
+                        <!-- Tombol Buat Akun Baru diubah menjadi warna abu-abu (bg-gray-600 hover:bg-gray-700) dengan ukuran seragam w-[104px] h-[32px] -->
                         <button onclick="openModalMarketing()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 font-semibold shadow transition flex items-center justify-center gap-1 text-xs">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             Buat Akun
                         </button>
                     </div>
                     <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <!-- Ukuran Font Diubah Menjadi Lebih Kecil dan Presisi (text-xs) -->
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-200">
@@ -311,6 +316,7 @@
                         <span class="text-xs font-semibold text-gray-700">Masa Berlaku Voucer (Hari)</span>
                         <div class="flex items-center gap-2">
                             <input type="number" id="setting-masa-berlaku" min="1" max="30" placeholder="1-30" class="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-xs text-center focus:outline-none focus:border-green-600 font-semibold">
+                            <!-- Tombol simpan masa berlaku diubah menjadi warna abu-abu dengan ukuran w-[104px] h-[32px] -->
                             <button onclick="updateMasaBerlaku()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                                 Simpan
@@ -326,6 +332,7 @@
                     <form onsubmit="updateAdminCreds(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="update-admin-user" placeholder="Username Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
                         <input type="password" id="update-admin-pass" placeholder="Password Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
+                        <!-- Tombol ubah data admin diubah menjadi warna biru dengan ikon key-lock SVG -->
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 md:col-span-2 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-5 8a3 3 0 11-6 0 3 3 0 016 0zm6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 3h.01M12 12h.01"></path></svg>
                             Ubah Data Admin
@@ -534,27 +541,33 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="text-center mb-8">
+                <!-- Teks deskripsi sub-judul diperbarui sesuai instruksi -->
                 <h2 class="text-2xl font-bold text-gray-800">Buat Voucer Baru</h2>
                 <p class="text-gray-500 mt-2 text-sm">Input Data Calon Pelanggan Untuk Membuat Kartu Voucer</p>
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
+                <!-- Label Nama Pelanggan diubah menjadi wajib di UI, opsional secara internal diisi "WhatsApp" jika kosong -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label No WA (Opsional) diubah menjadi No WhatsApp (Opsional) -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No WhatsApp</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Desa diubah, opsional secara internal diisi "Selamat Terpilih" jika kosong -->
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Desa</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Kecamatan diubah, opsional secara internal diisi "Sebagai Penerima" jika kosong -->
                 <div class="mb-8">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
+                    <!-- Teks tombol diubah menjadi "Buat Voucer" -->
                     <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-800 transition shadow-md">
                         Buat Voucer
                     </button>
@@ -1112,7 +1125,7 @@
             else if (action === 'verifyVoucher') {
                 const found = offlineDb.voucer.find(v => v.Kode === payload.code);
                 if (found) result.data = found;
-                else result = { status: 'error', message: 'Voucer tidak ditemukan!' };
+                else result = { status: 'error', message: 'Voucer simulasi tidak ditemukan!' };
             }
             else if (action === 'claimVoucher') {
                 const index = offlineDb.voucer.findIndex(v => v.Kode === payload.code);
@@ -2111,12 +2124,6 @@
             const statusBadge = document.getElementById('printer-status-badge');
             const nameLabel = document.getElementById('printer-name-label');
             
-            // [FIX GAURDRAIL SECURITY POLICY] Melakukan pemeriksaan apakah browser atau iframe mendukung Web Bluetooth API
-            if (!navigator.bluetooth || typeof navigator.bluetooth.requestDevice !== 'function') {
-                showToast("Bluetooth tidak didukung oleh browser ini atau dilarang oleh kebijakan sandbox iFrame. Silakan gunakan tombol 'Simpan PDF' di bawah untuk mencetak langsung lewat menu bawaan perangkat Anda.", true);
-                return;
-            }
-            
             try {
                 showToast("Membuka jendela pencarian perangkat Bluetooth...");
                 
@@ -2161,13 +2168,89 @@
             } catch (err) {
                 hideLoading();
                 console.error("[PAIRING ERROR]", err);
-                // Menampilkan panduan error ramah saat Bluetooth di iFrame diblokir secara fisik oleh browser
-                if (err.name === 'SecurityError' || err.message.includes('disallowed')) {
-                    showToast("Bluetooth diblokir oleh iFrame peramban. Silakan gunakan tombol 'Simpan PDF' di bawah untuk mencetak.", true);
-                } else {
-                    showToast("Gagal menyandingkan printer. Pastikan perangkat aktif & belum terhubung ke HP lain.", true);
-                }
+                showToast("Gagal menyandingkan printer. Pastikan perangkat aktif & belum terhubung ke HP lain.", true);
             }
+        }
+
+        // [GENERATE RECEIPT STRUCTURE] Modul Generator Tunggal Penghasil HTML Struk Kasir Termal
+        function generateReceiptHTML(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
+            const formattedHarga = parseInt(harga).toLocaleString('id-ID');
+            return `
+                <div style="width: 100%; font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #000000; line-height: 1.4; background-color: #ffffff; padding: 10px; box-sizing: border-box; text-align: left;">
+                    <div style="text-align: center; margin-bottom: 5px;">
+                        <div style="font-size: 14px; font-weight: bold; text-transform: uppercase; color: #000000;">Turja Computer</div>
+                        <div style="font-size: 9px; margin-top: 2px; color: #000000;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
+                        <div style="font-size: 9px; font-weight: bold; margin-top: 2px; color: #000000;">WhatsApp 0856-4260-0190 Rek. BCA 2500879516</div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #000000; margin: 6px 0;"></div>
+                    
+                    <table style="width: 100%; font-size: 10px; border-collapse: collapse; color: #000000;">
+                        <tr>
+                            <td style="width: 25%; color: #000000;">Tanggal</td>
+                            <td style="width: 4%; color: #000000;">:</td>
+                            <td style="color: #000000;">${waktu}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #000000;">Pembeli</td>
+                            <td style="color: #000000;">:</td>
+                            <td style="font-weight: bold; color: #000000;">${pembeli}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #000000;">Alamat</td>
+                            <td style="color: #000000;">:</td>
+                            <td style="color: #000000;">${alamat}</td>
+                        </tr>
+                    </table>
+                    
+                    <div style="border-top: 1px dashed #000000; margin: 6px 0;"></div>
+                    
+                    <div style="font-weight: bold; font-size: 10px; margin-bottom: 2px; color: #000000;">Detail Pembelian Barang atau Jasa</div>
+                    <div style="margin-top: 2px; color: #000000;">
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <div style="font-weight: bold; width: 65%; word-wrap: break-word; color: #000000;">${produk}</div>
+                            <div style="font-weight: bold; width: 35%; text-align: right; color: #000000;">Rp ${formattedHarga}</div>
+                        </div>
+                        <div style="font-size: 9px; margin-top: 1px; font-weight: 500; color: #000000;">
+                            ${kategori || '-'}
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #000000; margin: 6px 0;"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; color: #000000;">
+                        <div>TOTAL</div>
+                        <div>Rp ${formattedHarga}</div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 2px; color: #000000;">
+                        <div>Catatan</div>
+                        <div style="font-weight: bold; color: #000000;">${catatan}</div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #000000; margin: 6px 0;"></div>
+                    
+                    <div style="text-align: center; margin-top: 4px; color: #000000;">
+                        <div style="font-weight: bold; font-size: 10.5px; margin-bottom: 4px; color: #000000;">(Garansi .... Minggu/ Bulan)</div>
+                        <div style="font-size: 8.5px; line-height: 1.35; text-align: justify; color: #000000;">
+                            Garansi Laptop tidak berlaku apabila: <br>
+                            1. Segel rusak atau nota pembelian ini hilang. <br>
+                            2. Kesalahan pemakai seperti terbentur, jatuh, tertindih, terkena air dsb. <br>
+                            3. Garansi tidak termasuk casing, LCD bergaris, dan baterai 0%.
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #000000; margin: 6px 0;"></div>
+                    
+                    <div style="text-align: center; margin-top: 10px; color: #000000;">
+                        <div style="font-weight: bold; font-size: 10px; letter-spacing: 0.5px; margin-bottom: 2px; color: #000000;">TERIMA KASIH</div>
+                        <div style="font-size: 9px; margin-bottom: 4px; color: #000000;">Atas Kunjungan & Kepercayaan Anda</div>
+                        <div style="font-weight: bold; font-size: 8px; line-height: 1.3; text-transform: uppercase; color: #000000;">
+                            MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LAGI DENGAN ALASAN APAPUN
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // Fungsi mencetak langsung ke Printer Bluetooth Kasir
@@ -2210,13 +2293,6 @@
             receiptText += "YANG SANGAT SULIT DITUKAR\n";
             receiptText += "\n\n\n\n"; // Feed paper
 
-            // [FIX GAURDRAIL SECURITY POLICY] Jika hardware Bluetooth diblokir di browser, arahkan langsung ke metode pencetakan sistem (Print/PDF)
-            if (!navigator.bluetooth || typeof navigator.bluetooth.requestDevice !== 'function') {
-                showToast("Akses Bluetooth peramban tidak diizinkan. Mengalihkan ke metode cetak sistem...", true);
-                printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan, true);
-                return;
-            }
-
             try {
                 // Mencoba melakukan auto-reconnect jika printer tersimpan
                 if (!connectedPrinterCharacteristic && localStorage.getItem('pairedPrinterName')) {
@@ -2226,11 +2302,6 @@
                 }
 
                 if (connectedPrinterCharacteristic) {
-                    // Memastikan device masih terkoneksi sebelum ngeprint, jika terputus hubungkan kembali
-                    if (pairedDevice && !pairedDevice.gatt.connected) {
-                        await pairedDevice.gatt.connect();
-                    }
-
                     showLoading();
                     await sendTextToPrinter(receiptText);
                     hideLoading();
