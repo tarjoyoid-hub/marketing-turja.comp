@@ -577,7 +577,7 @@
     </div>
 
     <!-- MODAL EDIT MARKETING -->
-    <div id="modal-edit-marketing" class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+    <div id="modal-edit-marketing" class="fixed inset-0 bg-gray-900 bg-opacity-60 z-50 hidden flex justify-center items-center p-4">
         <div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md border-t-4 border-green-700">
             <h2 class="text-xl font-bold mb-4 text-gray-800">Edit Akun Marketing</h2>
             <form id="form-edit-marketing" onsubmit="submitEditMarketing(event)">
@@ -639,13 +639,19 @@
     <div id="modal-print-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="max-w-xs w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700 text-center">
             <h3 class="text-lg font-bold text-gray-800 mb-2">Cetak Struk</h3>
-            <p class="text-sm text-gray-500 mb-6">Data penjualan berhasil disimpan. Apakah Anda ingin mencetak struk belanja?</p>
-            <div class="flex justify-center gap-4">
-                <button onclick="handlePrintNo()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm font-semibold">
-                    Tidak
+            <p class="text-sm text-gray-500 mb-6">Data penjualan berhasil disimpan. Apakah Anda ingin memproses dokumen struk belanja ini?</p>
+            <!-- Diubah: Menambahkan opsi Unduh PDF secara horizontal sejajar dengan opsi Cetak & Batal -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <button onclick="handlePrintNo()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-xs font-bold">
+                    Batal
                 </button>
-                <button onclick="handlePrintYes()" class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-sm font-semibold">
-                    Ya, Cetak
+                <button onclick="handlePrintYes('pdf')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Simpan PDF
+                </button>
+                <button onclick="handlePrintYes('print')" class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-xs font-bold flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak Struk
                 </button>
             </div>
         </div>
@@ -1504,7 +1510,7 @@
                             <div class="bg-green-50 p-3 rounded-lg mb-3 border border-green-200 text-center flex flex-col items-center justify-center text-green-950">
                                 <p class="font-extrabold text-base leading-tight">${v.Pelanggan}</p>
                                 <p class="text-green-800 text-xs font-bold mt-1">${formatWAForDisplay(v['No WA'])}</p>
-                                <p class="text-green-700 text-[11px] mt-0.5">${v['Desa/Kelurahan']} ${v.Kecamatan}</p>
+                                <p class="text-green-700 text-[11px] mt-0.5">${v['Desa/Kelurahan'] || v.Desa || ''} ${v.Kecamatan}</p>
                             </div>
 
                             <!-- Bagian Bawah: Kode Voucer & Nilai Diskon -->
@@ -2025,16 +2031,106 @@
             tempPrintData = null;
         }
 
-        function handlePrintYes() {
+        // Modifikasi fungsi cetak agar mendukung opsi "Cetak Langsung" (Printer Sanding) atau "Unduh PDF"
+        async function handlePrintYes(mode) {
             document.getElementById('modal-print-confirm').classList.add('hidden');
             if (tempPrintData) {
-                printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan);
+                if (mode === 'pdf') {
+                    // Cetak via dialog browser (Bisa disimpan sebagai PDF bawaan perangkat)
+                    printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan, true);
+                } else {
+                    // Cetak langsung menggunakan Web Bluetooth API ke printer kasir yang aktif
+                    printToBluetoothPrinter(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan);
+                }
             }
             tempPrintData = null;
         }
 
-        // [FIX] Mengubah semua font pada cetak struk kasir termal menjadi font web modern (Segoe UI / Sans-Serif) dan hitam pekat
-        function printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
+        // Integrasi Web Bluetooth API untuk Printer Kasir Termal 58mm / 80mm ESC/POS
+        let connectedPrinterCharacteristic = null;
+
+        async function printToBluetoothPrinter(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
+            const formattedHarga = parseInt(harga).toLocaleString('id-ID');
+            
+            // Format Data Teks Murni untuk Printer Termal Kasir (ESC/POS)
+            let receiptText = "";
+            receiptText += "\x1b\x61\x01"; // Align center
+            receiptText += "\x1b\x21\x10" + "TURJA COMPUTER" + "\n"; // Double height
+            receiptText += "\x1b\x21\x00"; // Normal size
+            receiptText += "Pakisputih Kedungwuni Pekalongan\n";
+            receiptText += "WA 0856-4260-0190 Rek. BCA 2500879516\n";
+            receiptText += "--------------------------------\n"; // 32 chars
+            receiptText += "\x1b\x61\x00"; // Align left
+            receiptText += "Tgl: " + waktu + "\n";
+            receiptText += "Plg: " + pembeli + "\n";
+            receiptText += "Alm: " + alamat + "\n";
+            receiptText += "--------------------------------\n";
+            receiptText += "Detail Pembelian Barang/Jasa:\n";
+            receiptText += produk.substring(0, 20) + " " + "Rp " + formattedHarga + "\n";
+            if (kategori) {
+                receiptText += " " + kategori.substring(0, 30) + "\n";
+            }
+            receiptText += "--------------------------------\n";
+            receiptText += "TOTAL: " + "Rp " + formattedHarga + "\n";
+            receiptText += "Catatan: " + catatan + "\n";
+            receiptText += "--------------------------------\n";
+            receiptText += "\x1b\x61\x01"; // Align center
+            receiptText += "(Garansi .... Minggu/ Bulan)\n";
+            receiptText += "Segel rusak / nota hilang = VOID.\n";
+            receiptText += "Cek fisik & detail saat membeli.\n";
+            receiptText += "MOHON UNTUK DI CEK KEMBALI\n";
+            receiptText += "BARANG YG SANGAT SULIT DITUKAR\n";
+            receiptText += "\n\n\n\n"; // Feed paper
+
+            // Transmisi via Bluetooth API
+            try {
+                // Gunakan device yang sudah disandingkan sebelumnya (jika ada di local memori cache)
+                if (connectedPrinterCharacteristic) {
+                    await sendTextToPrinter(receiptText);
+                    showToast("Struk berhasil dikirim ke printer!");
+                    return;
+                }
+
+                showToast("Mencari & menghubungkan ke printer bluetooth...");
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb', 'link_loss'] }],
+                    optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+                });
+
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+                const characteristics = await service.getCharacteristics();
+                
+                // Cari characteristic yang mendukung write/writeWithoutResponse
+                const writeChar = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
+                if (writeChar) {
+                    connectedPrinterCharacteristic = writeChar;
+                    await sendTextToPrinter(receiptText);
+                    showToast("Printer terhubung! Struk berhasil dicetak.");
+                } else {
+                    throw new Error("Karakteristik write printer tidak ditemukan.");
+                }
+            } catch (err) {
+                console.error("[PRINTER ERROR]", err);
+                showToast("Koneksi bluetooth gagal. Mengalihkan ke PDF/Print biasa...", true);
+                // Fallback otomatis ke print peramban biasa
+                printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan, true);
+            }
+        }
+
+        async function sendTextToPrinter(text) {
+            const encoder = new TextEncoder();
+            const bytes = encoder.encode(text);
+            // Kirim dalam potongan data kecil agar tidak buffer-overflow pada chip printer kasir
+            const chunkLimit = 20;
+            for (let i = 0; i < bytes.length; i += chunkLimit) {
+                const chunk = bytes.slice(i, i + chunkLimit);
+                await connectedPrinterCharacteristic.writeValue(chunk);
+            }
+        }
+
+        // Fungsi khusus format cetak struk kasir termal 80mm (Menggunakan Courier New mirip minimarket)
+        function printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan, autoTrigger = false) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
             let iframe = document.getElementById('printReceiptFrame');
@@ -2064,8 +2160,8 @@
                             width: 74mm;
                             margin: 0;
                             padding: 3mm;
-                            /* Menggunakan font web modern sans-serif */
-                            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+                            /* Menggunakan font Courier New autentik mirip kasir minimarket */
+                            font-family: 'Courier New', Courier, monospace;
                             font-size: 11px;
                             color: #000000;
                             background-color: #fff;
@@ -2082,7 +2178,7 @@
                             font-weight: 700;
                         }
                         .title {
-                            font-size: 15px;
+                            font-size: 14px;
                             margin: 0 0 2px 0;
                             text-transform: uppercase;
                             letter-spacing: 0.5px;
@@ -2125,12 +2221,12 @@
                             color: #000000;
                         }
                         .item-name {
-                            width: 60%;
+                            width: 65%;
                             word-wrap: break-word;
                             font-weight: 700;
                         }
                         .item-price {
-                            width: 40%;
+                            width: 35%;
                             text-align: right;
                             font-weight: 700;
                         }
@@ -2144,7 +2240,7 @@
                         }
                         .footer {
                             margin-top: 15px;
-                            font-size: 9px;
+                            font-size: 8px;
                             color: #000000;
                         }
                     </style>
@@ -2153,12 +2249,8 @@
                     <div class="text-center">
                         <div class="title bold">Turja Computer</div>
                         <div class="subtitle">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
-                        <!-- Diubah: Menggabungkan WhatsApp dan Rekening BCA menjadi satu baris horizontal tebal hitam pekat -->
                         <div class="subtitle" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-weight: 700; color: #000000;">
-                            <!-- WhatsApp SVG Icon -->
-                            <svg style="width: 11px; height: 11px;" viewBox="0 0 24 24" fill="#000000">
-                                <path d="M12.004 2C6.51 2 2.014 6.5 2.014 12c0 1.8.48 3.5 1.39 4.97L2 22l5.17-1.36c1.42.77 3.03 1.18 4.69 1.18 5.5 0 10-4.5 10-10S17.36 2 12.004 2zm0 1.66c4.6 0 8.34 3.74 8.34 8.34 0 4.6-3.74 8.34-8.34 8.34-1.5 0-2.92-.41-4.14-1.12l-.3-.18-3.07.81.82-2.99-.2-.31a8.27 8.27 0 01-1.28-4.41c.01-4.6 3.75-8.33 8.35-8.33zm-3.52 3.32c-.17 0-.39.07-.58.26-.2.19-.74.72-.74 1.76s.76 2.04.86 2.18c.11.14 1.49 2.27 3.61 3.19.5.22.9.35 1.21.45.51.16.97.14 1.34.08.41-.06 1.26-.52 1.44-1.01.18-.5.18-.92.12-1.01-.05-.09-.2-.14-.43-.26-.23-.11-1.38-.68-1.59-.76-.21-.08-.37-.11-.53.11-.16.23-.62.77-.76.92-.14.15-.29.17-.52.05-.23-.11-.97-.36-1.85-1.15-.69-.61-1.15-1.37-1.29-1.6-.14-.23-.01-.36.1-.47.11-.1.23-.26.35-.39.11-.12.15-.21.23-.35.08-.14.04-.26-.02-.38-.06-.11-.53-1.28-.73-1.75-.19-.47-.39-.4-.53-.41h-.42z"/>
-                            </svg>
+                            <!-- Ikon WhatsApp dihapus, teks tebal horizontal -->
                             <span>WhatsApp 0856-4260-0190 Rek. BCA 2500879516</span>
                         </div>
                     </div>
@@ -2186,7 +2278,7 @@
                     
                     <div class="divider"></div>
                     
-                    <!-- Diubah: Teks header detail pembelian diperbarui -->
+                    <!-- Detail Pembelian Barang atau Jasa -->
                     <div class="bold" style="font-size: 10px; margin-bottom: 2px; color: #000000;">Detail Pembelian Barang atau Jasa</div>
                     <div class="item-container">
                         <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -2199,7 +2291,7 @@
                         </div>
                     </div>
                     
-                    <!-- Diubah: Garis putus-putus setelah spesifikasi produk dihapus -->
+                    <!-- Garis putus-putus setelah spesifikasi produk di hapus -->
                     
                     <div class="divider"></div>
                     
@@ -2208,17 +2300,16 @@
                         <div>Rp ${formattedHarga}</div>
                     </div>
                     
-                    <!-- STATUS diubah menjadi Catatan -->
+                    <!-- Catatan -->
                     <div class="total-section" style="font-size: 10px; margin-top: 3px; font-weight: 500;">
                         <div>Catatan</div>
                         <div class="bold">${catatan}</div>
                     </div>
                     
-                    <!-- Jaminan & Kebijakan Garansi Baru (Teks diperbarui dan ukurannya sedikit lebih besar) -->
+                    <!-- Jaminan & Kebijakan Garansi Baru -->
                     <div class="divider"></div>
                     <div style="text-align: center; margin-top: 4px; color: #000000;">
                         <div class="bold" style="font-size: 10.5px; margin-bottom: 4px;">(Garansi .... Minggu/ Bulan)</div>
-                        <!-- Ukuran teks ditingkatkan menjadi 8.5px dan diperbarui layout barisnya -->
                         <div style="font-size: 8.5px; line-height: 1.35; text-align: justify; font-weight: 500;">
                             Garansi Laptop tidak berlaku apabila: <br>
                             1. Segel rusak atau nota pembelian ini hilang. <br>
@@ -2232,7 +2323,7 @@
                     <div class="text-center footer">
                         <div class="bold" style="font-size: 10px; letter-spacing: 0.5px;">TERIMA KASIH</div>
                         <div style="margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
-                        <!-- Diubah: Teks pengembalian barang diperbarui sesuai dengan instruksi yang paling baru -->
+                        <!-- Kebijakan Pengembalian Baru -->
                         <div class="bold" style="font-size: 8px; line-height: 1.3; text-align: center; text-transform: uppercase;">
                             MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LAGI DENGAN ALASAN APAPUN
                         </div>
@@ -2240,8 +2331,10 @@
                     
                     <script>
                         window.onload = function() {
-                            window.focus();
-                            window.print();
+                            if (${autoTrigger}) {
+                                window.focus();
+                                window.print();
+                            }
                         };
                     <\/script>
                 </body>
@@ -2255,7 +2348,9 @@
         }
 
         function printReceiptDirect(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
-            printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan);
+            // Ketika diklik di halaman admin, buka pilihan cetak/download PDF
+            tempPrintData = { waktu, pembeli, alamat, produk, kategori, harga, catatan };
+            document.getElementById('modal-print-confirm').classList.remove('hidden');
         }
 
         // ================= VOUCHER IMAGE & SHARE LOGIC =================
