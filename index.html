@@ -225,8 +225,10 @@
             <!-- ADMIN: VERIFIKASI VOUCER -->
             <div id="tab-admin-verifikasi" class="hidden-tab">
                 <div class="max-w-md mx-auto mt-1 md:mt-2">
+                    <!-- Form Input Verifikasi (Akan disembunyikan saat hasil pratinjau muncul) -->
                     <div id="verify-form-container" class="bg-white p-8 rounded-xl shadow-md border-t-4 border-green-700 text-center">
                         <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
+                        <!-- Teks petunjuk verifikasi diubah sesuai instruksi -->
                         <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer dan Silahkan Klik Tombol Verifikasi</p>
                         <div class="flex flex-col gap-4 mb-6 justify-center items-center">
                             <input type="text" id="verify-code" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-widest uppercase">
@@ -234,17 +236,20 @@
                         </div>
                     </div>
                     
+                    <!-- Hasil Verifikasi: Sekarang dirancang tanpa form input di atasnya, langsung menampilkan pratinjau voucer & tombol silang -->
                     <div id="verify-result" class="hidden w-full relative"></div>
                 </div>
             </div>
 
-            <!-- DATA PENJUALAN (ADMIN & USER) -->
+            <!-- DATA PENJUALAN (ADMIN & USER) (Tombol Refresh Dihapus) -->
             <div id="tab-data-penjualan" class="hidden-tab">
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-gray-800">Data Penjualan</h2>
                         <div class="flex items-center gap-2">
+                            <!-- Tombol Tambah dipindahkan ke sini di sebelah tombol Refresh -->
                             <span id="btn-toggle-penjualan-container" class="hidden">
+                                <!-- Tombol tambah diubah menjadi warna oranye -->
                                 <button onclick="openModalPenjualan()" class="bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 text-sm font-semibold shadow transition flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Tambah
@@ -282,8 +287,10 @@
                 
                 <!-- Manajemen Akun Marketing -->
                 <div class="mb-8 border-b pb-6 max-w-md">
+                    <!-- Penyelarasan letak tombol Buat Akun agar sejajar vertikal lurus -->
                     <div class="flex flex-row justify-between items-center mb-3">
                         <h3 class="text-base font-semibold text-gray-800">Akun Marketing</h3>
+                        <!-- Tombol Buat Akun Baru diubah menjadi warna abu-abu dengan ukuran seragam w-[104px] h-[32px] -->
                         <button onclick="openModalMarketing()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 font-semibold shadow transition flex items-center justify-center gap-1 text-xs">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             Buat Akun
@@ -294,7 +301,7 @@
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-200">
                                     <th class="p-2 text-gray-700 font-semibold">Nama Lengkap</th>
-                                    <th class="p-2 text-center text-gray-700 font-semibold w-24">Aksi</th>
+                                    <th class="p-2 text-center text-gray-700 font-semibold w-28">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="marketing-list-body"></tbody>
@@ -308,6 +315,7 @@
                         <span class="text-xs font-semibold text-gray-700">Masa Berlaku Voucer (Hari)</span>
                         <div class="flex items-center gap-2">
                             <input type="number" id="setting-masa-berlaku" min="1" max="30" placeholder="1-30" class="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-xs text-center focus:outline-none focus:border-green-600 font-semibold">
+                            <!-- Tombol simpan masa berlaku diubah menjadi warna abu-abu dengan ukuran w-[104px] h-[32px] -->
                             <button onclick="updateMasaBerlaku()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                                 Simpan
@@ -323,6 +331,7 @@
                     <form onsubmit="updateAdminCreds(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="update-admin-user" placeholder="Username Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
                         <input type="password" id="update-admin-pass" placeholder="Password Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
+                        <!-- Tombol ubah data admin diubah menjadi warna biru dengan ikon key-lock SVG -->
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 md:col-span-2 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-5 8a3 3 0 11-6 0 3 3 0 016 0zm6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 3h.01M12 12h.01"></path></svg>
                             Ubah Data Admin
@@ -422,7 +431,7 @@
                             <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                             <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                             <th class="p-2 text-green-900 font-semibold">Status</th>
-                            <th class="p-2 text-center text-green-900 font-semibold w-24">Aksi</th>
+                            <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="voucher-list-body"></tbody>
@@ -464,7 +473,7 @@
         </div>
     </div>
 
-    <!-- MODAL TAMBAH/EDIT PENJUALAN -->
+    <!-- MODAL TAMBAH/EDIT PENJUALAN (Hapus placeholder teks bayangan) -->
     <div id="modal-tambah-penjualan" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="max-w-lg w-full bg-white rounded-xl shadow-2xl p-8 border-t-4 border-green-700 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModalPenjualan()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition">
@@ -676,6 +685,23 @@
                     Batal
                 </button>
                 <button onclick="executeDeletePenj()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-semibold">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOM DELETE VOUCHER CONFIRMATION -->
+    <div id="modal-delete-voucher-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="max-w-xs w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-red-600 text-center">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Hapus Voucer</h3>
+            <p class="text-sm text-gray-500 mb-6">Apakah Anda yakin ingin menghapus voucer ini secara permanen dari database?</p>
+            <input type="hidden" id="delete-voucher-code">
+            <div class="flex justify-center gap-4">
+                <button onclick="closeDeleteVoucherConfirm()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm font-semibold">
+                    Batal
+                </button>
+                <button onclick="executeDeleteVoucher()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-semibold">
                     Ya, Hapus
                 </button>
             </div>
@@ -2075,22 +2101,24 @@
             }
         }
 
-        // Fungsi khusus menyandingkan / Pairing Printer Kasir secara manual dari Dialog UI
+        // Fungsi khusus menyandingkan / Pairing Printer Kasir secara manual dari Dialog UI (Sistem Bebas / Generic Bluetooth API)
         async function pairBluetoothPrinter() {
             const statusBadge = document.getElementById('printer-status-badge');
             const nameLabel = document.getElementById('printer-name-label');
             
             try {
                 showToast("Membuka jendela pencarian perangkat Bluetooth...");
-                // Melakukan request scan Bluetooth kasir generic ESC/POS
+                
+                // [UPGRADE KONEKSI GENERIC] Deteksi dinamis tanpa filter UUID kaku
                 const device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
-                    optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // Layanan printer kasir standar
+                    optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] // Menggunakan generic Serial Port Profile standard kasir
                 });
 
                 showLoading();
                 const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+                // Hubungkan ke SPP Generic Port
+                const service = await server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');
                 const characteristics = await service.getCharacteristics();
                 
                 // Cari karakteristik write data
@@ -2158,9 +2186,7 @@
             receiptText += "MOHON UNTUK DI CEK DAN\n";
             receiptText += "TELITI TERLEBIH DAHULU\n";
             receiptText += "PEMBELIAN ANDA KARENA BARANG\n";
-            receiptText += "YANG SUDAH DI BELI TIDAK DAPAT\n";
-            receiptText += "DI KEMBALIKAN LAGI DENGAN\n";
-            receiptText += "ALASAN APAPUN\n";
+            receiptText += "YANG SANGAST SULIT DITUKAR\n";
             receiptText += "\n\n\n\n"; // Feed paper
 
             try {
@@ -2592,7 +2618,7 @@
 
             const link = document.createElement('a');
             link.download = `Voucer_${kode}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.href = canvas.toToDataURL('image/png');
             link.click();
         }
     </script>
