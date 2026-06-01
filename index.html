@@ -143,7 +143,7 @@
         <!-- Main Content -->
         <div class="flex-1 bg-gray-100 p-4 md:p-8 w-full max-w-full overflow-x-hidden md:min-h-screen pb-24 md:pb-8">
             
-            <!-- ADMIN: DASHBOARD ANALITIK (Tombol Refresh Dihapus) -->
+            <!-- ADMIN: DASHBOARD ANALITIK -->
             <div id="tab-admin-dashboard" class="hidden-tab">
                 <div class="flex justify-between items-center mb-6">
                     <div>
@@ -196,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- ADMIN: DAFTAR VOUCER GLOBAL (Tombol Refresh Dihapus) -->
+            <!-- ADMIN: DAFTAR VOUCER GLOBAL -->
             <div id="tab-admin-daftarvoucer" class="hidden-tab bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                 <div class="flex justify-between items-center mb-4">
                     <div>
@@ -222,10 +222,9 @@
                 </table>
             </div>
 
-            <!-- ADMIN: VERIFIKASI VOUCER (Diperkecil dan digeser ke atas sedikit: mt-1 md:mt-2) -->
+            <!-- ADMIN: VERIFIKASI VOUCER -->
             <div id="tab-admin-verifikasi" class="hidden-tab">
                 <div class="max-w-md mx-auto mt-1 md:mt-2">
-                    <!-- Form Input Verifikasi -->
                     <div id="verify-form-container" class="bg-white p-8 rounded-xl shadow-md border-t-4 border-green-700 text-center">
                         <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
                         <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer dan Silahkan Klik Tombol Verifikasi</p>
@@ -295,7 +294,7 @@
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-200">
                                     <th class="p-2 text-gray-700 font-semibold">Nama Lengkap</th>
-                                    <th class="p-2 text-center text-gray-700 font-semibold w-28">Aksi</th>
+                                    <th class="p-2 text-center text-gray-700 font-semibold w-24">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="marketing-list-body"></tbody>
@@ -423,7 +422,7 @@
                             <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                             <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                             <th class="p-2 text-green-900 font-semibold">Status</th>
-                            <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
+                            <th class="p-2 text-center text-green-900 font-semibold w-24">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="voucher-list-body"></tbody>
@@ -532,27 +531,33 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="text-center mb-8">
+                <!-- Teks deskripsi sub-judul diperbarui sesuai instruksi -->
                 <h2 class="text-2xl font-bold text-gray-800">Buat Voucer Baru</h2>
                 <p class="text-gray-500 mt-2 text-sm">Input Data Calon Pelanggan Untuk Membuat Kartu Voucer</p>
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
+                <!-- Label Nama Pelanggan diubah menjadi wajib di UI, opsional secara internal diisi "WhatsApp" jika kosong -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label No WA (Opsional) diubah menjadi No WhatsApp (Opsional) -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No WhatsApp</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Desa diubah, opsional secara internal diisi "Selamat Terpilih" jika kosong -->
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Desa</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
+                <!-- Label Kecamatan diubah, opsional secara internal diisi "Sebagai Penerima" jika kosong -->
                 <div class="mb-8">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
+                    <!-- Teks tombol diubah menjadi "Buat Voucer" -->
                     <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-800 transition shadow-md">
                         Buat Voucer
                     </button>
@@ -620,21 +625,39 @@
         </div>
     </div>
 
-    <!-- MODAL CUSTOM PRINT CONFIRMATION -->
+    <!-- MODAL PRINTER BLUETOOTH CONNECTION & PRINT CONFIRMATION (REVISED) -->
     <div id="modal-print-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="max-w-xs w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700 text-center">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Cetak Struk</h3>
-            <p class="text-sm text-gray-500 mb-6">Data penjualan berhasil disimpan. Apakah Anda ingin memproses dokumen struk belanja ini?</p>
-            <!-- Diubah: Menambahkan opsi Unduh PDF secara horizontal sejajar dengan opsi Cetak & Batal -->
+        <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">Cetak Struk Transaksi</h3>
+            <p class="text-sm text-gray-500 mb-6 text-center">Silakan hubungkan perangkat Anda ke printer kasir termal atau unduh sebagai PDF.</p>
+            
+            <!-- Panel Monitor Konektivitas Printer Bluetooth -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 text-xs text-gray-600 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span>Status Printer:</span>
+                    <span id="printer-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">TIDAK TERHUBUNG</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span>Nama Printer:</span>
+                    <span id="printer-name-label" class="font-mono text-gray-800 font-semibold">Belum Disandingkan</span>
+                </div>
+                <!-- Tombol Sandbox Hubungkan Khusus untuk Pairing/Mendeteksi Ulang -->
+                <button id="btn-pair-printer" onclick="pairBluetoothPrinter()" class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1.5 rounded transition text-center flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    Sandingkan Printer Kasir
+                </button>
+            </div>
+
+            <!-- Opsi Tombol Cetak, PDF, dan Batal -->
             <div class="flex flex-col sm:flex-row justify-center gap-3">
-                <button onclick="handlePrintNo()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-xs font-bold">
+                <button onclick="handlePrintNo()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-xs font-bold w-full">
                     Batal
                 </button>
-                <button onclick="handlePrintYes('pdf')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold flex items-center justify-center gap-1">
+                <button onclick="handlePrintYes('pdf')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold flex items-center justify-center gap-1 w-full">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Simpan PDF
                 </button>
-                <button onclick="handlePrintYes('print')" class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-xs font-bold flex items-center justify-center gap-1">
+                <button id="btn-execute-print" onclick="handlePrintYes('print')" class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-xs font-bold flex items-center justify-center gap-1 w-full">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     Cetak Struk
                 </button>
@@ -707,6 +730,8 @@
             }
             // Inisialisasi pemformat input teks otomatis
             initInputFormatters();
+            // Inisialisasi status koneksi printer Bluetooth
+            checkSavedBluetoothPrinter();
         };
 
         // Fungsi untuk menggeser buka tutup sidebar desktop
@@ -2031,82 +2056,143 @@
             tempPrintData = null;
         }
 
-        // Integrasi Web Bluetooth API untuk Printer Kasir Termal 58mm / 80mm ESC/POS
+        // INTEGRASI SYSTEM BLUETOOTH PRINTER MANAGEMENT (REVISED - NO AUTO-REDIRECT)
         let connectedPrinterCharacteristic = null;
+        let pairedDevice = null;
 
+        // Memeriksa dan memuat status printer dari localStorage saat load awal
+        function checkSavedBluetoothPrinter() {
+            const savedName = localStorage.getItem('pairedPrinterName');
+            const statusBadge = document.getElementById('printer-status-badge');
+            const nameLabel = document.getElementById('printer-name-label');
+            
+            if (savedName) {
+                if (statusBadge) {
+                    statusBadge.textContent = "TERDAFTAR";
+                    statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800";
+                }
+                if (nameLabel) nameLabel.textContent = savedName;
+            }
+        }
+
+        // Fungsi khusus menyandingkan / Pairing Printer Kasir secara manual dari Dialog UI
+        async function pairBluetoothPrinter() {
+            const statusBadge = document.getElementById('printer-status-badge');
+            const nameLabel = document.getElementById('printer-name-label');
+            
+            try {
+                showToast("Membuka jendela pencarian perangkat Bluetooth...");
+                // Melakukan request scan Bluetooth kasir generic ESC/POS
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // Layanan printer kasir standar
+                });
+
+                showLoading();
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+                const characteristics = await service.getCharacteristics();
+                
+                // Cari karakteristik write data
+                const writeChar = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
+                hideLoading();
+
+                if (writeChar) {
+                    connectedPrinterCharacteristic = writeChar;
+                    pairedDevice = device;
+                    
+                    // Simpan data printer di localStorage agar tersanding otomatis nantinya
+                    localStorage.setItem('pairedPrinterName', device.name || "Thermal Printer");
+                    
+                    if (statusBadge) {
+                        statusBadge.textContent = "TERHUBUNG";
+                        statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800";
+                    }
+                    if (nameLabel) nameLabel.textContent = device.name || "Thermal Printer";
+                    
+                    showToast("Printer kasir berhasil disandingkan!");
+                } else {
+                    throw new Error("Karakteristik data transfer printer tidak didukung.");
+                }
+            } catch (err) {
+                hideLoading();
+                console.error("[PAIRING ERROR]", err);
+                showToast("Gagal menyandingkan printer. Pastikan Bluetooth aktif.", true);
+            }
+        }
+
+        // Fungsi mencetak langsung ke Printer Bluetooth Kasir
         async function printToBluetoothPrinter(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
-            // Format Teks Murni untuk Printer Termal Kasir (ESC/POS)
+            // Format ESC/POS Murni untuk Printer Termal
             let receiptText = "";
             receiptText += "\x1b\x61\x01"; // Align center
-            receiptText += "\x1b\x21\x10" + "TURJA COMPUTER" + "\n"; // Double height
-            receiptText += "\x1b\x21\x00"; // Normal size
-            receiptText += "Pakisputih Kedungwuni Pekalongan\n";
-            receiptText += "WA 0856-4260-0190 Rek. BCA 2500879516\n";
-            receiptText += "--------------------------------\n"; // 32 chars
+            receiptText += "\x1b\x21\x10" + "TURJA COMPUTER" + "\n"; 
+            receiptText += "\x1b\x21\x00"; 
+            receiptText += "Kewangu'an Pakisputih\nKedungwuni Pekalongan\n";
+            receiptText += "WhatsApp 0856-4260-0190\nRek. BCA 2500879516\n";
+            receiptText += "================================\n"; 
             receiptText += "\x1b\x61\x00"; // Align left
             receiptText += "Tgl: " + waktu + "\n";
             receiptText += "Plg: " + pembeli + "\n";
             receiptText += "Alm: " + alamat + "\n";
             receiptText += "--------------------------------\n";
-            receiptText += "Detail Pembelian Barang/Jasa:\n";
-            receiptText += produk.substring(0, 20) + " " + "Rp " + formattedHarga + "\n";
+            receiptText += "Detail Pembelian Barang atau Jasa\n";
+            receiptText += produk.substring(0, 20) + "\n";
             if (kategori) {
                 receiptText += " " + kategori.substring(0, 30) + "\n";
             }
+            receiptText += "                     Rp " + formattedHarga + "\n";
             receiptText += "--------------------------------\n";
-            receiptText += "TOTAL: " + "Rp " + formattedHarga + "\n";
+            receiptText += "TOTAL                Rp " + formattedHarga + "\n";
             receiptText += "Catatan: " + catatan + "\n";
-            receiptText += "--------------------------------\n";
+            receiptText += "================================\n";
             receiptText += "\x1b\x61\x01"; // Align center
             receiptText += "(Garansi .... Minggu/ Bulan)\n";
-            receiptText += "Segel rusak / nota hilang = VOID.\n";
-            receiptText += "Cek fisik & detail saat membeli.\n";
-            receiptText += "MOHON UNTUK DI CEK KEMBALI\n";
-            receiptText += "BARANG YG SANGAT SULIT DITUKAR\n";
+            receiptText += "Syarat Garansi Kasir:\n";
+            receiptText += "1. Segel utuh & nota ini ada.\n";
+            receiptText += "2. Bukan kelalaian pemakai.\n";
+            receiptText += "3. LCD/Casing/Batre 0% no-garansi.\n";
+            receiptText += "--------------------------------\n";
+            receiptText += "MOHON UNTUK DI CEK DAN\n";
+            receiptText += "TELITI TERLEBIH DAHULU\n";
+            receiptText += "PEMBELIAN ANDA KARENA BARANG\n";
+            receiptText += "YANG SUDAH DI BELI TIDAK DAPAT\n";
+            receiptText += "DI KEMBALIKAN LAGI DENGAN\n";
+            receiptText += "ALASAN APAPUN\n";
             receiptText += "\n\n\n\n"; // Feed paper
 
-            // Transmisi via Bluetooth API
             try {
-                // Gunakan device yang sudah disandingkan sebelumnya (jika ada di local memori cache)
-                if (connectedPrinterCharacteristic) {
-                    await sendTextToPrinter(receiptText);
-                    showToast("Struk berhasil dikirim ke printer!");
-                    return;
+                // Mencoba melakukan auto-reconnect jika printer tersimpan
+                if (!connectedPrinterCharacteristic && localStorage.getItem('pairedPrinterName')) {
+                    showToast("Mencoba menghubungkan ulang ke printer...");
+                    // Web Bluetooth memerlukan interaksi pengguna awal untuk inisiasi ulang gatt server
+                    await pairBluetoothPrinter();
                 }
 
-                showToast("Mencari & menghubungkan ke printer bluetooth...");
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb', 'link_loss'] }],
-                    optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
-                });
-
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-                const characteristics = await service.getCharacteristics();
-                
-                // Cari characteristic yang mendukung write/writeWithoutResponse
-                const writeChar = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
-                if (writeChar) {
-                    connectedPrinterCharacteristic = writeChar;
+                if (connectedPrinterCharacteristic) {
+                    showLoading();
                     await sendTextToPrinter(receiptText);
-                    showToast("Printer terhubung! Struk berhasil dicetak.");
+                    hideLoading();
+                    showToast("Struk kasir sukses dicetak!");
                 } else {
-                    throw new Error("Karakteristik write printer tidak ditemukan.");
+                    // JIKA GAGAL: Tidak langsung dilempar ke PDF, melainkan diberi notifikasi dan instruksi agar menyandingkan ulang
+                    showToast("Printer belum terhubung! Silakan sandingkan printer kasir Anda terlebih dahulu.", true);
+                    // Buka modal kembali untuk memberikan kesempatan menyandingkan perangkat kasir
+                    document.getElementById('modal-print-confirm').classList.remove('hidden');
                 }
             } catch (err) {
-                console.error("[PRINTER ERROR]", err);
-                showToast("Koneksi bluetooth gagal. Mengalihkan ke PDF/Print biasa...", true);
-                // Fallback otomatis ke print peramban biasa
-                printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan, true);
+                hideLoading();
+                console.error("[PRINT ERROR]", err);
+                showToast("Gagal mengirim data ke printer. Silakan sandingkan ulang.", true);
+                document.getElementById('modal-print-confirm').classList.remove('hidden');
             }
         }
 
         async function sendTextToPrinter(text) {
             const encoder = new TextEncoder();
             const bytes = encoder.encode(text);
-            // Kirim dalam potongan data kecil agar tidak buffer-overflow pada chip printer kasir
             const chunkLimit = 20;
             for (let i = 0; i < bytes.length; i += chunkLimit) {
                 const chunk = bytes.slice(i, i + chunkLimit);
