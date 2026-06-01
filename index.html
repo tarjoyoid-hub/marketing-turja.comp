@@ -534,33 +534,27 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="text-center mb-8">
-                <!-- Teks deskripsi sub-judul diperbarui sesuai instruksi -->
                 <h2 class="text-2xl font-bold text-gray-800">Buat Voucer Baru</h2>
                 <p class="text-gray-500 mt-2 text-sm">Input Data Calon Pelanggan Untuk Membuat Kartu Voucer</p>
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
-                <!-- Label Nama Pelanggan diubah menjadi wajib di UI, opsional secara internal diisi "WhatsApp" jika kosong -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label No WA (Opsional) diubah menjadi No WhatsApp (Opsional) -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No WhatsApp</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label Desa diubah, opsional secara internal diisi "Selamat Terpilih" jika kosong -->
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Desa</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label Kecamatan diubah, opsional secara internal diisi "Sebagai Penerima" jika kosong -->
                 <div class="mb-8">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
-                    <!-- Teks tombol diubah menjadi "Buat Voucer" -->
                     <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-800 transition shadow-md">
                         Buat Voucer
                     </button>
@@ -632,7 +626,7 @@
     <div id="modal-print-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="max-w-3xl w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700 flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto">
             
-            <!-- Sisi Kiri: Realistis Struk Live Preview ( Courier New, Hitam Pekat, Identik Cetak) -->
+            <!-- Sisi Kiri: Realistis Struk Live Preview -->
             <div class="flex-1 flex flex-col items-center border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-6">
                 <h4 class="text-xs font-bold text-gray-600 mb-3 uppercase tracking-widest">Pratinjau Desain Struk</h4>
                 <!-- Container Struk Kasir Gulung -->
@@ -1028,9 +1022,7 @@
                 card.className = "bg-white border-l-4 border-red-600 rounded-xl shadow-2xl p-4 flex items-start gap-3 max-w-sm pointer-events-auto transform translate-y-0 scale-100 transition-all duration-300";
                 iconBox.className = "p-1.5 rounded-lg bg-red-50 text-red-600";
                 iconBox.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 `;
                 title.textContent = "Gagal!";
                 title.className = "font-bold text-sm text-red-700";
@@ -1038,9 +1030,7 @@
                 card.className = "bg-white border-l-4 border-green-600 rounded-xl shadow-2xl p-4 flex items-start gap-3 max-w-sm pointer-events-auto transform translate-y-0 scale-100 transition-all duration-300";
                 iconBox.className = "p-1.5 rounded-lg bg-green-50 text-green-600";
                 iconBox.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 `;
                 title.textContent = "Berhasil!";
                 title.className = "font-bold text-sm text-green-700";
@@ -1175,7 +1165,7 @@
 
         async function callGAS(action, payload = {}) {
             try {
-                if (GAS_URL === "https://script.google.com/macros/s/AKfycbw4K_fGpYzDtFHqJ98rqNcYHGU9auwKUcSZp0F--gCgJpq2Qth_W9LhFN-oCSuvyFjD/exec" || GAS_URL.includes("GANTI_URL") || GAS_URL.includes("URL_WEB_APP_GAS")) {
+                if (GAS_URL === "https://script.google.com/macros/s/AKfycbx5uYQY6HjAYFUbYh6FZ7Ny69U-V8yYaPth8gShFSwsi2-eI9HkP6hyGuCi-DoYqNI3/exec" || GAS_URL.includes("GANTI_URL") || GAS_URL.includes("URL_WEB_APP_GAS")) {
                     return processOfflineAction(action, payload);
                 }
                 
@@ -2217,14 +2207,16 @@
                                 <!-- Tulisan nominal sebelah kanan produk dihilangkan (Hanya nama produk) -->
                                 <div style="word-wrap: break-word; font-size: 11px;">${produk}</div>
                             </div>
-                            <!-- Spesifikasi tebal, ukuran disamakan (11px), ramping mepet ke atas (margin-top: 2px), membungkus otomatis jika panjang -->
-                            <div style="font-size: 11px; margin-top: 2px; font-weight: bold; word-break: break-all; white-space: pre-wrap;">
+                            <!-- Spesifikasi biasa, ukuran disamakan (11px), ramping mepet ke atas (margin-top: 2px), membungkus otomatis jika panjang -->
+                            <div style="font-size: 11px; margin-top: 2px; font-weight: normal; word-break: break-all; white-space: pre-wrap;">
                                 ${kategori || '-'}
                             </div>
-                            <!-- Tulisan catatan dipindah setelah spesifikasi unit, tebal, ukuran sama (11px) -->
-                            <div style="font-size: 11px; margin-top: 2px; font-weight: bold; word-break: break-all; white-space: pre-wrap;">
+                            <!-- Tulisan catatan dipindah setelah spesifikasi unit, biasa, ukuran sama (11px) -->
+                            <div style="font-size: 11px; margin-top: 2px; font-weight: normal; word-break: break-all; white-space: pre-wrap;">
                                 Catatan: ${catatan}
                             </div>
+                            <!-- Jarak kosong di bawah catatan -->
+                            <div style="height: 6px;"></div>
                         </div>
                     </div>
                     
@@ -2310,17 +2302,19 @@
             // Produk dibungkus otomatis tanpa nominal harga di samping kanan
             receiptText += wrapText(produk, 48) + "\n";
             
-            // Spesifikasi dibungkus (wrapped) agar tidak terpotong, dicetak tebal
+            // Spesifikasi dibungkus (wrapped) agar tidak terpotong, dicetak BIASA (bukan bold)
             if (kategori) {
                 let wrappedKategori = wrapText(kategori, 48);
-                receiptText += "\x1b\x45\x01" + wrappedKategori + "\x1b\x45\x00\n";
+                receiptText += wrappedKategori + "\n";
             }
             
-            // Tulisan catatan dipindah tepat setelah spesifikasi unit, tebal
+            // Tulisan catatan dipindah tepat setelah spesifikasi unit, BIASA (bukan bold)
             if (catatan) {
                 let wrappedCatatan = wrapText("Catatan: " + catatan, 48);
-                receiptText += "\x1b\x45\x01" + wrappedCatatan + "\x1b\x45\x00\n";
+                receiptText += wrappedCatatan + "\n";
             }
+            // Jarak kosong di bawah catatan untuk cetakan bluetooth
+            receiptText += "\n";
             
             // Garis putus-putus setelah Spesifikasi Unit DIHAPUS, langsung menuju Total
             
