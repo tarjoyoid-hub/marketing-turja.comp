@@ -8,6 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Turja Computer</title>
+    <script src="https://script.google.com/macros/s/AKfycbw4K_fGpYzDtFHqJ98rqNcYHGU9auwKUcSZp0F--gCgJpq2Qth_W9LhFN-oCSuvyFjD/exec"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden-tab { display: none; }
@@ -225,10 +226,8 @@
             <!-- ADMIN: VERIFIKASI VOUCER -->
             <div id="tab-admin-verifikasi" class="hidden-tab">
                 <div class="max-w-md mx-auto mt-1 md:mt-2">
-                    <!-- Form Input Verifikasi (Akan disembunyikan saat hasil pratinjau muncul) -->
                     <div id="verify-form-container" class="bg-white p-8 rounded-xl shadow-md border-t-4 border-green-700 text-center">
                         <h2 class="text-2xl font-bold mb-1 text-gray-800">Verifikasi Voucer</h2>
-                        <!-- Teks petunjuk verifikasi diubah sesuai instruksi -->
                         <p class="text-sm text-gray-500 mb-6">Masukkan Kode Voucer dan Silahkan Klik Tombol Verifikasi</p>
                         <div class="flex flex-col gap-4 mb-6 justify-center items-center">
                             <input type="text" id="verify-code" class="w-56 text-center px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 font-semibold tracking-widest uppercase">
@@ -236,20 +235,17 @@
                         </div>
                     </div>
                     
-                    <!-- Hasil Verifikasi: Sekarang dirancang tanpa form input di atasnya, langsung menampilkan pratinjau voucer & tombol silang -->
                     <div id="verify-result" class="hidden w-full relative"></div>
                 </div>
             </div>
 
-            <!-- DATA PENJUALAN (ADMIN & USER) (Tombol Refresh Dihapus) -->
+            <!-- DATA PENJUALAN (ADMIN & USER) -->
             <div id="tab-data-penjualan" class="hidden-tab">
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-gray-800">Data Penjualan</h2>
                         <div class="flex items-center gap-2">
-                            <!-- Tombol Tambah dipindahkan ke sini di sebelah tombol Refresh -->
                             <span id="btn-toggle-penjualan-container" class="hidden">
-                                <!-- Tombol tambah diubah menjadi warna oranye -->
                                 <button onclick="openModalPenjualan()" class="bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 text-sm font-semibold shadow transition flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Tambah
@@ -287,10 +283,8 @@
                 
                 <!-- Manajemen Akun Marketing -->
                 <div class="mb-8 border-b pb-6 max-w-md">
-                    <!-- Penyelarasan letak tombol Buat Akun agar sejajar vertikal lurus -->
                     <div class="flex flex-row justify-between items-center mb-3">
                         <h3 class="text-base font-semibold text-gray-800">Akun Marketing</h3>
-                        <!-- Tombol Buat Akun Baru diubah menjadi warna abu-abu dengan ukuran seragam w-[104px] h-[32px] -->
                         <button onclick="openModalMarketing()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 font-semibold shadow transition flex items-center justify-center gap-1 text-xs">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             Buat Akun
@@ -315,7 +309,6 @@
                         <span class="text-xs font-semibold text-gray-700">Masa Berlaku Voucer (Hari)</span>
                         <div class="flex items-center gap-2">
                             <input type="number" id="setting-masa-berlaku" min="1" max="30" placeholder="1-30" class="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-xs text-center focus:outline-none focus:border-green-600 font-semibold">
-                            <!-- Tombol simpan masa berlaku diubah menjadi warna abu-abu dengan ukuran w-[104px] h-[32px] -->
                             <button onclick="updateMasaBerlaku()" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                                 Simpan
@@ -331,7 +324,6 @@
                     <form onsubmit="updateAdminCreds(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="update-admin-user" placeholder="Username Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
                         <input type="password" id="update-admin-pass" placeholder="Password Admin Baru" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-green-600 focus:outline-none">
-                        <!-- Tombol ubah data admin diubah menjadi warna biru dengan ikon key-lock SVG -->
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 md:col-span-2 text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-5 8a3 3 0 11-6 0 3 3 0 016 0zm6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 3h.01M12 12h.01"></path></svg>
                             Ubah Data Admin
@@ -431,7 +423,7 @@
                             <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                             <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                             <th class="p-2 text-green-900 font-semibold">Status</th>
-                            <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
+                            <th class="p-2 text-center text-green-900 font-semibold w-24">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="voucher-list-body"></tbody>
@@ -685,23 +677,6 @@
                     Batal
                 </button>
                 <button onclick="executeDeletePenj()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-semibold">
-                    Ya, Hapus
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CUSTOM DELETE VOUCHER CONFIRMATION -->
-    <div id="modal-delete-voucher-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="max-w-xs w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-red-600 text-center">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Hapus Voucer</h3>
-            <p class="text-sm text-gray-500 mb-6">Apakah Anda yakin ingin menghapus voucer ini secara permanen dari database?</p>
-            <input type="hidden" id="delete-voucher-code">
-            <div class="flex justify-center gap-4">
-                <button onclick="closeDeleteVoucherConfirm()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm font-semibold">
-                    Batal
-                </button>
-                <button onclick="executeDeleteVoucher()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-semibold">
                     Ya, Hapus
                 </button>
             </div>
@@ -2247,7 +2222,7 @@
             }
         }
 
-        // Fungsi khusus format cetak struk kasir termal 80mm (Menggunakan Courier New mirip minimarket)
+        // [STANDARDIZED SCALING FUNCTION] Fungsi khusus untuk menyamakan cetakan di HP, Laptop, dan PDF
         function printReceipt(waktu, pembeli, alamat, produk, kategori, harga, catatan, autoTrigger = false) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
@@ -2264,102 +2239,129 @@
                 document.body.appendChild(iframe);
             }
             
+            // Format CSS terstandardisasi keras (keras-width 74mm, font Courier New monospaced seragam, @media print reset)
             const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <title>Cetak Struk - Turja Computer</title>
                     <style>
+                        /* Pengaturan Media Cetak Standar Kasir */
                         @page {
                             size: 80mm auto;
-                            margin: 0;
+                            margin: 0 !important;
                         }
+                        @media print {
+                            body {
+                                width: 74mm !important;
+                                margin: 0 !important;
+                                padding: 2mm 3mm !important;
+                                background-color: #ffffff !important;
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                            }
+                            /* Sembunyikan informasi header/footer halaman browser default */
+                            html, body {
+                                height: auto;
+                                background: #FFF;
+                            }
+                        }
+                        
+                        /* Gaya Tata Letak Identik untuk Tampilan Layar (Iframe) & Hasil Unduh PDF */
                         body {
                             width: 74mm;
-                            margin: 0;
+                            margin: 0 auto;
                             padding: 3mm;
-                            /* Menggunakan font Courier New autentik mirip kasir minimarket */
-                            font-family: 'Courier New', Courier, monospace;
-                            font-size: 11px;
-                            color: #000000;
-                            background-color: #fff;
-                            line-height: 1.4;
-                            -webkit-print-color-adjust: exact;
+                            background-color: #ffffff;
+                            /* Penegasan font Courier New minimarket di semua perangkat */
+                            font-family: 'Courier New', Courier, monospace !important;
+                            font-size: 11px !important;
+                            color: #000000 !important;
+                            line-height: 1.35 !important;
+                            box-sizing: border-box;
                         }
                         .text-center {
-                            text-align: center;
+                            text-align: center !important;
                         }
                         .text-right {
-                            text-align: right;
+                            text-align: right !important;
                         }
                         .bold {
-                            font-weight: 700;
+                            font-weight: 700 !important;
                         }
                         .title {
-                            font-size: 14px;
-                            margin: 0 0 2px 0;
-                            text-transform: uppercase;
-                            letter-spacing: 0.5px;
-                            color: #000000;
+                            font-size: 14px !important;
+                            margin: 0 0 2px 0 !important;
+                            text-transform: uppercase !important;
+                            letter-spacing: 0.5px !important;
                         }
                         .subtitle {
-                            font-size: 9px;
-                            margin: 0 0 1px 0;
-                            color: #000000;
+                            font-size: 9px !important;
+                            margin: 0 0 1px 0 !important;
                         }
                         .divider {
-                            border-top: 1px dashed #000000;
-                            margin: 6px 0;
+                            border-top: 1px dashed #000000 !important;
+                            margin: 5px 0 !important;
+                            height: 0px !important;
+                        }
+                        .solid-divider {
+                            border-top: 1px solid #000000 !important;
+                            margin: 5px 0 !important;
+                            height: 0px !important;
                         }
                         .info-table {
-                            width: 100%;
-                            margin-bottom: 3px;
-                            font-size: 10px;
-                            color: #000000;
+                            width: 100% !important;
+                            margin-bottom: 3px !important;
+                            font-size: 10px !important;
+                            border-collapse: collapse !important;
                         }
                         .info-table td {
-                            vertical-align: top;
-                            padding: 1px 0;
-                            color: #000000;
+                            vertical-align: top !important;
+                            padding: 1px 0 !important;
                         }
                         .info-label {
-                            width: 25%;
-                            color: #000000;
+                            width: 25% !important;
                         }
                         .info-separator {
-                            width: 4%;
-                            color: #000000;
+                            width: 4% !important;
                         }
                         .item-container {
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: flex-start;
-                            font-size: 11px;
-                            margin-top: 3px;
-                            color: #000000;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            justify-content: flex-start !important;
+                            font-size: 11px !important;
+                            margin-top: 2px !important;
+                        }
+                        .item-row {
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            width: 100% !important;
                         }
                         .item-name {
-                            width: 65%;
-                            word-wrap: break-word;
-                            font-weight: 700;
+                            width: 65% !important;
+                            word-wrap: break-word !important;
                         }
                         .item-price {
-                            width: 35%;
-                            text-align: right;
-                            font-weight: 700;
+                            width: 35% !important;
+                            text-align: right !important;
                         }
                         .total-section {
-                            display: flex;
-                            justify-content: space-between;
-                            font-weight: 700;
-                            font-size: 11px;
-                            margin-top: 4px;
-                            color: #000000;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            font-weight: 700 !important;
+                            font-size: 11px !important;
+                            margin-top: 3px !important;
                         }
-                        .footer {
-                            margin-top: 15px;
-                            font-size: 8px;
-                            color: #000000;
+                        .garansi-box {
+                            text-align: justify !important;
+                            font-size: 8.5px !important;
+                            line-height: 1.3 !important;
+                        }
+                        .footer-text {
+                            font-size: 8px !important;
+                            line-height: 1.3 !important;
+                            text-align: center !important;
+                            text-transform: uppercase !important;
                         }
                     </style>
                 </head>
@@ -2367,14 +2369,12 @@
                     <div class="text-center">
                         <div class="title bold">Turja Computer</div>
                         <div class="subtitle">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
-                        <div class="subtitle" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-weight: 700; color: #000000;">
-                            <!-- Ikon WhatsApp dihapus, teks tebal horizontal -->
-                            <span>WhatsApp 0856-4260-0190 Rek. BCA 2500879516</span>
+                        <div class="subtitle bold" style="margin-top: 2px;">
+                            WhatsApp 0856-4260-0190 Rek. BCA 2500879516
                         </div>
                     </div>
                     
-                    <!-- Garis solid setelah baris WhatsApp & rekening BCA -->
-                    <div style="border-top: 1px solid #000000; margin: 6px 0;"></div>
+                    <div class="solid-divider"></div>
                     
                     <table class="info-table">
                         <tr>
@@ -2396,20 +2396,16 @@
                     
                     <div class="divider"></div>
                     
-                    <!-- Detail Pembelian Barang atau Jasa -->
-                    <div class="bold" style="font-size: 10px; margin-bottom: 2px; color: #000000;">Detail Pembelian Barang atau Jasa</div>
+                    <div class="bold" style="font-size: 10px; margin-bottom: 2px;">Detail Pembelian Barang atau Jasa</div>
                     <div class="item-container">
-                        <div style="display: flex; justify-content: space-between; width: 100%;">
-                            <div class="item-name">${produk}</div>
-                            <div class="item-price">Rp ${formattedHarga}</div>
+                        <div class="item-row">
+                            <div class="item-name bold">${produk}</div>
+                            <div class="item-price bold">Rp ${formattedHarga}</div>
                         </div>
-                        <!-- Spesifikasi dicetak tepat di bawah produk -->
-                        <div style="font-size: 9px; margin-top: 1px; color: #000000; font-weight: 500;">
+                        <div style="font-size: 9px; margin-top: 1px; font-weight: 500;">
                             ${kategori || '-'}
                         </div>
                     </div>
-                    
-                    <!-- Garis putus-putus setelah spesifikasi produk di hapus -->
                     
                     <div class="divider"></div>
                     
@@ -2418,17 +2414,16 @@
                         <div>Rp ${formattedHarga}</div>
                     </div>
                     
-                    <!-- Catatan -->
-                    <div class="total-section" style="font-size: 10px; margin-top: 3px; font-weight: 500;">
+                    <div class="total-section" style="font-size: 10px; margin-top: 2px; font-weight: 500;">
                         <div>Catatan</div>
                         <div class="bold">${catatan}</div>
                     </div>
                     
-                    <!-- Jaminan & Kebijakan Garansi Baru -->
                     <div class="divider"></div>
-                    <div style="text-align: center; margin-top: 4px; color: #000000;">
-                        <div class="bold" style="font-size: 10.5px; margin-bottom: 4px;">(Garansi .... Minggu/ Bulan)</div>
-                        <div style="font-size: 8.5px; line-height: 1.35; text-align: justify; font-weight: 500;">
+                    
+                    <div class="text-center">
+                        <div class="bold" style="font-size: 10px; margin-bottom: 3px;">(Garansi .... Minggu/ Bulan)</div>
+                        <div class="garansi-box">
                             Garansi Laptop tidak berlaku apabila: <br>
                             1. Segel rusak atau nota pembelian ini hilang. <br>
                             2. Kesalahan pemakai seperti terbentur, jatuh, tertindih, terkena air dsb. <br>
@@ -2438,11 +2433,10 @@
                     
                     <div class="divider"></div>
                     
-                    <div class="text-center footer">
-                        <div class="bold" style="font-size: 10px; letter-spacing: 0.5px;">TERIMA KASIH</div>
-                        <div style="margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
-                        <!-- Kebijakan Pengembalian Baru -->
-                        <div class="bold" style="font-size: 8px; line-height: 1.3; text-align: center; text-transform: uppercase;">
+                    <div class="text-center" style="margin-top: 10px;">
+                        <div class="bold" style="font-size: 10px; letter-spacing: 0.5px; margin-bottom: 2px;">TERIMA KASIH</div>
+                        <div style="font-size: 9px; margin-bottom: 4px;">Atas Kunjungan & Kepercayaan Anda</div>
+                        <div class="bold footer-text">
                             MOHON UNTUK DI CEK DAN TELITI TERLEBIH DAHULU PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI TIDAK DAPAT DI KEMBALIKAN LAGI DENGAN ALASAN APAPUN
                         </div>
                     </div>
@@ -2466,7 +2460,6 @@
         }
 
         function printReceiptDirect(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
-            // Ketika diklik di halaman admin, buka pilihan cetak/download PDF
             tempPrintData = { waktu, pembeli, alamat, produk, kategori, harga, catatan };
             document.getElementById('modal-print-confirm').classList.remove('hidden');
         }
@@ -2639,7 +2632,7 @@
 
             const link = document.createElement('a');
             link.download = `Voucer_${kode}.png`;
-            link.href = canvas.toToDataURL('image/png');
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }
     </script>
