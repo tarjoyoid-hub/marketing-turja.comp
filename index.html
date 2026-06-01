@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION (Premium & Attractive UI) -->
+    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed top-5 right-5 z-[100] transform transition-all duration-300 translate-x-full opacity-0 pointer-events-none">
         <div id="toast-card" class="bg-white border-l-4 rounded-xl shadow-2xl p-4 flex items-start gap-3 max-w-sm pointer-events-auto">
             <div id="toast-icon-box" class="p-1.5 rounded-lg flex-shrink-0"></div>
@@ -196,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- ADMIN: DAFTAR VOUCER GLOBAL (Tombol Refresh Dihapus) -->
+            <!-- ADMIN: DAFTAR VOUCER GLOBAL -->
             <div id="tab-admin-daftarvoucer" class="hidden-tab bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                 <div class="flex justify-between items-center mb-4">
                     <div>
@@ -240,7 +240,7 @@
                 </div>
             </div>
 
-            <!-- DATA PENJUALAN (ADMIN & USER) (Tombol Refresh Dihapus) -->
+            <!-- DATA PENJUALAN (ADMIN & USER) -->
             <div id="tab-data-penjualan" class="hidden-tab">
                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto border-t-4 border-green-700">
                     <div class="flex justify-between items-center mb-4">
@@ -425,7 +425,7 @@
                             <th class="p-2 text-green-900 font-semibold">Kecamatan</th>
                             <th class="p-2 text-green-900 font-semibold">Berlaku Sampai</th>
                             <th class="p-2 text-green-900 font-semibold">Status</th>
-                            <th class="p-2 text-center text-green-900 font-semibold w-24">Aksi</th>
+                            <th class="p-2 text-center text-green-900 font-semibold">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="voucher-list-body"></tbody>
@@ -534,33 +534,27 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="text-center mb-8">
-                <!-- Teks deskripsi sub-judul diperbarui sesuai instruksi -->
                 <h2 class="text-2xl font-bold text-gray-800">Buat Voucer Baru</h2>
                 <p class="text-gray-500 mt-2 text-sm">Input Data Calon Pelanggan Untuk Membuat Kartu Voucer</p>
             </div>
             <form id="form-buat-voucer" onsubmit="generateVoucher(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
-                <!-- Label Nama Pelanggan diubah menjadi wajib di UI, opsional secara internal diisi "WhatsApp" jika kosong -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Nama Pelanggan</label>
                     <input type="text" id="v-pelanggan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label No WA (Opsional) diubah menjadi No WhatsApp (Opsional) -->
                 <div class="mb-2 md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">No WhatsApp</label>
                     <input type="text" id="v-nowa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label Desa diubah, opsional secara internal diisi "Selamat Terpilih" jika kosong -->
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Desa</label>
                     <input type="text" id="v-desa" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
-                <!-- Label Kecamatan diubah, opsional secara internal diisi "Sebagai Penerima" jika kosong -->
                 <div class="mb-8">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Kecamatan</label>
                     <input type="text" id="v-kecamatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600">
                 </div>
                 <div class="md:col-span-2">
-                    <!-- Teks tombol diubah menjadi "Buat Voucer" -->
                     <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-800 transition shadow-md">
                         Buat Voucer
                     </button>
@@ -628,61 +622,38 @@
         </div>
     </div>
 
-    <!-- MODAL PRINTER BLUETOOTH CONNECTION & PRINT CONFIRMATION (REVISED WITH DUAL-PLANE LIVE RECEIPT PREVIEW) -->
+    <!-- MODAL PRINTER BLUETOOTH CONNECTION & PRINT CONFIRMATION -->
     <div id="modal-print-confirm" class="fixed inset-0 bg-gray-800 bg-opacity-90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="max-w-3xl w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700 flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto">
+        <div class="max-w-sm w-full bg-white rounded-xl shadow-2xl p-6 border-t-4 border-green-700">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">Cetak Struk Transaksi</h3>
+            <p class="text-sm text-gray-500 mb-6 text-center">Silakan hubungkan perangkat Anda ke printer kasir termal.</p>
             
-            <!-- Sisi Kiri: Realistis Struk Live Preview ( Courier New, Hitam Pekat, Identik Cetak) -->
-            <div class="flex-1 flex flex-col items-center border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-6">
-                <h4 class="text-xs font-bold text-gray-600 mb-3 uppercase tracking-widest">Pratinjau Desain Struk</h4>
-                <!-- Container Struk Kasir Gulung -->
-                <div class="w-full max-w-[290px] bg-stone-200 p-3 rounded-lg shadow-inner overflow-hidden border border-stone-300">
-                    <div id="receipt-live-preview" class="bg-white shadow-md border-b-8 border-dashed border-stone-400 rounded-t-sm overflow-hidden" style="max-width: 74mm; margin: 0 auto;">
-                        <!-- HTML Struk Dinamis Di-Inject Di Sini -->
-                    </div>
+            <!-- Panel Monitor Konektivitas Printer Bluetooth -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 text-xs text-gray-600 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span>Status Printer:</span>
+                    <span id="printer-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">TIDAK TERHUBUNG</span>
                 </div>
+                <div class="flex justify-between items-center">
+                    <span>Nama Printer:</span>
+                    <span id="printer-name-label" class="font-mono text-gray-800 font-semibold">Belum Disandingkan</span>
+                </div>
+                <!-- Tombol Hubungkan Khusus untuk Pairing/Mendeteksi Ulang -->
+                <button id="btn-pair-printer" onclick="pairBluetoothPrinter()" class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1.5 rounded transition text-center flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    Sandingkan Printer Kasir
+                </button>
             </div>
 
-            <!-- Sisi Kanan: Panel Kontrol Konektivitas & Aksi -->
-            <div class="flex-1 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">Cetak Struk Transaksi</h3>
-                    <p class="text-xs text-gray-500 mb-6 leading-relaxed">Pratinjau di sebelah kiri menunjukkan visualisasi cetak tebal di kertas kasir termal. Hubungkan Bluetooth printer atau klik "Simpan PDF".</p>
-                    
-                    <!-- Panel Monitor Konektivitas Printer Bluetooth -->
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 text-xs text-gray-600 space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span>Status Printer:</span>
-                            <span id="printer-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">TIDAK TERHUBUNG</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>Nama Printer:</span>
-                            <span id="printer-name-label" class="font-mono text-gray-800 font-semibold">Belum Disandingkan</span>
-                        </div>
-                        <!-- Tombol Hubungkan Khusus untuk Pairing/Mendeteksi Ulang -->
-                        <button id="btn-pair-printer" onclick="pairBluetoothPrinter()" class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1.5 rounded transition text-center flex items-center justify-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                            Sandingkan Printer Kasir
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Opsi Tombol Cetak, PDF, dan Batal -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex gap-2">
-                        <button onclick="handlePrintYes('pdf')" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold flex items-center justify-center gap-1.5 flex-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Simpan PDF
-                        </button>
-                        <button id="btn-execute-print" onclick="handlePrintYes('print')" class="px-3 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-xs font-bold flex items-center justify-center gap-1.5 flex-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            Cetak Struk
-                        </button>
-                    </div>
-                    <button onclick="handlePrintNo()" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-xs font-bold w-full">
-                        Tutup / Batal
-                    </button>
-                </div>
+            <!-- Opsi Tombol Cetak, PDF, dan Batal -->
+            <div class="flex flex-col gap-2">
+                <button id="btn-execute-print" onclick="handlePrintYes('print')" class="px-3 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition text-xs font-bold flex items-center justify-center gap-1.5 w-full">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak Struk
+                </button>
+                <button onclick="handlePrintNo()" class="px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-xs font-bold w-full">
+                    Tutup / Batal
+                </button>
             </div>
         </div>
     </div>
@@ -1175,7 +1146,7 @@
 
         async function callGAS(action, payload = {}) {
             try {
-                if (GAS_URL === "https://script.google.com/macros/s/AKfycbx5uYQY6HjAYFUbYh6FZ7Ny69U-V8yYaPth8gShFSwsi2-eI9HkP6hyGuCi-DoYqNI3/exec" || GAS_URL.includes("GANTI_URL") || GAS_URL.includes("URL_WEB_APP_GAS")) {
+                if (GAS_URL === "https://script.google.com/macros/s/AKfycbw4K_fGpYzDtFHqJ98rqNcYHGU9auwKUcSZp0F--gCgJpq2Qth_W9LhFN-oCSuvyFjD/exec" || GAS_URL.includes("GANTI_URL") || GAS_URL.includes("URL_WEB_APP_GAS")) {
                     return processOfflineAction(action, payload);
                 }
                 
@@ -1607,10 +1578,12 @@
             document.getElementById('modal-claim-confirm').classList.remove('hidden');
         }
 
+        // Tutup konfirmasi klaim
         function closeClaimConfirm() {
             document.getElementById('modal-claim-confirm').classList.add('hidden');
         }
 
+        // Jalankan perintah klaim
         async function executeClaim() {
             const code = document.getElementById('claim-voucher-code').value;
             closeClaimConfirm();
@@ -1619,13 +1592,13 @@
             hideLoading();
             if(res.status === 'success') {
                 showToast("Voucer berhasil diklaim!");
-                // Panggil verifyVoucher kembali untuk memperbarui UI status pratinjau yang sedang aktif
                 verifyVoucher(); 
             } else {
                 showToast(res.message, true);
             }
         }
 
+        // Buat Akun Marketing baru
         async function createMarketingAccount(e) {
             e.preventDefault();
             const n = document.getElementById('new-mkt-name').value;
@@ -1646,6 +1619,7 @@
             }
         }
 
+        // Load Marketing accounts
         async function loadMarketing() {
             const res = await callGAS('getMarketing');
             const tbody = document.getElementById('marketing-list-body');
@@ -1654,9 +1628,7 @@
                 res.data.forEach(user => {
                     const tr = document.createElement('tr');
                     tr.className = "bg-white border-b hover:bg-gray-50 transition";
-                    // [REVISI] Menyamakan ukuran tombol edit (w-[104px] h-[32px]) berwarna abu-abu dengan ikon pensil
                     tr.innerHTML = `
-                        <!-- Pengaturan Padding Tipis pada baris tabel agar presisi (p-2) -->
                         <td class="p-2 font-semibold text-gray-800">${user.Nama}</td>
                         <td class="p-2 text-center">
                             <button onclick="openEditMarketing('${user.ID}', '${user.Nama}', '${user.Username}', '${user.Password}')" class="bg-gray-600 text-white w-[104px] h-[32px] rounded-lg hover:bg-gray-700 text-xs font-semibold transition shadow-sm inline-flex items-center justify-center gap-1">
@@ -1676,15 +1648,6 @@
             document.getElementById('edit-mkt-username').value = username;
             document.getElementById('edit-mkt-password').value = password;
             document.getElementById('modal-edit-marketing').classList.remove('hidden');
-        }
-
-        // Menambahkan fungsi openModalVoucer dan closeModalVoucer yang sebelumnya hilang
-        function openModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.remove('hidden');
-        }
-        function closeModalVoucer() {
-            document.getElementById('modal-buat-voucer').classList.add('hidden');
-            document.getElementById('form-buat-voucer').reset();
         }
 
         function closeEditMarketing() {
@@ -1761,7 +1724,6 @@
 
         function generateVoucher(e) {
             e.preventDefault();
-            // Implementasi Validasi & Pengisian Default Otomatis jika kosong
             let pelVal = document.getElementById('v-pelanggan').value.trim();
             if (pelVal === "") {
                 pelVal = "WhatsApp";
@@ -1854,7 +1816,6 @@
                     const tr = document.createElement('tr');
                     tr.className = "border-b hover:bg-green-50 transition whitespace-nowrap";
                     
-                    // [EDISI USER] Tambahkan tombol Download gambar berupa ikon tebal di kolom Aksi
                     tr.innerHTML = `
                         <td class="p-2 font-mono font-bold text-green-700">${v.Kode}</td>
                         <td class="p-2 font-medium">${v.Pelanggan}</td>
@@ -1899,7 +1860,7 @@
             hideLoading();
             if(res.status === 'success') {
                 showToast("Voucer berhasil dihapus!");
-                loadAdminVouchers(); // Refresh tabel admin
+                loadAdminVouchers(); 
             } else {
                 showToast("Gagal menghapus voucer: " + res.message, true);
             }
@@ -2016,7 +1977,6 @@
             }
         }
 
-        // Mengembalikan fungsi openEditPenjualan yang sebelumnya terhapus dari berkas
         function openEditPenjualan(id, pembeli, nohp, alamat, kategori, produk, voucer, harga, catatan) {
             document.getElementById('penj-edit-id').value = id; 
             document.getElementById('modal-penjualan-title').textContent = "Edit Data Penjualan";
@@ -2030,7 +1990,6 @@
             document.getElementById('penj-produk').value = produk;
             document.getElementById('penj-voucer').value = voucer;
             
-            // Format ulang harga dengan separator titik sebelum disisipkan ke input
             document.getElementById('penj-harga').value = parseInt(harga).toLocaleString('id-ID');
             document.getElementById('penj-catatan').value = catatan === "Lunas" ? "" : catatan; 
 
@@ -2067,26 +2026,22 @@
             tempPrintData = null;
         }
 
-        // Modifikasi fungsi cetak agar mendukung opsi "Cetak Langsung" (Printer Sanding) atau "Unduh PDF"
         async function handlePrintYes(mode) {
             document.getElementById('modal-print-confirm').classList.add('hidden');
             if (tempPrintData) {
                 if (mode === 'pdf') {
-                    // Cetak via dialog browser (Bisa disimpan sebagai PDF bawaan perangkat)
                     printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan, true);
                 } else {
-                    // Cetak langsung menggunakan Web Bluetooth API ke printer kasir yang aktif
                     printToBluetoothPrinter(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan);
                 }
             }
             tempPrintData = null;
         }
 
-        // INTEGRASI SYSTEM BLUETOOTH PRINTER MANAGEMENT (REVISED - NO AUTO-REDIRECT)
+        // INTEGRASI SYSTEM BLUETOOTH PRINTER MANAGEMENT
         let connectedPrinterCharacteristic = null;
         let pairedDevice = null;
 
-        // Daftar UUID Service BLE yang umum dipakai printer kasir termal di pasaran
         const commonPrinterServices = [
             '000018f0-0000-1000-8000-00805f9b34fb', // Standard printer
             'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // Mini thermal
@@ -2097,7 +2052,6 @@
             '0000ffe0-0000-1000-8000-00805f9b34fb'  // Generic BLE
         ];
 
-        // Memeriksa dan memuat status printer dari localStorage saat load awal
         function checkSavedBluetoothPrinter() {
             const savedName = localStorage.getItem('pairedPrinterName');
             const statusBadge = document.getElementById('printer-status-badge');
@@ -2112,7 +2066,6 @@
             }
         }
 
-        // Fungsi khusus menyandingkan / Pairing Printer Kasir secara manual dari Dialog UI (Sistem Bebas / Generic Bluetooth API)
         async function pairBluetoothPrinter() {
             const statusBadge = document.getElementById('printer-status-badge');
             const nameLabel = document.getElementById('printer-name-label');
@@ -2125,7 +2078,6 @@
             try {
                 showToast("Membuka jendela pencarian perangkat Bluetooth...");
                 
-                // [UPGRADE KONEKSI GENERIC] Deteksi dinamis dan mendukung banyak UUID printer di pasaran
                 const device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
                     optionalServices: commonPrinterServices
@@ -2134,14 +2086,13 @@
                 showLoading();
                 const server = await device.gatt.connect();
                 
-                // Ekstrak semua layanan yang diizinkan dan cari otomatis mana yang bisa untuk nge-print (write)
                 let writeChar = null;
                 const services = await server.getPrimaryServices();
                 
                 for (let service of services) {
                     const characteristics = await service.getCharacteristics();
                     writeChar = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
-                    if (writeChar) break; // Berhenti jika port printer kasir ditemukan
+                    if (writeChar) break;
                 }
                 
                 hideLoading();
@@ -2150,7 +2101,6 @@
                     connectedPrinterCharacteristic = writeChar;
                     pairedDevice = device;
                     
-                    // Simpan data printer di localStorage agar tersanding otomatis nantinya
                     localStorage.setItem('pairedPrinterName', device.name || "Thermal Printer");
                     
                     if (statusBadge) {
@@ -2174,18 +2124,19 @@
             }
         }
 
-        // [GENERATE RECEIPT STRUCTURE] Modul Generator Tunggal Penghasil HTML Struk Kasir Termal (Sama Persis Desain & Cetak)
+        // [GENERATE RECEIPT STRUCTURE] Modul Generator Tunggal Penghasil HTML Struk Kasir Termal
         function generateReceiptHTML(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             return `
-                <div style="width: 100%; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000000 !important; line-height: 1.4 !important; background-color: #ffffff; padding: 5px 0; box-sizing: border-box; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                <div style="width: 100%; font-family: 'Courier New', Courier, monospace !important; font-size: 11px !important; color: #000000 !important; line-height: 1.4 !important; background-color: #ffffff; padding: 0px 0px; box-sizing: border-box; text-align: left; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     <div style="text-align: center; margin-bottom: 8px; padding: 0 2px;">
+                        <!-- Tulisan Turja Computer dibuat Tebal & Lebar-Tinggi optimal -->
                         <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transform: scaleY(1.4) scaleX(1.1); transform-origin: top;">TURJA COMPUTER</div>
                         <div style="font-size: 9.5px; margin-top: 8px; white-space: nowrap;">Kewangu'an Pakisputih Kedungwuni Pekalongan</div>
                         <div style="font-size: 9.5px; font-weight: bold; margin-top: 2px; white-space: nowrap;">WhatsApp 0856-4260-0190 Rek. BCA 2500879516</div>
                     </div>
                     
-                    <div style="border-top: 1px solid #000000; margin: 6px 0; width: 100%;"></div>
+                    <div style="border-top: 1px solid #000000; margin: 4px 0; width: 100%;"></div>
                     
                     <table style="width: 100%; font-size: 10px; border-collapse: collapse; font-family: 'Courier New', Courier, monospace !important; padding: 0 4px;">
                         <tr>
@@ -2205,42 +2156,43 @@
                         </tr>
                     </table>
                     
-                    <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
-                    <div style="height: 6px;"></div> <!-- Spasi Kosong Setelah Garis Putus -->
+                    <div style="border-top: 1px dashed #000000; margin: 4px 0; width: 100%;"></div>
                     
                     <div style="padding: 0 4px;">
-                        <div style="font-weight: bold; font-size: 10px; margin-bottom: 8px; text-align: center;">Detail Barang atau Jasa</div> <!-- Rata Tengah & Teks Diubah -->
+                        <!-- Detail Barang atau Jasa (Rata Tengah) -->
+                        <div style="font-weight: bold; font-size: 11px; margin-bottom: 2px; text-align: center;">Detail Barang atau Jasa</div>
+                        <!-- Spasi kosong antar baris di bawah judul Detail Barang dihapus (margin-top: 0) -->
                         <div style="margin-top: 0;">
                             <div style="width: 100%;">
-                                <div style="word-wrap: break-word;">${produk}</div>
+                                <!-- Tulisan nominal sebelah kanan produk dihilangkan (Hanya nama produk) -->
+                                <div style="word-wrap: break-word; font-size: 11px;">${produk}</div>
                             </div>
-                            <!-- Spesifikasi ramping (margin 0), tebal -->
-                            <div style="font-size: 10px; margin-top: 0px; font-weight: bold;">
+                            <!-- Spesifikasi tebal, ukuran disamakan (11px), ramping mepet ke atas (margin-top: 2px), membungkus otomatis jika panjang -->
+                            <div style="font-size: 11px; margin-top: 2px; font-weight: bold; word-break: break-all; white-space: pre-wrap;">
                                 ${kategori || '-'}
+                            </div>
+                            <!-- Tulisan catatan dipindah setelah spesifikasi unit, tebal, ukuran sama (11px) -->
+                            <div style="font-size: 11px; margin-top: 2px; font-weight: bold; word-break: break-all; white-space: pre-wrap;">
+                                Catatan: ${catatan}
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Garis Putus-putus setelah spesifikasi DIHAPUS -->
+                    <!-- Garis putus-putus setelah Spesifikasi Unit DIHAPUS -->
                     
-                    <div style="padding: 0 4px; margin-top: 6px;">
+                    <div style="padding: 0 4px; margin-top: 4px;">
+                        <!-- TOTAL HARGA size 11px (sama seperti spesifikasi), nominal ditebalkan -->
                         <div style="display: flex; justify-content: space-between; font-size: 11px;">
                             <div>TOTAL HARGA</div>
                             <div style="font-weight: bold;">Rp ${formattedHarga}</div>
                         </div>
-                        
-                        <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 2px;">
-                            <div>Catatan</div>
-                            <div style="font-weight: bold;">${catatan}</div>
-                        </div>
                     </div>
                     
-                    <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
+                    <div style="border-top: 1px dashed #000000; margin: 4px 0; width: 100%;"></div>
                     <!-- Spasi kosong sebelum ketentuan garansi DIHAPUS -->
                     
-                    <!-- Garansi Rata Kiri -->
+                    <!-- Garansi Rata Kiri & Teks (Garansi ....) DIHAPUS -->
                     <div style="text-align: left; padding: 0 4px;">
-                        <!-- Teks (Garansi .... Minggu/ Bulan) DIHAPUS -->
                         <div style="font-size: 8.5px; line-height: 1.35; text-align: justify;">
                             Garansi Laptop tidak berlaku apabila: <br>
                             1. Segel rusak atau nota pembelian ini hilang. <br>
@@ -2249,7 +2201,7 @@
                         </div>
                     </div>
                     
-                    <div style="border-top: 1px dashed #000000; margin: 6px 0; width: 100%;"></div>
+                    <div style="border-top: 1px dashed #000000; margin: 4px 0; width: 100%;"></div>
                     
                     <div style="text-align: center; margin-top: 10px; padding: 0 4px;">
                         <div style="font-weight: bold; font-size: 10px; letter-spacing: 0.5px; margin-bottom: 2px;">TERIMA KASIH</div>
@@ -2266,10 +2218,30 @@
         async function printToBluetoothPrinter(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             const formattedHarga = parseInt(harga).toLocaleString('id-ID');
             
+            // Helper function to wrap text dynamic to 48 chars
+            const wrapText = (text, limit) => {
+                if (!text) return "";
+                let words = text.split(" ");
+                let lines = [];
+                let currentLine = "";
+                for (let word of words) {
+                    if ((currentLine + word).length <= limit) {
+                        currentLine += (currentLine === "" ? "" : " ") + word;
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
+                return lines.join("\n");
+            };
+
             // Format ESC/POS Murni untuk Printer Termal
             let receiptText = "";
+            receiptText += "\x1b\x40"; // Initialize printer (mepet atas)
             receiptText += "\x1b\x61\x01"; // Align center
-            // \x1b\x21\x30 mengaktifkan Tinggi Ganda (0x10) dan Lebar Ganda (0x20) sekaligus
+            
+            // Tinggi Ganda & Lebar Ganda tebal optimal (Double height + Double width)
             receiptText += "\x1b\x21\x30\x1b\x45\x01" + "TURJA COMPUTER" + "\n"; 
             receiptText += "\x1b\x21\x00\x1b\x45\x00"; // Normal size & bold off
             receiptText += "Kewangu'an Pakisputih Kedungwuni Pekalongan\n";
@@ -2279,23 +2251,28 @@
             receiptText += "Tanggal : " + waktu + "\n";
             receiptText += "Pembeli : " + pembeli + "\n";
             receiptText += "Alamat  : " + alamat + "\n";
-            receiptText += "------------------------------------------------\n\n"; // Jarak kosong setelah putus-putus
+            receiptText += "------------------------------------------------\n"; // Tanpa baris kosong ganda agar ketat
             
             receiptText += "\x1b\x61\x01"; // Align center
-            receiptText += "Detail Barang atau Jasa\n\n"; // Jarak kosong setelah judul
+            receiptText += "Detail Barang atau Jasa\n"; // Spasi kosong di bawahnya dihapus
             receiptText += "\x1b\x61\x00"; // Kembali ke Align left
             
-            // Logika format produk (tanpa harga nominal)
-            let leftText = produk;
-            if(leftText.length > 48) leftText = leftText.substring(0, 48);
-            receiptText += leftText + "\n";
+            // Produk dibungkus otomatis tanpa nominal harga di samping kanan
+            receiptText += wrapText(produk, 48) + "\n";
             
-            // Spesifikasi ditebalkan & tanpa spasi depan
+            // Spesifikasi dibungkus (wrapped) agar tidak terpotong, dicetak tebal
             if (kategori) {
-                receiptText += "\x1b\x45\x01" + kategori.substring(0, 48) + "\x1b\x45\x00\n";
+                let wrappedKategori = wrapText(kategori, 48);
+                receiptText += "\x1b\x45\x01" + wrappedKategori + "\x1b\x45\x00\n";
             }
             
-            // Garis putus-putus dan jarak dihapus di sini
+            // Tulisan catatan dipindah tepat setelah spesifikasi unit, tebal
+            if (catatan) {
+                let wrappedCatatan = wrapText("Catatan: " + catatan, 48);
+                receiptText += "\x1b\x45\x01" + wrappedCatatan + "\x1b\x45\x00\n";
+            }
+            
+            // Garis putus-putus setelah Spesifikasi Unit DIHAPUS, langsung menuju Total
             
             // TOTAL HARGA & Nominal Tebal
             let totalStr = "TOTAL HARGA";
@@ -2304,12 +2281,10 @@
             if(spaceTotal < 1) spaceTotal = 1;
             receiptText += totalStr + " ".repeat(spaceTotal) + "\x1b\x45\x01" + rightText + "\x1b\x45\x00\n";
             
-            receiptText += "Catatan : " + catatan + "\n";
-            receiptText += "================================================\n"; // Jarak kosong setelah putus-putus DIHAPUS
+            receiptText += "================================================\n"; // Tanpa baris kosong ganda
             
-            // Garansi rata kiri
+            // Garansi rata kiri & Teks (Garansi ....) DIHAPUS
             receiptText += "\x1b\x61\x00"; // Rata Kiri
-            // Teks (Garansi .... Minggu/ Bulan) DIHAPUS
             receiptText += "Garansi Laptop tidak berlaku apabila:\n";
             receiptText += "1. Segel rusak / nota ini hilang.\n";
             receiptText += "2. Kesalahan pemakai (jatuh, air, tertindih).\n";
@@ -2322,7 +2297,9 @@
             receiptText += "PEMBELIAN ANDA KARENA BARANG YANG SUDAH DI BELI\n";
             receiptText += "TIDAK DAPAT DI KEMBALIKAN LAGI\n";
             receiptText += "DENGAN ALASAN APAPUN\n";
-            receiptText += "\n\n\n\n"; // Feed paper
+            
+            // [AKTIFKAN PISAU PEMOTONG] Feed 3 lines & potong kertas (ESC/POS partial cut command)
+            receiptText += "\x1b\x64\x03\x1d\x56\x01"; 
 
             if (!navigator.bluetooth || typeof navigator.bluetooth.requestDevice !== 'function') {
                 showToast("Akses Bluetooth peramban tidak diizinkan. Mengalihkan ke metode cetak sistem...", true);
@@ -2331,10 +2308,8 @@
             }
 
             try {
-                // Mencoba melakukan auto-reconnect jika printer tersimpan
                 if (!connectedPrinterCharacteristic && localStorage.getItem('pairedPrinterName')) {
                     showToast("Mencoba menghubungkan ulang ke printer...");
-                    // Web Bluetooth memerlukan interaksi pengguna awal untuk inisiasi ulang gatt server
                     await pairBluetoothPrinter();
                 }
 
@@ -2344,9 +2319,7 @@
                     hideLoading();
                     showToast("Struk kasir sukses dicetak!");
                 } else {
-                    // JIKA GAGAL: Tidak langsung dilempar ke PDF, melainkan diberi notifikasi dan instruksi agar menyandingkan ulang
                     showToast("Printer belum terhubung! Silakan sandingkan printer kasir Anda terlebih dahulu.", true);
-                    // Buka modal kembali untuk memberikan kesempatan menyandingkan perangkat kasir
                     document.getElementById('modal-print-confirm').classList.remove('hidden');
                 }
             } catch (err) {
@@ -2382,10 +2355,8 @@
                 document.body.appendChild(iframe);
             }
             
-            // Ambil layout tunggal terstandarisasi untuk dicetak
             const receiptHtml = generateReceiptHTML(waktu, pembeli, alamat, produk, kategori, harga, catatan);
 
-            // Format CSS terstandardisasi keras (keras-width 74mm, font Courier New monospaced seragam, @media print reset)
             const htmlContent = `
                 <!DOCTYPE html>
                 <html>
@@ -2401,12 +2372,11 @@
                             body {
                                 width: 74mm !important;
                                 margin: 0 !important;
-                                padding: 2mm 3mm !important;
+                                padding: 0 !important; /* mepeet atas dan bawah saat dipotong */
                                 background-color: #ffffff !important;
                                 -webkit-print-color-adjust: exact !important;
                                 print-color-adjust: exact !important;
                             }
-                            /* Sembunyikan informasi header/footer halaman browser default */
                             html, body {
                                 height: auto;
                                 background: #FFF;
@@ -2417,7 +2387,7 @@
                         body {
                             width: 74mm;
                             margin: 0 auto;
-                            padding: 3mm;
+                            padding: 0; /* mepet */
                             background-color: #ffffff;
                             box-sizing: border-box;
                         }
@@ -2446,19 +2416,13 @@
         // [EDISI PRATINJAU PRE-PRINT] Inject modul struktur struk sebelum menampilkan modal popup print
         function printReceiptDirect(waktu, pembeli, alamat, produk, kategori, harga, catatan) {
             tempPrintData = { waktu, pembeli, alamat, produk, kategori, harga, catatan };
-            
-            // Jalankan live preview generator 
             const liveReceiptHtml = generateReceiptHTML(waktu, pembeli, alamat, produk, kategori, harga, catatan);
-            
-            // Suntikkan pratinjau struktur persis ke modal box
             document.getElementById('receipt-live-preview').innerHTML = liveReceiptHtml;
-            
             document.getElementById('modal-print-confirm').classList.remove('hidden');
         }
 
         // ================= VOUCHER IMAGE & SHARE LOGIC =================
 
-        // Helper memformat nomor WA untuk parameter share
         function formatWA(nowa) {
             if(!nowa) return "";
             let clean = nowa.replace(/[^0-9]/g, '');
@@ -2468,7 +2432,6 @@
             return clean;
         }
 
-        // Pembagian voucer melalui WA
         function shareToWA() {
             if(!activeVoucherData) return;
             shareSingleWA(activeVoucherData.kode, activeVoucherData.tanggal, activeVoucherData.nowa);
@@ -2480,7 +2443,6 @@
             window.open("https://wa.me/" + formattedNum + "?text=" + encodeURIComponent(text));
         }
 
-        // Unduhan berkas gambar voucer dari canvas
         function downloadVoucherImage() {
             if(!activeVoucherData) return;
             drawAndDownloadVoucher(activeVoucherData.kode, activeVoucherData.pelanggan, activeVoucherData.nowa, activeVoucherData.desa, activeVoucherData.kecamatan, activeVoucherData.tanggal);
