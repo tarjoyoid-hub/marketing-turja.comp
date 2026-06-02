@@ -166,7 +166,7 @@
                         <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Unit Penjualan</span>
                         <div class="flex items-baseline justify-between mt-2">
                             <span class="text-3xl font-extrabold text-indigo-900" id="dash-penjualan-count">0</span>
-                            <span class="text-xs text-indigo-600 font-semibold">Transaksi</span>
+                            <span class="text-xs text-emerald-600 font-semibold">Transaksi</span>
                         </div>
                     </div>
                     <!-- Jumlah Voucer Hack Aktif -->
@@ -399,7 +399,7 @@
                         
                         <div class="mt-5 pt-3 border-t border-red-800 border-opacity-40 text-center flex flex-col gap-1.5">
                             <p class="text-[11px] text-red-200 italic leading-snug font-medium">Tunjukan Kode Voucer ini Saat Belanja Laptop atau Komputer</p>
-                            <p class="text-[10px] text-gray-300">Berlaku s/d: <span id="disp-v-tanggal" class="font-bold text-yellow-400 text-xs tracking-wide"></span></p>
+                            <p class="text-[10px] text-gray-300">Berlaku Sampai: <span id="disp-v-tanggal" class="font-bold text-yellow-400 text-xs tracking-wide"></span></p>
                         </div>
                     </div>
 
@@ -411,7 +411,7 @@
                         <!-- Tombol Download Gambar ditambahkan di sini agar bisa diunduh secara manual -->
                         <button onclick="downloadVoucherImage()" class="flex items-center bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition font-medium shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download
+                            Unduh
                         </button>
                     </div>
                 </div>
@@ -2610,7 +2610,7 @@
 
             const link = document.createElement('a');
             link.download = `Voucer_${kode}.png`;
-            link.href = canvas.toToDataURL ? canvas.toToDataURL('image/png') : canvas.toDataURL('image/png');
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }
     </script>
