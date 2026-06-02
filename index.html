@@ -411,7 +411,7 @@
                         <!-- Tombol Download Gambar ditambahkan di sini agar bisa diunduh secara manual -->
                         <button onclick="downloadVoucherImage()" class="flex items-center bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition font-medium shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download Gambar
+                            Download
                         </button>
                     </div>
                 </div>
@@ -623,7 +623,7 @@
                     Batal
                 </button>
                 <button onclick="executeClaim()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm font-semibold">
-                    Ya, Klaim
+                    Klaim
                 </button>
             </div>
         </div>
@@ -2315,9 +2315,9 @@
             receiptText += "Terima Kasih\n";
             receiptText += "Atas Kunjungan & Kepercayaan Anda\n\n";
             receiptText += "MOHON CEK DAN TELITI BARANG PEMBELIAN ANDA\n";
-            receiptText += "KARENA BARANG YANG SUDAH DIBELI\n";
+            receiptText += "KARENA BARANG YANG SUDAH ANDA BELI\n";
             receiptText += "TIDAK DAPAT DIKEMBALIKAN LAGI\n";
-            receiptText += "WALAUPUN DENGAN ALASAN APAPUN\n";
+            receiptText += "DENGAN ALASAN APAPUN\n";
             
             // [AKTIFKAN PISAU PEMOTONG] Feed 3 lines & potong kertas (ESC/POS partial cut command)
             receiptText += "\x1b\x64\x03\x1d\x56\x01"; 
