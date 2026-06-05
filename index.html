@@ -2039,16 +2039,7 @@
                     printReceipt(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan, true);
                 } else {
                     // Cetak langsung menggunakan Web Bluetooth API ke printer kasir yang aktif
-                    let receiptText =
-generateReceiptText(
-   tempPrintData.waktu,
-   tempPrintData.pembeli,
-   tempPrintData.alamat,
-   tempPrintData.produk,
-   tempPrintData.kategori,
-   tempPrintData.harga,
-   tempPrintData.catatan
-);
+                    printToBluetoothPrinter(tempPrintData.waktu, tempPrintData.pembeli, tempPrintData.alamat, tempPrintData.produk, tempPrintData.kategori, tempPrintData.harga, tempPrintData.catatan);
                 }
             }
             tempPrintData = null;
