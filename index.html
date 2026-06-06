@@ -30,7 +30,7 @@
          GANTI URL DI BAWAH INI DENGAN URL WEB APP GAS ANDA
          ========================================== -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwKz0kYW5k9zAflnJXRe9krf_BNMxZtRuqdXfNWwbWwpz_5gHumNi8ZQcQf7rjTeLTF/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxiGZZZDcp89d7LRr5I6vUxHd7N--1539x5dQd_3xjU8LflC2wxX4KRqtOYoQal5OQu/exec"; 
     </script>
 
     <!-- LOADING OVERLAY -->
@@ -41,7 +41,7 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION (Premium & Attractive UI) -->
+    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed top-5 right-5 z-[100] transform transition-all duration-300 translate-x-full opacity-0 pointer-events-none">
         <div id="toast-card" class="bg-white border-l-4 rounded-xl shadow-2xl p-4 flex items-start gap-3 max-w-sm pointer-events-auto">
             <div id="toast-icon-box" class="p-1.5 rounded-lg flex-shrink-0"></div>
@@ -921,6 +921,135 @@
                 if (adjustedCursor < 0) adjustedCursor = 0;
                 this.setSelectionRange(adjustedCursor, adjustedCursor);
             });
+        }
+
+        // CORE GAS API CALL HANDLER (PENTING: Jangan Dihapus!)
+        async function callGAS(action, payload = {}) {
+            try {
+                if (GAS_URL.includes("GANTI_URL") || GAS_URL === "") {
+                    return processOfflineAction(action, payload);
+                }
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: action, ...payload })
+                });
+                if (!response.ok) throw new Error("HTTP Error " + response.status);
+                return await response.json();
+            } catch (err) {
+                console.warn("[NETWORK WARNING] Mengalihkan ke database simulasi karena:", err.message);
+                return processOfflineAction(action, payload);
+            }
+        }
+
+        // OFFLINE ACTIONS EMULATOR (PENTING: Jangan Dihapus!)
+        function processOfflineAction(action, payload) {
+            console.log(`[SIMULATION MODE] Memproses aksi: ${action}`, payload);
+            let result = { status: 'success' };
+            
+            if (action === 'getSettings') {
+                result.data = appSettings;
+            }
+            else if (action === 'login') {
+                const matched = offlineDb.akun.find(u => u.Username.toLowerCase() === payload.username.toLowerCase() && u.Password === payload.password);
+                if (matched) {
+                    result.data = { id: matched.ID, name: matched.Nama, username: matched.Username, role: matched.Role };
+                    result.settings = appSettings;
+                    showToast("Simulasi: Login berhasil menggunakan data lokal.");
+                } else {
+                    result = { status: 'error', message: 'Username atau Password Simulasi salah!' };
+                }
+            }
+            else if (action === 'getMarketing') {
+                result.data = offlineDb.akun.filter(u => u.Role === 'User').map(u => ({ ID: u.ID, Nama: u.Nama, Username: u.Username, Password: u.Password }));
+            }
+            else if (action === 'createMarketing') {
+                const newId = 'U' + (offlineDb.akun.length + 1);
+                offlineDb.akun.push({ ID: newId, Nama: payload.name, Username: payload.username, Password: payload.password, Role: 'User' });
+            }
+            else if (action === 'updateMarketing') {
+                const index = offlineDb.akun.findIndex(u => u.ID === payload.id);
+                if (index !== -1) {
+                    offlineDb.akun[index].Nama = payload.name;
+                    offlineDb.akun[index].Username = payload.username;
+                    offlineDb.akun[index].Password = payload.password;
+                }
+            }
+            else if (action === 'createVoucher') {
+                let expDate = new Date();
+                expDate.setDate(expDate.getDate() + parseInt(appSettings.masaAktifVoucer));
+                let expStr = expDate.toISOString().split('T')[0];
+                offlineDb.voucer.push({
+                    Kode: payload.kode,
+                    Pelanggan: payload.pelanggan,
+                    "No WA": payload.nowa,
+                    "Desa/Kelurahan": payload.desa,
+                    Kecamatan: payload.kecamatan,
+                    "Berlaku Sampai": expStr,
+                    Status: 'Aktif',
+                    Pembuat: payload.pembuat
+                });
+                result.data = { berlakuSampai: expStr };
+            }
+            else if (action === 'getVouchers') {
+                result.data = payload.filterUser ? offlineDb.voucer.filter(v => v.Pembuat === payload.filterUser) : offlineDb.voucer;
+            }
+            else if (action === 'verifyVoucher') {
+                const found = offlineDb.voucer.find(v => v.Kode === payload.code);
+                if (found) result.data = found;
+                else result = { status: 'error', message: 'Voucer tidak ditemukan!' };
+            }
+            else if (action === 'claimVoucher') {
+                const index = offlineDb.voucer.findIndex(v => v.Kode === payload.code);
+                if (index !== -1) offlineDb.voucer[index].Status = 'Terpakai';
+            }
+            else if (action === 'deleteVoucher') {
+                const originalLength = offlineDb.voucer.length;
+                offlineDb.voucer = offlineDb.voucer.filter(v => v.Kode !== payload.code);
+                if(offlineDb.voucer.length === originalLength) {
+                    result = { status: 'error', message: 'Voucer tidak ditemukan di database lokal!' };
+                } else {
+                    showToast("Simulasi: Voucer lokal berhasil dihapus.");
+                }
+            }
+            else if (action === 'createPenjualan') {
+                const time = new Date().toLocaleString('id-ID');
+                offlineDb.penjualan.push({
+                    "Waktu Input": time,
+                    Marketing: payload.marketing,
+                    Pembeli: payload.pembeli,
+                    "No HP": payload.nohp,
+                    Alamat: payload.alamat,
+                    Kategori: payload.kategori,
+                    Produk: payload.produk,
+                    "Voucer Klaim": payload.voucer,
+                    "Harga Final": payload.harga,
+                    Catatan: payload.catatan
+                });
+            }
+            else if (action === 'getPenjualan') {
+                result.data = offlineDb.penjualan;
+            }
+            else if (action === 'updatePenjualan') {
+                const index = offlineDb.penjualan.findIndex(p => p["Waktu Input"] === payload.id);
+                if (index !== -1) {
+                    offlineDb.penjualan[index].Pembeli = payload.pembeli;
+                    offlineDb.penjualan[index]["No HP"] = payload.nohp;
+                    offlineDb.penjualan[index].Alamat = payload.alamat;
+                    offlineDb.penjualan[index].Kategori = payload.kategori;
+                    offlineDb.penjualan[index].Produk = payload.produk;
+                    offlineDb.penjualan[index]["Voucer Klaim"] = payload.voucer;
+                    offlineDb.penjualan[index]["Harga Final"] = payload.harga;
+                    offlineDb.penjualan[index].Catatan = payload.catatan;
+                }
+            }
+            else if (action === 'deletePenjualan') {
+                offlineDb.penjualan = offlineDb.penjualan.filter(p => p["Waktu Input"] !== payload.id);
+            }
+            else if (action === 'updateSetting') {
+                appSettings[payload.key] = payload.value;
+            }
+            return result;
         }
 
         async function handleLogin(e) {
